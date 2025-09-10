@@ -134,19 +134,43 @@ const EnhancedAppLayout: React.FC = () => {
 
     switch (activeTab) {
       case 'tournaments':
-        return <TournamentSystem />;
+        return <TournamentSystem 
+          tournaments={[]} 
+          player={player} 
+          onJoinTournament={(id) => alert(`Joined tournament ${id}!`)} 
+        />;
       case 'achievements':
-        return <AchievementSystem />;
+        return <AchievementSystem 
+          achievements={[]} 
+          player={player} 
+        />;
       case 'challenges':
-        return <DailyChallenges />;
+        return <DailyChallenges 
+          challenges={[]} 
+          player={player} 
+          onCompleteChallenge={(id) => alert(`Completed challenge ${id}!`)} 
+        />;
       case 'friends':
-        return <FriendsSystem />;
+        return <FriendsSystem 
+          friends={[]} 
+          player={player} 
+          onAddFriend={(username) => alert(`Added friend ${username}!`)} 
+        />;
       case 'events':
-        return <SeasonalEvents />;
+        return <SeasonalEvents 
+          events={[]} 
+          player={player} 
+        />;
       case 'vip':
-        return <VIPSystem />;
+        return <VIPSystem 
+          benefits={[]} 
+          player={player} 
+        />;
       case 'spectate':
-        return <SpectatorMode />;
+        return <SpectatorMode 
+          games={[]} 
+          onWatchGame={(id) => alert(`Watching game ${id}!`)} 
+        />;
       default:
         return (
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
