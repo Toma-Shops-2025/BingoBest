@@ -80,6 +80,20 @@ const EnhancedAppLayout: React.FC = () => {
   ];
 
   const renderTabContent = () => {
+    if (!user) {
+      return (
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold text-gray-600 mb-4">Please sign in to access the game</h2>
+          <button
+            onClick={() => setShowAuthModal(true)}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold"
+          >
+            Sign In
+          </button>
+        </div>
+      );
+    }
+
     switch (activeTab) {
       case 'tournaments':
         return <TournamentSystem />;
@@ -153,14 +167,16 @@ const EnhancedAppLayout: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <GameHeader 
-            player={player}
-            currentRoom={gameState.currentRoom?.name}
-            prizePool={gameState.currentRoom?.prizePool || 0}
-            onSignOut={signOut}
-          />
-        </div>
+        {user && (
+          <div className="mb-8">
+            <GameHeader 
+              player={player}
+              currentRoom={gameState.currentRoom?.name}
+              prizePool={gameState.currentRoom?.prizePool || 0}
+              onSignOut={signOut}
+            />
+          </div>
+        )}
 
         {/* Navigation Tabs */}
         <div className="mb-6">
