@@ -84,6 +84,39 @@ const EnhancedAppLayout: React.FC = () => {
     setShowPaymentModal(true);
   };
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+  };
+
+  const handleJoinRoom = (roomId: string) => {
+    // Find the room and join it
+    const room = gameRooms.find(r => r.id === roomId);
+    if (room) {
+      setGameState(prev => ({
+        ...prev,
+        currentRoom: room,
+        gameStatus: 'waiting'
+      }));
+      // Show success message
+      alert(`Joined ${room.name}! Game will start soon.`);
+    }
+  };
+
+  const handlePurchasePowerUp = (powerUpId: string) => {
+    const powerUp = powerUps.find(p => p.id === powerUpId);
+    if (powerUp && player.balance >= powerUp.cost) {
+      // Deduct cost from balance
+      setPlayer(prev => ({
+        ...prev,
+        balance: prev.balance - powerUp.cost
+      }));
+      // Show success message
+      alert(`Purchased ${powerUp.name} for $${powerUp.cost}!`);
+    } else {
+      alert('Insufficient funds!');
+    }
+  };
+
   const renderTabContent = () => {
     if (!user) {
       return (
@@ -120,7 +153,7 @@ const EnhancedAppLayout: React.FC = () => {
             <div className="xl:col-span-2">
               <GameRooms
                 rooms={gameRooms}
-                onJoinRoom={() => {}}
+                onJoinRoom={handleJoinRoom}
                 playerBalance={player.balance}
               />
             </div>
@@ -128,7 +161,7 @@ const EnhancedAppLayout: React.FC = () => {
               <PowerUpShop
                 powerUps={powerUps}
                 playerBalance={player.balance}
-                onPurchase={() => {}}
+                onPurchase={handlePurchasePowerUp}
               />
               <Leaderboard players={leaderboardPlayers} />
               <GameStats player={player} />
@@ -188,7 +221,7 @@ const EnhancedAppLayout: React.FC = () => {
         <div className="mb-6">
           <MainNavigation 
             activeTab={activeTab} 
-            onTabChange={setActiveTab} 
+            onTabChange={handleTabChange} 
             unreadChallenges={2} 
           />
         </div>
