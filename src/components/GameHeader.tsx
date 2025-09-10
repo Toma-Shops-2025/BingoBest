@@ -9,6 +9,7 @@ interface GameHeaderProps {
   prizePool: number;
   timeLeft?: number;
   onSignOut?: () => void;
+  onAddFunds?: () => void;
 }
 
 const GameHeader: React.FC<GameHeaderProps> = ({ 
@@ -16,7 +17,8 @@ const GameHeader: React.FC<GameHeaderProps> = ({
   currentRoom, 
   prizePool, 
   timeLeft,
-  onSignOut
+  onSignOut,
+  onAddFunds
 }) => {
   const handleSignOut = () => {
     if (onSignOut) {
@@ -34,7 +36,16 @@ const GameHeader: React.FC<GameHeaderProps> = ({
           </div>
           <div>
             <h2 className="font-bold text-lg">{player.username}</h2>
-            <p className="text-purple-200">Balance: ${player.balance.toFixed(2)}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-purple-200">Balance: ${player.balance.toFixed(2)}</p>
+              <Button 
+                onClick={onAddFunds}
+                size="sm"
+                className="bg-green-500 hover:bg-green-600 text-white text-xs px-2 py-1"
+              >
+                Add Funds
+              </Button>
+            </div>
           </div>
         </div>
         

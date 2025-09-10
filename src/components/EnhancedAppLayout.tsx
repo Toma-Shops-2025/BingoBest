@@ -79,6 +79,11 @@ const EnhancedAppLayout: React.FC = () => {
     }
   ];
 
+  const handleAddFundsClick = () => {
+    setPaymentAmount(25);
+    setShowPaymentModal(true);
+  };
+
   const renderTabContent = () => {
     if (!user) {
       return (
@@ -174,6 +179,7 @@ const EnhancedAppLayout: React.FC = () => {
               currentRoom={gameState.currentRoom?.name}
               prizePool={gameState.currentRoom?.prizePool || 0}
               onSignOut={signOut}
+              onAddFunds={handleAddFundsClick}
             />
           </div>
         )}
