@@ -8,18 +8,20 @@ interface GameHeaderProps {
   currentRoom?: string;
   prizePool: number;
   timeLeft?: number;
+  onSignOut?: () => void;
 }
 
 const GameHeader: React.FC<GameHeaderProps> = ({ 
   player, 
   currentRoom, 
   prizePool, 
-  timeLeft 
+  timeLeft,
+  onSignOut
 }) => {
-  const { signOut } = useAuth();
-
-  const handleSignOut = async () => {
-    await signOut();
+  const handleSignOut = () => {
+    if (onSignOut) {
+      onSignOut();
+    }
   };
   return (
     <div className="bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-lg shadow-lg">

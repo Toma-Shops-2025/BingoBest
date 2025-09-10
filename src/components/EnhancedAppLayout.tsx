@@ -38,7 +38,7 @@ import {
 
 const EnhancedAppLayout: React.FC = () => {
   const { sidebarOpen, toggleSidebar } = useAppContext();
-  const { user, userProfile, loading: authLoading } = useAuth();
+  const { user, userProfile, loading: authLoading, signOut } = useAuth();
   const isMobile = useIsMobile();
   const { gameState, setGameState, player, setPlayer, generateBingoCard, markNumber } = useBingoGame();
   
@@ -158,6 +158,7 @@ const EnhancedAppLayout: React.FC = () => {
             player={player}
             currentRoom={gameState.currentRoom?.name}
             prizePool={gameState.currentRoom?.prizePool || 0}
+            onSignOut={signOut}
           />
         </div>
 
