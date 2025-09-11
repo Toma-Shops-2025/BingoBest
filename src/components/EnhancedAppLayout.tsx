@@ -26,6 +26,7 @@ import VIPSystem from './VIPSystem';
 import SpectatorMode from './SpectatorMode';
 import LiveGameFeed from './LiveGameFeed';
 import BingoGame from './BingoGame';
+import PWAInstallPrompt from './PWAInstallPrompt';
 import { 
   GameRoom, 
   PowerUp, 
@@ -352,6 +353,9 @@ const EnhancedAppLayout: React.FC = () => {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
       />
+
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt />
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-6 sm:py-8 mt-8 sm:mt-12">
