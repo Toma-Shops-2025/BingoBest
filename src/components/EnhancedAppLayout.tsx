@@ -24,6 +24,7 @@ import SeasonalEvents from './SeasonalEvents';
 import VIPSystem from './VIPSystem';
 import SpectatorMode from './SpectatorMode';
 import LiveGameFeed from './LiveGameFeed';
+import BingoGame from './BingoGame';
 import { 
   GameRoom, 
   PowerUp, 
@@ -50,6 +51,7 @@ const EnhancedAppLayout: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [gameRooms, setGameRooms] = useState<GameRoom[]>([]);
   const [leaderboardPlayers, setLeaderboardPlayers] = useState<Player[]>([]);
+  const [showBingoGame, setShowBingoGame] = useState(false);
 
   const heroImage = "https://d64gsuwffb70l.cloudfront.net/68c18cfaf53345a2b0f3b279_1757515318315_894aa039.webp";
   const ballImages = [
@@ -97,8 +99,9 @@ const EnhancedAppLayout: React.FC = () => {
         currentRoom: room,
         gameStatus: 'waiting'
       }));
-      // Show success message
-      alert(`Joined ${room.name}! Game will start soon.`);
+      // Start the bingo game
+      setShowBingoGame(true);
+      alert(`Joined ${room.name}! Starting bingo game...`);
     }
   };
 
@@ -254,8 +257,33 @@ const EnhancedAppLayout: React.FC = () => {
           />
         </div>
         
+        {/* AdSense Banner Ad */}
+        <div className="mb-6">
+          <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+            <p className="text-gray-500 mb-2">Advertisement Space</p>
+            <p className="text-sm text-gray-400">Google AdSense Banner Ad (728x90)</p>
+            <div className="mt-2 text-xs text-gray-300">
+              Replace with: &lt;ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto"&gt;&lt;/ins&gt;
+            </div>
+          </div>
+        </div>
+
         {/* Tab Content */}
-        {renderTabContent()}
+        {showBingoGame ? (
+          <BingoGame 
+            onWin={(winType, prize) => {
+              setShowWinModal(true);
+              setPlayer(prev => ({ ...prev, balance: prev.balance + prize }));
+              alert(`Congratulations! You won ${winType} and earned $${prize}!`);
+            }}
+            onGameEnd={() => {
+              setShowBingoGame(false);
+              setGameState(prev => ({ ...prev, gameStatus: 'finished' }));
+            }}
+          />
+        ) : (
+          renderTabContent()
+        )}
       </div>
       
       {/* Modals */}
@@ -281,6 +309,48 @@ const EnhancedAppLayout: React.FC = () => {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
       />
+
+      {/* Footer */}
+      <footer className="bg-gray-800 text-white py-8 mt-12">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-lg font-bold mb-4">BetBingo</h3>
+              <p className="text-gray-300 text-sm">
+                The ultimate online bingo experience with real money prizes, tournaments, and social features.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Quick Links</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#game-rooms" className="text-gray-300 hover:text-white">Game Rooms</a></li>
+                <li><a href="#tournaments" className="text-gray-300 hover:text-white">Tournaments</a></li>
+                <li><a href="#achievements" className="text-gray-300 hover:text-white">Achievements</a></li>
+                <li><a href="#friends" className="text-gray-300 hover:text-white">Friends</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="mailto:support@betbingo.live" className="text-gray-300 hover:text-white">Contact Us</a></li>
+                <li><a href="#help" className="text-gray-300 hover:text-white">Help Center</a></li>
+                <li><a href="#faq" className="text-gray-300 hover:text-white">FAQ</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="/privacy-policy.html" className="text-gray-300 hover:text-white">Privacy Policy</a></li>
+                <li><a href="/terms-of-service.html" className="text-gray-300 hover:text-white">Terms of Service</a></li>
+                <li><a href="#responsible-gaming" className="text-gray-300 hover:text-white">Responsible Gaming</a></li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
+            <p>&copy; 2025 BetBingo. All rights reserved. | 18+ Only | Play Responsibly</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
