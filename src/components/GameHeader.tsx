@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Player } from '@/types/game';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -20,14 +20,24 @@ const GameHeader: React.FC<GameHeaderProps> = ({
   onSignOut,
   onAddFunds
 }) => {
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
   const handleSignOut = async () => {
+    if (isSigningOut) return; // Prevent double-clicks
+    
     console.log('Sign out button clicked');
-    if (onSignOut) {
-      console.log('Calling onSignOut function');
-      await onSignOut();
-      console.log('Sign out completed');
-    } else {
-      console.log('onSignOut function not provided');
+    setIsSigningOut(true);
+    
+    try {
+      if (onSignOut) {
+        console.log('Calling onSignOut function');
+        await onSignOut();
+        console.log('Sign out completed');
+      } else {
+        console.log('onSignOut function not provided');
+      }
+    } finally {
+      setIsSigningOut(false);
     }
   };
   return (
@@ -70,9 +80,10 @@ const GameHeader: React.FC<GameHeaderProps> = ({
             onClick={handleSignOut}
             variant="outline"
             size="sm"
-            className="bg-white bg-opacity-20 border-white text-white hover:bg-white hover:text-purple-600"
+            disabled={isSigningOut}
+            className="bg-white bg-opacity-20 border-white text-white hover:bg-white hover:text-purple-600 disabled:opacity-50"
           >
-            Sign Out
+            {isSigningOut ? 'Signing Out...' : 'Sign Out'}
           </Button>
         </div>
       </div>

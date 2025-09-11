@@ -123,13 +123,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('AuthContext: Starting sign out process');
       const { error } = await supabase.auth.signOut();
+      console.log('Supabase signOut response:', { error });
+      
       if (error) {
         console.error('Error signing out:', error);
+        // Force local sign out even if Supabase fails
+        setUser(null);
+        setSession(null);
+        setUserProfile(null);
+        setLoading(false);
       } else {
         console.log('AuthContext: Sign out successful');
+        // Ensure local state is cleared
+        setUser(null);
+        setSession(null);
+        setUserProfile(null);
+        setLoading(false);
       }
     } catch (error) {
       console.error('Error signing out:', error);
+      // Force local sign out even if there's an error
+      setUser(null);
+      setSession(null);
+      setUserProfile(null);
+      setLoading(false);
     }
   };
 
