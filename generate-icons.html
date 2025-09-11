@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BingoBest Icon Generator</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #8B5CF6;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px dashed #8B5CF6;
+            border-radius: 8px;
+        }
+        .preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .icon-preview {
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #f9fafb;
+        }
+        .icon-preview h3 {
+            margin: 0 0 10px 0;
+            color: #374151;
+            font-size: 14px;
+        }
+        .icon-preview canvas {
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+        }
+        .download-section {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .download-btn {
+            background: #8B5CF6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: 600;
+        }
+        .download-btn:hover {
+            background: #7C3AED;
+        }
+        .download-all {
+            background: #10B981;
+            font-size: 18px;
+            padding: 15px 30px;
+        }
+        .download-all:hover {
+            background: #059669;
+        }
+        .instructions {
+            background: #FEF3C7;
+            border: 1px solid #F59E0B;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .size-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .size-item {
+            background: #f3f4f6;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 BingoBest Icon Generator</h1>
+        
+        <div class="instructions">
+            <h3>📋 Instructions:</h3>
+            <ol>
+                <li>Upload your master icon image (512x512 recommended)</li>
+                <li>Preview all generated sizes below</li>
+                <li>Download individual icons or all at once</li>
+                <li>Place the downloaded icons in your public folder</li>
+            </ol>
+        </div>
+
+        <div class="upload-section">
+            <h3>Upload Your Master Icon</h3>
+            <input type="file" id="imageInput" accept="image/*" style="margin-bottom: 15px;">
+            <br>
+            <button id="generateBtn" class="download-btn" disabled>Generate Icons</button>
+        </div>
+
+        <div class="size-grid">
+            <div class="size-item"><strong>Web Icons</strong><br>16x16, 32x32, 48x48</div>
+            <div class="size-item"><strong>PWA Icons</strong><br>72x72, 96x96, 128x128, 144x144, 152x152, 192x192, 384x384, 512x512</div>
+            <div class="size-item"><strong>iOS Icons</strong><br>167x167, 180x180, 204x204, 1024x1024</div>
+            <div class="size-item"><strong>Android Icons</strong><br>48x48, 72x72, 96x96, 144x144, 192x192, 512x512</div>
+            <div class="size-item"><strong>Windows Icons</strong><br>16x16, 32x32, 48x48, 64x64, 70x70, 150x150, 310x310</div>
+            <div class="size-item"><strong>Social Media</strong><br>110x110, 180x180, 300x300, 400x400</div>
+        </div>
+
+        <div class="preview" id="previewContainer">
+            <p style="grid-column: 1 / -1; text-align: center; color: #6B7280;">
+                Upload an image to see previews of all icon sizes
+            </p>
+        </div>
+
+        <div class="download-section" id="downloadSection" style="display: none;">
+            <h3>Download Generated Icons</h3>
+            <button id="downloadAllBtn" class="download-btn download-all">Download All Icons (ZIP)</button>
+            <div id="individualDownloads"></div>
+        </div>
+    </div>
+
+    <script>
+        const sizes = [
+            // Web Icons
+            { name: 'favicon-16', size: 16, category: 'Web' },
+            { name: 'favicon-32', size: 32, category: 'Web' },
+            { name: 'favicon-48', size: 48, category: 'Web' },
+            
+            // PWA Icons
+            { name: 'icon-72', size: 72, category: 'PWA' },
+            { name: 'icon-96', size: 96, category: 'PWA' },
+            { name: 'icon-128', size: 128, category: 'PWA' },
+            { name: 'icon-144', size: 144, category: 'PWA' },
+            { name: 'icon-152', size: 152, category: 'PWA' },
+            { name: 'icon-192', size: 192, category: 'PWA' },
+            { name: 'icon-384', size: 384, category: 'PWA' },
+            { name: 'icon-512', size: 512, category: 'PWA' },
+            
+            // iOS Icons
+            { name: 'apple-touch-icon-167', size: 167, category: 'iOS' },
+            { name: 'apple-touch-icon-180', size: 180, category: 'iOS' },
+            { name: 'apple-touch-icon-204', size: 204, category: 'iOS' },
+            { name: 'app-store-1024', size: 1024, category: 'iOS' },
+            
+            // Android Icons
+            { name: 'android-48', size: 48, category: 'Android' },
+            { name: 'android-72', size: 72, category: 'Android' },
+            { name: 'android-96', size: 96, category: 'Android' },
+            { name: 'android-144', size: 144, category: 'Android' },
+            { name: 'android-192', size: 192, category: 'Android' },
+            { name: 'android-512', size: 512, category: 'Android' },
+            
+            // Windows Icons
+            { name: 'windows-16', size: 16, category: 'Windows' },
+            { name: 'windows-32', size: 32, category: 'Windows' },
+            { name: 'windows-48', size: 48, category: 'Windows' },
+            { name: 'windows-64', size: 64, category: 'Windows' },
+            { name: 'windows-70', size: 70, category: 'Windows' },
+            { name: 'windows-150', size: 150, category: 'Windows' },
+            { name: 'windows-310', size: 310, category: 'Windows' },
+            
+            // Social Media
+            { name: 'instagram-110', size: 110, category: 'Social' },
+            { name: 'facebook-180', size: 180, category: 'Social' },
+            { name: 'linkedin-300', size: 300, category: 'Social' },
+            { name: 'twitter-400', size: 400, category: 'Social' }
+        ];
+
+        let generatedIcons = {};
+
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('generateBtn').disabled = false;
+            }
+        });
+
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const file = document.getElementById('imageInput').files[0];
+            if (!file) return;
+
+            const img = new Image();
+            img.onload = function() {
+                generateIcons(img);
+            };
+            img.src = URL.createObjectURL(file);
+        });
+
+        function generateIcons(sourceImg) {
+            const previewContainer = document.getElementById('previewContainer');
+            const downloadSection = document.getElementById('downloadSection');
+            const individualDownloads = document.getElementById('individualDownloads');
+            
+            previewContainer.innerHTML = '';
+            individualDownloads.innerHTML = '';
+            generatedIcons = {};
+
+            sizes.forEach(icon => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = icon.size;
+                canvas.height = icon.size;
+
+                // Draw the resized image
+                ctx.drawImage(sourceImg, 0, 0, icon.size, icon.size);
+
+                // Create preview
+                const preview = document.createElement('div');
+                preview.className = 'icon-preview';
+                preview.innerHTML = `
+                    <h3>${icon.name} (${icon.size}x${icon.size})</h3>
+                    <canvas width="${icon.size}" height="${icon.size}"></canvas>
+                    <br>
+                    <button class="download-btn" onclick="downloadIcon('${icon.name}', ${icon.size})">Download</button>
+                `;
+                
+                const previewCanvas = preview.querySelector('canvas');
+                const previewCtx = previewCanvas.getContext('2d');
+                previewCtx.drawImage(canvas, 0, 0);
+
+                previewContainer.appendChild(preview);
+                generatedIcons[icon.name] = canvas;
+            });
+
+            downloadSection.style.display = 'block';
+        }
+
+        function downloadIcon(name, size) {
+            const canvas = generatedIcons[name];
+            if (!canvas) return;
+
+            const link = document.createElement('a');
+            link.download = `${name}-${size}x${size}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        document.getElementById('downloadAllBtn').addEventListener('click', function() {
+            // This would require a ZIP library - for now, just download the most important ones
+            const importantIcons = ['favicon-32', 'icon-192', 'icon-512', 'apple-touch-icon-180', 'android-192'];
+            
+            importantIcons.forEach(iconName => {
+                if (generatedIcons[iconName]) {
+                    setTimeout(() => {
+                        downloadIcon(iconName, generatedIcons[iconName].width);
+                    }, 100);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
