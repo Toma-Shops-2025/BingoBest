@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import HowToPlayModal from './HowToPlayModal';
 
 interface BingoNumber {
   number: number;
@@ -27,6 +28,7 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
   const [gameStatus, setGameStatus] = useState<'waiting' | 'playing' | 'finished'>('waiting');
   const [bingoCards, setBingoCards] = useState<BingoCard[]>([]);
   const [gameTimer, setGameTimer] = useState(300); // 5 minutes
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
 
   const letters = ['B', 'I', 'N', 'G', 'O'];
   const numbersPerLetter = 15;
@@ -115,7 +117,26 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
         // Check for win
         const winType = checkWin(newMarked, card.numbers);
         if (winType) {
-          onWin(winType, 100); // $100 prize
+          // Different prizes for different patterns
+          let prize = 100; // Default prize
+          switch (winType) {
+            case 'line':
+              prize = 50;
+              break;
+            case 'diagonal':
+              prize = 75;
+              break;
+            case '4-corners':
+              prize = 25;
+              break;
+            case 'x-pattern':
+              prize = 150;
+              break;
+            case 'full-house':
+              prize = 200;
+              break;
+          }
+          onWin(winType, prize);
           return { ...card, marked: newMarked, completed: true };
         }
         
@@ -148,6 +169,17 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
     
     if (marked[0][4] && marked[1][3] && marked[2][2] && marked[3][1] && marked[4][0]) {
       return 'diagonal';
+    }
+    
+    // Check 4 corners
+    if (marked[0][0] && marked[0][4] && marked[4][0] && marked[4][4]) {
+      return '4-corners';
+    }
+    
+    // Check X pattern (both diagonals)
+    if ((marked[0][0] && marked[1][1] && marked[2][2] && marked[3][3] && marked[4][4]) &&
+        (marked[0][4] && marked[1][3] && marked[2][2] && marked[3][1] && marked[4][0])) {
+      return 'x-pattern';
     }
     
     // Check full house
@@ -207,9 +239,14 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
           {gameStatus === 'waiting' && (
             <div className="text-center py-8">
               <h3 className="text-xl font-semibold mb-4">Ready to Play Bingo?</h3>
-              <Button onClick={startGame} size="lg">
-                Start Game
-              </Button>
+              <div className="flex gap-4 justify-center">
+                <Button onClick={startGame} size="lg">
+                  Start Game
+                </Button>
+                <Button onClick={() => setShowHowToPlay(true)} variant="outline" size="lg">
+                  How to Play
+                </Button>
+              </div>
             </div>
           )}
           
@@ -279,6 +316,12 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
           </CardContent>
         </Card>
       ))}
+
+      {/* How to Play Modal */}
+      <HowToPlayModal
+        isOpen={showHowToPlay}
+        onClose={() => setShowHowToPlay(false)}
+      />
     </div>
   );
 };

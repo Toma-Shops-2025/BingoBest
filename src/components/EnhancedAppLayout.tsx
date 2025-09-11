@@ -62,7 +62,7 @@ const EnhancedAppLayout: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab, showBingoGame]);
 
-  const heroImage = "https://d64gsuwffb70l.cloudfront.net/68c18cfaf53345a2b0f3b279_1757515318315_894aa039.webp";
+  const heroImage = "/1000015560.png";
   const ballImages = [
     "https://d64gsuwffb70l.cloudfront.net/68c18cfaf53345a2b0f3b279_1757515322144_660039cf.webp",
     "https://d64gsuwffb70l.cloudfront.net/68c18cfaf53345a2b0f3b279_1757515323914_9918e934.webp",
@@ -255,26 +255,79 @@ const EnhancedAppLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100">
+      <style jsx>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        @keyframes glow {
+          0%, 100% { text-shadow: 0 0 20px rgba(255, 165, 0, 0.8); }
+          50% { text-shadow: 0 0 30px rgba(255, 165, 0, 1), 0 0 40px rgba(255, 165, 0, 0.8); }
+        }
+        .float-animation {
+          animation: float 3s ease-in-out infinite;
+        }
+        .glow-animation {
+          animation: glow 2s ease-in-out infinite;
+        }
+      `}</style>
       {/* Hero Section */}
       <div 
-        className="relative h-96 bg-cover bg-center flex items-center justify-center"
+        className="relative h-[500px] bg-cover bg-center flex items-center justify-center"
         style={{ backgroundImage: `url(${heroImage})` }}
       >
-        <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-        <div className="relative z-10 text-center text-white">
-          <h1 className="text-5xl font-bold mb-4">Ultimate Bingo Experience!</h1>
-          <p className="text-xl mb-6">Tournaments, achievements, friends, and more!</p>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30"></div>
+        
+        {/* Animated floating elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 left-10 animate-bounce">
+            <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-xl shadow-lg">
+              $
+            </div>
+          </div>
+          <div className="absolute top-32 right-20 animate-pulse">
+            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-purple-600 font-bold text-lg shadow-lg">
+              75
+            </div>
+          </div>
+          <div className="absolute bottom-32 left-20 animate-bounce delay-1000">
+            <div className="w-14 h-14 bg-green-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+              €
+            </div>
+          </div>
+          <div className="absolute bottom-20 right-10 animate-pulse delay-500">
+            <div className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
+              ¥
+            </div>
+          </div>
+        </div>
+        
+        <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
+          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold mb-6 text-orange-400 drop-shadow-2xl glow-animation">
+            Ultimate Bingo Experience
+          </h1>
+          <div className="mb-8">
+            <div className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-8 py-4 rounded-full text-3xl sm:text-4xl font-bold mb-4 shadow-2xl float-animation">
+              BingoBest
+            </div>
+            <p className="text-2xl sm:text-3xl text-white font-semibold drop-shadow-lg">
+              Cash Bingo Adventure
+            </p>
+          </div>
+          <p className="text-xl sm:text-2xl text-gray-200 mb-8 drop-shadow-lg">
+            Tournaments, achievements, friends, and more!
+          </p>
           {!user && (
-            <div className="space-x-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="bg-green-500 hover:bg-green-600 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors"
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-10 py-4 rounded-full font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl"
               >
                 Sign Up to Play
               </button>
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold text-lg transition-colors"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-10 py-4 rounded-full font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl"
               >
                 Sign In
               </button>
