@@ -163,13 +163,17 @@ const EnhancedAppLayout: React.FC = () => {
         />;
       case 'vip':
         return <VIPSystem 
-          benefits={[]} 
           player={player} 
+          vipBenefits={[]} 
+          currentTier={0} 
+          nextTierRequirement={10} 
+          onUpgradeVIP={() => alert('VIP upgrade feature coming soon!')} 
         />;
       case 'spectate':
         return <SpectatorMode 
-          games={[]} 
-          onWatchGame={(id) => alert(`Watching game ${id}!`)} 
+          activeGames={[]} 
+          onJoinAsSpectator={(id) => alert(`Watching game ${id} as spectator!`)} 
+          onJoinAsPlayer={(id) => alert(`Joined game ${id} as player!`)} 
         />;
       default:
         return (

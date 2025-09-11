@@ -32,7 +32,14 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {challenges.map((challenge) => (
+        {challenges.length === 0 ? (
+          <div className="text-center py-8">
+            <div className="text-6xl mb-4">📅</div>
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">No Daily Challenges Available</h3>
+            <p className="text-gray-500">Check back tomorrow for new challenges!</p>
+          </div>
+        ) : (
+          challenges.map((challenge) => (
           <div
             key={challenge.id}
             className={`p-4 rounded-lg border ${
@@ -85,7 +92,8 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({
               )}
             </div>
           </div>
-        ))}
+          ))
+        )}
       </CardContent>
     </Card>
   );
