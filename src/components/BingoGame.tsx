@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import HowToPlayModal from './HowToPlayModal';
+import { trackBingoWin, trackUserAction } from '@/lib/analytics';
 
 interface BingoNumber {
   number: number;
@@ -136,6 +137,10 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
               prize = 200;
               break;
           }
+          // Track analytics
+          trackBingoWin(winType, prize);
+          trackUserAction('bingo_win', { winType, prize });
+          
           onWin(winType, prize);
           return { ...card, marked: newMarked, completed: true };
         }

@@ -31,6 +31,7 @@ import BackToTopButton from './BackToTopButton';
 import NavigationBreadcrumbs from './NavigationBreadcrumbs';
 import LoadingSpinner from './LoadingSpinner';
 import UserProfile from './UserProfile';
+import { analytics, trackPageView, trackUserAction } from '@/lib/analytics';
 import { 
   GameRoom, 
   PowerUp, 
@@ -65,6 +66,14 @@ const EnhancedAppLayout: React.FC = () => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab, showBingoGame]);
+
+  // Track page views and user actions
+  useEffect(() => {
+    if (user) {
+      analytics.setUserId(user.id);
+      trackPageView(activeTab);
+    }
+  }, [user, activeTab]);
 
   const heroImage = "/1000015560.png";
   const ballImages = [
@@ -125,10 +134,15 @@ const EnhancedAppLayout: React.FC = () => {
         setActiveTab('home'); // Switch to home tab to show the game
         // Scroll to top when starting game
         window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Track analytics
+        trackUserAction('join_room', { roomId, roomName: room.name });
+        
         alert(`Joined ${room.name}! Starting bingo game...`);
       }
     } catch (error) {
       console.error('Error joining room:', error);
+      trackUserAction('join_room_error', { roomId, error: error.message });
       alert('Failed to join room. Please try again.');
     } finally {
       setIsLoading(false);
