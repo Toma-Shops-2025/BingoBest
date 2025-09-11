@@ -159,6 +159,7 @@ const EnhancedAppLayout: React.FC = () => {
   const [showBingoGame, setShowBingoGame] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
+  const [roomTimers, setRoomTimers] = useState<Record<string, number>>({});
 
   // Scroll to top when component mounts or activeTab changes
   useEffect(() => {
@@ -177,6 +178,32 @@ const EnhancedAppLayout: React.FC = () => {
       trackPageView(activeTab);
     }
   }, [user, activeTab]);
+
+  // Initialize room timers
+  useEffect(() => {
+    const initialTimers: Record<string, number> = {};
+    gameRooms.forEach(room => {
+      initialTimers[room.id] = room.timeLeft;
+    });
+    setRoomTimers(initialTimers);
+  }, []);
+
+  // Update room timers every second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRoomTimers(prev => {
+        const newTimers = { ...prev };
+        Object.keys(newTimers).forEach(roomId => {
+          if (newTimers[roomId] > 0) {
+            newTimers[roomId] -= 1;
+          }
+        });
+        return newTimers;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const heroImage = "/1000015560.png";
   const ballImages = [
@@ -227,11 +254,24 @@ const EnhancedAppLayout: React.FC = () => {
       // Find the room and join it
       const room = gameRooms.find(r => r.id === roomId);
       if (room) {
+        // Check if player has enough balance
+        if (player.balance < room.entryFee) {
+          alert(`Insufficient funds! You need $${room.entryFee} to join this game.`);
+          return;
+        }
+        
+        // Deduct entry fee from balance
+        setPlayer(prev => ({
+          ...prev,
+          balance: (prev.balance || 0) - room.entryFee
+        }));
+        
         setGameState(prev => ({
           ...prev,
           currentRoom: room,
           gameStatus: 'waiting'
         }));
+        
         // Start the bingo game
         setShowBingoGame(true);
         setActiveTab('home'); // Switch to home tab to show the game
@@ -239,9 +279,9 @@ const EnhancedAppLayout: React.FC = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         
         // Track analytics
-        trackUserAction('join_room', { roomId, roomName: room.name });
+        trackUserAction('join_room', { roomId, roomName: room.name, entryFee: room.entryFee });
         
-        alert(`Joined ${room.name}! Starting bingo game...`);
+        alert(`🎉 Joined ${room.name}! Entry fee of $${room.entryFee} deducted. Starting bingo game...`);
       }
     } catch (error) {
       console.error('Error joining room:', error);
@@ -363,7 +403,10 @@ const EnhancedAppLayout: React.FC = () => {
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
             <div className="xl:col-span-2">
               <GameRooms
-                rooms={gameRooms}
+                rooms={gameRooms.map(room => ({
+                  ...room,
+                  timeLeft: roomTimers[room.id] || room.timeLeft
+                }))}
                 onJoinRoom={handleJoinRoom}
                 playerBalance={player.balance}
               />

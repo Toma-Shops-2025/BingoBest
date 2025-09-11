@@ -40,7 +40,11 @@ const GameRooms: React.FC<GameRoomsProps> = ({ rooms, onJoinRoom, playerBalance 
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Players:</span>
-                <span className="font-semibold">{room.currentPlayers}/{room.maxPlayers}</span>
+                <span className="font-semibold">{room.playerCount}/{room.maxPlayers}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Time Left:</span>
+                <span className="font-semibold text-blue-600">{Math.floor(room.timeLeft / 60)}:{(room.timeLeft % 60).toString().padStart(2, '0')}</span>
               </div>
             </div>
             
@@ -48,19 +52,19 @@ const GameRooms: React.FC<GameRoomsProps> = ({ rooms, onJoinRoom, playerBalance 
               onClick={() => onJoinRoom(room.id)}
               disabled={
                 room.status !== 'waiting' || 
-                room.currentPlayers >= room.maxPlayers ||
+                room.playerCount >= room.maxPlayers ||
                 playerBalance < room.entryFee
               }
               className={`
                 w-full py-2 px-4 rounded-lg font-semibold transition-colors
-                ${room.status === 'waiting' && room.currentPlayers < room.maxPlayers && playerBalance >= room.entryFee
+                ${room.status === 'waiting' && room.playerCount < room.maxPlayers && playerBalance >= room.entryFee
                   ? 'bg-purple-600 hover:bg-purple-700 text-white'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }
               `}
             >
               {room.status !== 'waiting' ? 'Game in Progress' : 
-               room.currentPlayers >= room.maxPlayers ? 'Room Full' :
+               room.playerCount >= room.maxPlayers ? 'Room Full' :
                playerBalance < room.entryFee ? 'Insufficient Funds' : 'Join Game'}
             </button>
           </div>
