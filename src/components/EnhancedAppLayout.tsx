@@ -255,15 +255,6 @@ const EnhancedAppLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100">
-      <style jsx>{`
-        @keyframes glow {
-          0%, 100% { text-shadow: 0 0 20px rgba(255, 165, 0, 0.8); }
-          50% { text-shadow: 0 0 30px rgba(255, 165, 0, 1), 0 0 40px rgba(255, 165, 0, 0.8); }
-        }
-        .glow-animation {
-          animation: glow 2s ease-in-out infinite;
-        }
-      `}</style>
       {/* Hero Section */}
       <div 
         className="relative h-[500px] bg-cover bg-center flex items-center justify-center"
@@ -273,7 +264,7 @@ const EnhancedAppLayout: React.FC = () => {
         
         
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
-          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold mb-6 text-orange-400 drop-shadow-2xl glow-animation">
+          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold mb-6 text-orange-400 drop-shadow-2xl">
             Ultimate Bingo Experience
           </h1>
           <div className="mb-8">
