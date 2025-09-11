@@ -29,6 +29,7 @@ import BingoGame from './BingoGame';
 import PWAInstallPrompt from './PWAInstallPrompt';
 import BackToTopButton from './BackToTopButton';
 import NavigationBreadcrumbs from './NavigationBreadcrumbs';
+import LoadingSpinner from './LoadingSpinner';
 import { 
   GameRoom, 
   PowerUp, 
@@ -56,6 +57,7 @@ const EnhancedAppLayout: React.FC = () => {
   const [gameRooms, setGameRooms] = useState<GameRoom[]>([]);
   const [leaderboardPlayers, setLeaderboardPlayers] = useState<Player[]>([]);
   const [showBingoGame, setShowBingoGame] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Scroll to top when component mounts or activeTab changes
   useEffect(() => {
@@ -105,21 +107,29 @@ const EnhancedAppLayout: React.FC = () => {
     }, 100);
   };
 
-  const handleJoinRoom = (roomId: string) => {
-    // Find the room and join it
-    const room = gameRooms.find(r => r.id === roomId);
-    if (room) {
-      setGameState(prev => ({
-        ...prev,
-        currentRoom: room,
-        gameStatus: 'waiting'
-      }));
-      // Start the bingo game
-      setShowBingoGame(true);
-      setActiveTab('home'); // Switch to home tab to show the game
-      // Scroll to top when starting game
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      alert(`Joined ${room.name}! Starting bingo game...`);
+  const handleJoinRoom = async (roomId: string) => {
+    setIsLoading(true);
+    try {
+      // Find the room and join it
+      const room = gameRooms.find(r => r.id === roomId);
+      if (room) {
+        setGameState(prev => ({
+          ...prev,
+          currentRoom: room,
+          gameStatus: 'waiting'
+        }));
+        // Start the bingo game
+        setShowBingoGame(true);
+        setActiveTab('home'); // Switch to home tab to show the game
+        // Scroll to top when starting game
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        alert(`Joined ${room.name}! Starting bingo game...`);
+      }
+    } catch (error) {
+      console.error('Error joining room:', error);
+      alert('Failed to join room. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -139,6 +149,7 @@ const EnhancedAppLayout: React.FC = () => {
   };
 
   const handlePaymentSuccess = async () => {
+    setIsLoading(true);
     try {
       // Update balance in database
       if (user) {
@@ -165,6 +176,8 @@ const EnhancedAppLayout: React.FC = () => {
     } catch (error) {
       console.error('Payment success error:', error);
       alert('Payment processed but there was an error updating your balance. Please contact support.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -263,6 +276,14 @@ const EnhancedAppLayout: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        {isLoading && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl">
+              <LoadingSpinner size="lg" text="Processing..." />
+            </div>
+          </div>
+        )}
+        
         {user && (
           <div className="mb-8">
             <GameHeader 
