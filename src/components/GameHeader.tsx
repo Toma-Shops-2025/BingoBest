@@ -20,9 +20,14 @@ const GameHeader: React.FC<GameHeaderProps> = ({
   onSignOut,
   onAddFunds
 }) => {
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    console.log('Sign out button clicked');
     if (onSignOut) {
-      onSignOut();
+      console.log('Calling onSignOut function');
+      await onSignOut();
+      console.log('Sign out completed');
+    } else {
+      console.log('onSignOut function not provided');
     }
   };
   return (
