@@ -48,7 +48,40 @@ const EnhancedAppLayout: React.FC = () => {
   const { sidebarOpen, toggleSidebar } = useAppContext();
   const { user, userProfile, loading: authLoading, signOut } = useAuth();
   const isMobile = useIsMobile();
-  const { gameState, setGameState, player, setPlayer, generateBingoCard, markNumber } = useBingoGame();
+  
+  // Initialize player with default values
+  const [player, setPlayer] = useState<Player>({
+    id: user?.id || 'guest',
+    username: user?.email?.split('@')[0] || 'Player1',
+    balance: 100.00,
+    level: 1,
+    experience: 0,
+    avatar: '',
+    achievements: [],
+    friends: [],
+    isOnline: true,
+    lastActive: new Date().toISOString(),
+    totalWinnings: 0,
+    gamesPlayed: 0,
+    gamesWon: 0,
+    winRate: 0,
+    favoriteRoom: 'Speed Bingo',
+    joinDate: new Date().toISOString(),
+    preferences: {
+      soundEnabled: true,
+      notificationsEnabled: true,
+      theme: 'light'
+    }
+  });
+
+  const [gameState, setGameState] = useState({
+    currentRoom: null as GameRoom | null,
+    gameStatus: 'waiting' as 'waiting' | 'playing' | 'finished',
+    currentNumber: null as number | null,
+    calledNumbers: [] as number[],
+    bingoCards: [] as any[],
+    gameTimer: 300
+  });
   
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -56,7 +89,72 @@ const EnhancedAppLayout: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [activeTab, setActiveTab] = useState('home');
-  const [gameRooms, setGameRooms] = useState<GameRoom[]>([]);
+  const [gameRooms, setGameRooms] = useState<GameRoom[]>([
+    {
+      id: 'speed-bingo',
+      name: 'Speed Bingo',
+      description: 'Fast-paced bingo with quick rounds',
+      playerCount: 12,
+      maxPlayers: 50,
+      entryFee: 5.00,
+      prizePool: 250.00,
+      gameType: 'speed',
+      status: 'waiting',
+      timeLeft: 300,
+      rules: 'First to complete any line wins!',
+      powerUpsAllowed: true,
+      minLevel: 1,
+      maxLevel: 10
+    },
+    {
+      id: 'classic-bingo',
+      name: 'Classic Bingo',
+      description: 'Traditional bingo with full house wins',
+      playerCount: 8,
+      maxPlayers: 30,
+      entryFee: 10.00,
+      prizePool: 300.00,
+      gameType: 'classic',
+      status: 'waiting',
+      timeLeft: 600,
+      rules: 'Complete any line or full house to win!',
+      powerUpsAllowed: true,
+      minLevel: 1,
+      maxLevel: 10
+    },
+    {
+      id: 'high-stakes',
+      name: 'High Stakes Arena',
+      description: 'Big prizes for experienced players',
+      playerCount: 5,
+      maxPlayers: 20,
+      entryFee: 25.00,
+      prizePool: 500.00,
+      gameType: 'high-stakes',
+      status: 'waiting',
+      timeLeft: 900,
+      rules: 'Multiple patterns win different prizes!',
+      powerUpsAllowed: true,
+      minLevel: 3,
+      maxLevel: 10
+    },
+    {
+      id: 'beginner-room',
+      name: 'Beginner Room',
+      description: 'Perfect for new players',
+      playerCount: 15,
+      maxPlayers: 40,
+      entryFee: 2.00,
+      prizePool: 80.00,
+      gameType: 'beginner',
+      status: 'waiting',
+      timeLeft: 450,
+      rules: 'Learn the basics with small stakes',
+      powerUpsAllowed: false,
+      minLevel: 1,
+      maxLevel: 3
+    }
+  ]);
   const [leaderboardPlayers, setLeaderboardPlayers] = useState<Player[]>([]);
   const [showBingoGame, setShowBingoGame] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,9 +165,14 @@ const EnhancedAppLayout: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab, showBingoGame]);
 
-  // Track page views and user actions
+  // Update player when user changes
   useEffect(() => {
     if (user) {
+      setPlayer(prev => ({
+        ...prev,
+        id: user.id,
+        username: user.email?.split('@')[0] || 'Player1'
+      }));
       analytics.setUserId(user.id);
       trackPageView(activeTab);
     }
