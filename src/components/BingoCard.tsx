@@ -1,50 +1,55 @@
 import React from 'react';
-import { BingoCard as BingoCardType } from '@/types/game';
+import { Card, CardContent } from '@/components/ui/card';
 
-interface BingoCardProps {
-  card: BingoCardType;
-  onNumberClick: (row: number, col: number) => void;
-  disabled?: boolean;
+interface BingoNumber {
+  number: number;
+  called: boolean;
+  letter: string;
 }
 
-const BingoCard: React.FC<BingoCardProps> = ({ card, onNumberClick, disabled = false }) => {
-  const headers = ['B', 'I', 'N', 'G', 'O'];
+interface BingoCardProps {
+  numbers: BingoNumber[][];
+  marked: boolean[][];
+  onMark: (row: number, col: number) => void;
+}
+
+const BingoCard: React.FC<BingoCardProps> = ({ numbers, marked, onMark }) => {
+  const letters = ['B', 'I', 'N', 'G', 'O'];
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-4 border-2 border-purple-200">
-      <div className="grid grid-cols-5 gap-1 mb-2">
-        {headers.map((header, index) => (
-          <div key={index} className="bg-purple-600 text-white font-bold text-center py-2 rounded">
-            {header}
-          </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-5 gap-1">
-        {card.numbers.map((row, rowIndex) =>
-          row.map((number, colIndex) => {
-            const isCenter = rowIndex === 2 && colIndex === 2;
-            const isMarked = card.marked[rowIndex][colIndex];
-            
-            return (
+    <Card className="w-full max-w-md mx-auto">
+      <CardContent className="p-4">
+        <div className="grid grid-cols-5 gap-1 text-center">
+          {/* Header row with letters */}
+          {letters.map((letter, colIndex) => (
+            <div key={colIndex} className="font-bold text-lg bg-purple-600 text-white p-2 rounded">
+              {letter}
+            </div>
+          ))}
+          
+          {/* Number grid */}
+          {numbers.map((row, rowIndex) =>
+            row.map((cell, colIndex) => (
               <button
                 key={`${rowIndex}-${colIndex}`}
-                onClick={() => !disabled && onNumberClick(rowIndex, colIndex)}
-                disabled={disabled}
+                onClick={() => onMark(rowIndex, colIndex)}
                 className={`
-                  h-12 w-12 rounded-lg font-semibold text-sm transition-all duration-200
-                  ${isCenter ? 'bg-yellow-400 text-black' : ''}
-                  ${isMarked && !isCenter ? 'bg-green-500 text-white' : ''}
-                  ${!isMarked && !isCenter ? 'bg-gray-100 hover:bg-gray-200 text-gray-800' : ''}
-                  ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                  p-2 border rounded text-sm font-semibold transition-all
+                  ${marked[rowIndex][colIndex] 
+                    ? 'bg-green-500 text-white border-green-600' 
+                    : 'bg-white hover:bg-gray-100 border-gray-300'
+                  }
+                  ${cell.called ? 'ring-2 ring-blue-500' : ''}
                 `}
+                disabled={marked[rowIndex][colIndex]}
               >
-                {isCenter ? 'FREE' : number}
+                {cell.number}
               </button>
-            );
-          })
-        )}
-      </div>
-    </div>
+            ))
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 

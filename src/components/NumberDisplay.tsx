@@ -1,60 +1,72 @@
 import React from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface NumberDisplayProps {
   currentNumber: number | null;
   calledNumbers: number[];
-  ballImages: string[];
+  onCallNumber: () => void;
+  gameStatus: 'waiting' | 'playing' | 'finished';
 }
 
 const NumberDisplay: React.FC<NumberDisplayProps> = ({ 
   currentNumber, 
   calledNumbers, 
-  ballImages 
+  onCallNumber, 
+  gameStatus 
 }) => {
-  const getRandomBallImage = () => {
-    return ballImages[Math.floor(Math.random() * ballImages.length)];
+  const getLetter = (number: number) => {
+    if (number <= 15) return 'B';
+    if (number <= 30) return 'I';
+    if (number <= 45) return 'N';
+    if (number <= 60) return 'G';
+    return 'O';
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <div className="text-center mb-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-4">Current Number</h3>
-        {currentNumber ? (
-          <div className="relative">
-            <img 
-              src={getRandomBallImage()} 
-              alt="Bingo Ball" 
-              className="w-24 h-24 mx-auto mb-2"
-            />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-3xl font-bold text-white drop-shadow-lg">
-                {currentNumber}
-              </span>
+    <Card className="w-full">
+      <CardContent className="p-6">
+        <div className="text-center space-y-4">
+          <h3 className="text-xl font-bold">Called Numbers</h3>
+          
+          {/* Current Number Display */}
+          {currentNumber && (
+            <div className="bg-purple-600 text-white p-6 rounded-lg">
+              <div className="text-4xl font-bold">
+                {getLetter(currentNumber)}-{currentNumber}
+              </div>
+              <div className="text-sm mt-2">Current Number</div>
+            </div>
+          )}
+          
+          {/* Call Next Number Button */}
+          {gameStatus === 'playing' && (
+            <button
+              onClick={onCallNumber}
+              className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold text-lg"
+            >
+              Call Next Number
+            </button>
+          )}
+          
+          {/* Called Numbers List */}
+          <div className="mt-6">
+            <h4 className="text-lg font-semibold mb-3">Called Numbers ({calledNumbers.length})</h4>
+            <div className="flex flex-wrap gap-2 justify-center max-h-32 overflow-y-auto">
+              {calledNumbers.map((number, index) => (
+                <Badge 
+                  key={index} 
+                  variant="secondary" 
+                  className="text-sm"
+                >
+                  {getLetter(number)}-{number}
+                </Badge>
+              ))}
             </div>
           </div>
-        ) : (
-          <div className="w-24 h-24 mx-auto bg-gray-200 rounded-full flex items-center justify-center">
-            <span className="text-gray-500">?</span>
-          </div>
-        )}
-      </div>
-      
-      <div>
-        <h4 className="font-semibold text-gray-700 mb-2">Called Numbers</h4>
-        <div className="max-h-32 overflow-y-auto">
-          <div className="flex flex-wrap gap-1">
-            {calledNumbers.map((number, index) => (
-              <span
-                key={index}
-                className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-medium"
-              >
-                {number}
-              </span>
-            ))}
-          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 

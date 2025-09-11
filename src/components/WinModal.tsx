@@ -1,63 +1,56 @@
 import React from 'react';
-import { Player } from '@/types/game';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Trophy, DollarSign } from 'lucide-react';
 
 interface WinModalProps {
   isOpen: boolean;
-  winner: Player;
-  prizeAmount: number;
   onClose: () => void;
-  onPlayAgain: () => void;
+  winType: string;
+  prize: number;
 }
 
-const WinModal: React.FC<WinModalProps> = ({ 
-  isOpen, 
-  winner, 
-  prizeAmount, 
-  onClose, 
-  onPlayAgain 
-}) => {
-  const trophyIcon = "https://d64gsuwffb70l.cloudfront.net/68c18cfaf53345a2b0f3b279_1757515340373_524a8c39.webp";
-  const coinIcon = "https://d64gsuwffb70l.cloudfront.net/68c18cfaf53345a2b0f3b279_1757515336644_d79daee6.webp";
-
-  if (!isOpen) return null;
-
+const WinModal: React.FC<WinModalProps> = ({ isOpen, onClose, winType, prize }) => {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 text-center">
-        <div className="mb-6">
-          <img src={trophyIcon} alt="Trophy" className="w-20 h-20 mx-auto mb-4" />
-          <h2 className="text-3xl font-bold text-yellow-600 mb-2">BINGO!</h2>
-          <h3 className="text-xl font-semibold text-gray-800">
-            {winner.username} Wins!
-          </h3>
-        </div>
-
-        <div className="bg-gradient-to-r from-green-100 to-green-200 rounded-lg p-6 mb-6">
-          <div className="flex items-center justify-center mb-2">
-            <img src={coinIcon} alt="Prize" className="w-8 h-8 mr-2" />
-            <span className="text-2xl font-bold text-green-800">
-              ${prizeAmount.toFixed(2)}
-            </span>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="text-center text-2xl font-bold text-green-600">
+            🎉 BINGO! 🎉
+          </DialogTitle>
+        </DialogHeader>
+        
+        <div className="text-center space-y-6 py-4">
+          <div className="flex justify-center">
+            <Trophy className="w-16 h-16 text-yellow-500" />
           </div>
-          <p className="text-green-700">Prize Won!</p>
+          
+          <div>
+            <h3 className="text-xl font-semibold mb-2">Congratulations!</h3>
+            <p className="text-gray-600">You won with a {winType} pattern!</p>
+          </div>
+          
+          <div className="bg-green-100 border border-green-300 rounded-lg p-4">
+            <div className="flex items-center justify-center gap-2">
+              <DollarSign className="w-6 h-6 text-green-600" />
+              <span className="text-2xl font-bold text-green-600">
+                ${prize.toFixed(2)}
+              </span>
+            </div>
+            <p className="text-sm text-green-700 mt-1">Added to your balance!</p>
+          </div>
+          
+          <div className="flex gap-3 justify-center">
+            <Button onClick={onClose} className="bg-purple-600 hover:bg-purple-700">
+              Continue Playing
+            </Button>
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
+          </div>
         </div>
-
-        <div className="space-y-3">
-          <button
-            onClick={onPlayAgain}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors"
-          >
-            Play Again
-          </button>
-          <button
-            onClick={onClose}
-            className="w-full border border-gray-300 hover:bg-gray-50 text-gray-700 py-3 px-6 rounded-lg font-semibold transition-colors"
-          >
-            Back to Lobby
-          </button>
-        </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
