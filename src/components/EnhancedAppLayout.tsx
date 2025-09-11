@@ -101,6 +101,7 @@ const EnhancedAppLayout: React.FC = () => {
       }));
       // Start the bingo game
       setShowBingoGame(true);
+      setActiveTab('home'); // Switch to home tab to show the game
       alert(`Joined ${room.name}! Starting bingo game...`);
     }
   };
@@ -270,17 +271,28 @@ const EnhancedAppLayout: React.FC = () => {
 
         {/* Tab Content */}
         {showBingoGame ? (
-          <BingoGame 
-            onWin={(winType, prize) => {
-              setShowWinModal(true);
-              setPlayer(prev => ({ ...prev, balance: prev.balance + prize }));
-              alert(`Congratulations! You won ${winType} and earned $${prize}!`);
-            }}
-            onGameEnd={() => {
-              setShowBingoGame(false);
-              setGameState(prev => ({ ...prev, gameStatus: 'finished' }));
-            }}
-          />
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Playing Bingo</h2>
+              <Button 
+                onClick={() => setShowBingoGame(false)}
+                variant="outline"
+              >
+                Back to Game Rooms
+              </Button>
+            </div>
+            <BingoGame 
+              onWin={(winType, prize) => {
+                setShowWinModal(true);
+                setPlayer(prev => ({ ...prev, balance: prev.balance + prize }));
+                alert(`Congratulations! You won ${winType} and earned $${prize}!`);
+              }}
+              onGameEnd={() => {
+                setShowBingoGame(false);
+                setGameState(prev => ({ ...prev, gameStatus: 'finished' }));
+              }}
+            />
+          </div>
         ) : (
           renderTabContent()
         )}
@@ -323,26 +335,26 @@ const EnhancedAppLayout: React.FC = () => {
             <div>
               <h4 className="font-semibold mb-4">Quick Links</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="#game-rooms" className="text-gray-300 hover:text-white">Game Rooms</a></li>
-                <li><a href="#tournaments" className="text-gray-300 hover:text-white">Tournaments</a></li>
-                <li><a href="#achievements" className="text-gray-300 hover:text-white">Achievements</a></li>
-                <li><a href="#friends" className="text-gray-300 hover:text-white">Friends</a></li>
+                <li><button onClick={() => setActiveTab('home')} className="text-gray-300 hover:text-white cursor-pointer">Game Rooms</button></li>
+                <li><button onClick={() => setActiveTab('tournaments')} className="text-gray-300 hover:text-white cursor-pointer">Tournaments</button></li>
+                <li><button onClick={() => setActiveTab('achievements')} className="text-gray-300 hover:text-white cursor-pointer">Achievements</button></li>
+                <li><button onClick={() => setActiveTab('friends')} className="text-gray-300 hover:text-white cursor-pointer">Friends</button></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Support</h4>
               <ul className="space-y-2 text-sm">
                 <li><a href="mailto:support@betbingo.live" className="text-gray-300 hover:text-white">Contact Us</a></li>
-                <li><a href="#help" className="text-gray-300 hover:text-white">Help Center</a></li>
-                <li><a href="#faq" className="text-gray-300 hover:text-white">FAQ</a></li>
+                <li><button onClick={() => alert('Help Center coming soon!')} className="text-gray-300 hover:text-white cursor-pointer">Help Center</button></li>
+                <li><button onClick={() => alert('FAQ coming soon!')} className="text-gray-300 hover:text-white cursor-pointer">FAQ</button></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Legal</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="/privacy-policy.html" className="text-gray-300 hover:text-white">Privacy Policy</a></li>
-                <li><a href="/terms-of-service.html" className="text-gray-300 hover:text-white">Terms of Service</a></li>
-                <li><a href="#responsible-gaming" className="text-gray-300 hover:text-white">Responsible Gaming</a></li>
+                <li><a href="/privacy-policy.html" target="_blank" className="text-gray-300 hover:text-white">Privacy Policy</a></li>
+                <li><a href="/terms-of-service.html" target="_blank" className="text-gray-300 hover:text-white">Terms of Service</a></li>
+                <li><button onClick={() => alert('Responsible Gaming information coming soon!')} className="text-gray-300 hover:text-white cursor-pointer">Responsible Gaming</button></li>
               </ul>
             </div>
           </div>
