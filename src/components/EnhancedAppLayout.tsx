@@ -256,16 +256,9 @@ const EnhancedAppLayout: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100">
       <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
-        }
         @keyframes glow {
           0%, 100% { text-shadow: 0 0 20px rgba(255, 165, 0, 0.8); }
           50% { text-shadow: 0 0 30px rgba(255, 165, 0, 1), 0 0 40px rgba(255, 165, 0, 0.8); }
-        }
-        .float-animation {
-          animation: float 3s ease-in-out infinite;
         }
         .glow-animation {
           animation: glow 2s ease-in-out infinite;
@@ -278,36 +271,13 @@ const EnhancedAppLayout: React.FC = () => {
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30"></div>
         
-        {/* Animated floating elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 animate-bounce">
-            <div className="w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center text-black font-bold text-xl shadow-lg">
-              $
-            </div>
-          </div>
-          <div className="absolute top-32 right-20 animate-pulse">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-purple-600 font-bold text-lg shadow-lg">
-              75
-            </div>
-          </div>
-          <div className="absolute bottom-32 left-20 animate-bounce delay-1000">
-            <div className="w-14 h-14 bg-green-400 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
-              €
-            </div>
-          </div>
-          <div className="absolute bottom-20 right-10 animate-pulse delay-500">
-            <div className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg">
-              ¥
-            </div>
-          </div>
-        </div>
         
         <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
           <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold mb-6 text-orange-400 drop-shadow-2xl glow-animation">
             Ultimate Bingo Experience
           </h1>
           <div className="mb-8">
-            <div className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-8 py-4 rounded-full text-3xl sm:text-4xl font-bold mb-4 shadow-2xl float-animation">
+            <div className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-8 py-4 rounded-full text-3xl sm:text-4xl font-bold mb-4 shadow-2xl">
               BingoBest
             </div>
             <p className="text-2xl sm:text-3xl text-white font-semibold drop-shadow-lg">
