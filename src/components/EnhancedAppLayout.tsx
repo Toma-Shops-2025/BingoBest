@@ -57,6 +57,11 @@ const EnhancedAppLayout: React.FC = () => {
   const [leaderboardPlayers, setLeaderboardPlayers] = useState<Player[]>([]);
   const [showBingoGame, setShowBingoGame] = useState(false);
 
+  // Scroll to top when component mounts or activeTab changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab, showBingoGame]);
+
   const heroImage = "https://d64gsuwffb70l.cloudfront.net/68c18cfaf53345a2b0f3b279_1757515318315_894aa039.webp";
   const ballImages = [
     "https://d64gsuwffb70l.cloudfront.net/68c18cfaf53345a2b0f3b279_1757515322144_660039cf.webp",
@@ -94,8 +99,10 @@ const EnhancedAppLayout: React.FC = () => {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    // Scroll to top when changing tabs
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Scroll to top when changing tabs - use setTimeout to ensure DOM is updated
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
   };
 
   const handleJoinRoom = (roomId: string) => {
@@ -417,33 +424,31 @@ const EnhancedAppLayout: React.FC = () => {
               <h4 className="font-semibold mb-4">Support</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <button 
-                    onClick={() => {
-                      // Try to open email client, fallback to copy email
-                      const email = 'support@betbingo.live';
-                      const subject = 'BetBingo Support Request';
-                      const body = 'Hello BetBingo Support Team,\n\nI need help with:\n\n';
-                      
-                      const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                      
-                      try {
-                        window.location.href = mailtoLink;
-                      } catch (error) {
-                        // Fallback: copy email to clipboard
-                        navigator.clipboard.writeText(email).then(() => {
-                          alert(`Email copied to clipboard: ${email}\n\nPlease paste it into your email client.`);
-                        }).catch(() => {
+                  <a 
+                    href="mailto:support@betbingo.live?subject=BetBingo Support Request&body=Hello BetBingo Support Team,%0D%0A%0D%0AI need help with:%0D%0A%0D%0A"
+                    className="text-gray-300 hover:text-white"
+                    onClick={(e) => {
+                      // Fallback for browsers that don't support mailto
+                      if (!e.defaultPrevented) {
+                        e.preventDefault();
+                        const email = 'support@betbingo.live';
+                        if (navigator.clipboard) {
+                          navigator.clipboard.writeText(email).then(() => {
+                            alert(`Email copied to clipboard: ${email}\n\nPlease paste it into your email client.`);
+                          }).catch(() => {
+                            alert(`Please email us at: ${email}`);
+                          });
+                        } else {
                           alert(`Please email us at: ${email}`);
-                        });
+                        }
                       }
                     }}
-                    className="text-gray-300 hover:text-white cursor-pointer"
                   >
                     Contact Us
-                  </button>
+                  </a>
                 </li>
-                <li><button onClick={() => alert('Help Center coming soon!')} className="text-gray-300 hover:text-white cursor-pointer">Help Center</button></li>
-                <li><button onClick={() => alert('FAQ coming soon!')} className="text-gray-300 hover:text-white cursor-pointer">FAQ</button></li>
+                <li><a href="/help-center.html" target="_blank" className="text-gray-300 hover:text-white">Help Center</a></li>
+                <li><a href="/faq.html" target="_blank" className="text-gray-300 hover:text-white">FAQ</a></li>
               </ul>
             </div>
             <div>
@@ -451,7 +456,7 @@ const EnhancedAppLayout: React.FC = () => {
               <ul className="space-y-2 text-sm">
                 <li><a href="/privacy-policy.html" target="_blank" className="text-gray-300 hover:text-white">Privacy Policy</a></li>
                 <li><a href="/terms-of-service.html" target="_blank" className="text-gray-300 hover:text-white">Terms of Service</a></li>
-                <li><button onClick={() => alert('Responsible Gaming information coming soon!')} className="text-gray-300 hover:text-white cursor-pointer">Responsible Gaming</button></li>
+                <li><a href="/responsible-gaming.html" target="_blank" className="text-gray-300 hover:text-white">Responsible Gaming</a></li>
               </ul>
             </div>
           </div>
