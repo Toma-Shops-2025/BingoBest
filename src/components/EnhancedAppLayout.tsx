@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '@/contexts/AppContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/lib/supabase';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useBingoGame } from '@/hooks/useBingoGame';
 import AuthModal from './AuthModal';
@@ -121,6 +122,36 @@ const EnhancedAppLayout: React.FC = () => {
     }
   };
 
+  const handlePaymentSuccess = async () => {
+    try {
+      // Update balance in database
+      if (user) {
+        const { error } = await supabase
+          .from('users')
+          .update({ balance: player.balance + paymentAmount })
+          .eq('id', user.id);
+        
+        if (error) {
+          console.error('Error updating balance:', error);
+          alert('Payment processed but failed to update balance. Please contact support.');
+          return;
+        }
+      }
+      
+      // Update local state
+      setPlayer(prev => ({
+        ...prev,
+        balance: prev.balance + paymentAmount
+      }));
+      
+      setShowPaymentModal(false);
+      alert(`Payment successful! Added $${paymentAmount} to your balance. Your new balance is $${(player.balance + paymentAmount).toFixed(2)}`);
+    } catch (error) {
+      console.error('Payment success error:', error);
+      alert('Payment processed but there was an error updating your balance. Please contact support.');
+    }
+  };
+
   const renderTabContent = () => {
     if (!user) {
       return (
@@ -236,7 +267,7 @@ const EnhancedAppLayout: React.FC = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
         {user && (
           <div className="mb-8">
             <GameHeader 
@@ -259,11 +290,11 @@ const EnhancedAppLayout: React.FC = () => {
         </div>
         
         {/* AdSense Banner Ad */}
-        <div className="mb-6">
-          <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-            <p className="text-gray-500 mb-2">Advertisement Space</p>
-            <p className="text-sm text-gray-400">Google AdSense Banner Ad (728x90)</p>
-            <div className="mt-2 text-xs text-gray-300">
+        <div className="mb-4 sm:mb-6">
+          <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-4 sm:p-8 text-center">
+            <p className="text-gray-500 mb-2 text-sm sm:text-base">Advertisement Space</p>
+            <p className="text-xs sm:text-sm text-gray-400">Google AdSense Banner Ad (728x90)</p>
+            <div className="mt-2 text-xs text-gray-300 hidden sm:block">
               Replace with: &lt;ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto"&gt;&lt;/ins&gt;
             </div>
           </div>
@@ -323,9 +354,9 @@ const EnhancedAppLayout: React.FC = () => {
       />
 
       {/* Footer */}
-      <footer className="bg-gray-800 text-white py-8 mt-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <footer className="bg-gray-800 text-white py-6 sm:py-8 mt-8 sm:mt-12">
+        <div className="container mx-auto px-2 sm:px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
             <div>
               <h3 className="text-lg font-bold mb-4">BetBingo</h3>
               <p className="text-gray-300 text-sm">
