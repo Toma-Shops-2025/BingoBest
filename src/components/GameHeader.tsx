@@ -48,13 +48,13 @@ const GameHeader: React.FC<GameHeaderProps> = ({
         <div className="flex items-center space-x-4">
           <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center">
             <span className="text-purple-600 font-bold text-lg">
-              {player.username.charAt(0).toUpperCase()}
+              {(player.username || 'P').charAt(0).toUpperCase()}
             </span>
           </div>
           <div>
-            <h2 className="font-bold text-lg">{player.username}</h2>
+            <h2 className="font-bold text-lg">{player.username || 'Player'}</h2>
             <div className="flex items-center gap-2">
-              <p className="text-purple-200">Balance: ${player.balance.toFixed(2)}</p>
+              <p className="text-purple-200">Balance: ${(player.balance || 0).toFixed(2)}</p>
               <Button 
                 onClick={onAddFunds}
                 size="sm"
@@ -67,7 +67,7 @@ const GameHeader: React.FC<GameHeaderProps> = ({
         </div>
         
         <div className="text-center">
-          <div className="text-2xl font-bold">${prizePool.toFixed(2)}</div>
+          <div className="text-2xl font-bold">${(prizePool || 0).toFixed(2)}</div>
           <div className="text-purple-200">Prize Pool</div>
         </div>
         

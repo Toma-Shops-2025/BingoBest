@@ -39,12 +39,12 @@ const GameStats: React.FC<GameStatsProps> = ({
           </div>
           
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">{winRate.toFixed(1)}%</div>
+            <div className="text-2xl font-bold text-blue-600">{(winRate || 0).toFixed(1)}%</div>
             <div className="text-sm text-gray-600">Win Rate</div>
           </div>
           
           <div className="text-center">
-            <div className="text-2xl font-bold text-yellow-600">${totalWinnings.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-yellow-600">${(totalWinnings || 0).toFixed(2)}</div>
             <div className="text-sm text-gray-600">Total Winnings</div>
           </div>
         </div>

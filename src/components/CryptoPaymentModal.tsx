@@ -43,7 +43,7 @@ const CryptoPaymentModal: React.FC<CryptoPaymentModalProps> = ({
 
   const getCryptoAmount = () => {
     if (!selectedCrypto || !cryptoRates[selectedCrypto as keyof typeof cryptoRates]) return 0;
-    return (amount * cryptoRates[selectedCrypto as keyof typeof cryptoRates]).toFixed(8);
+    return ((amount || 0) * (cryptoRates[selectedCrypto as keyof typeof cryptoRates] || 0)).toFixed(8);
   };
 
   const getWalletAddress = () => {
@@ -86,7 +86,7 @@ const CryptoPaymentModal: React.FC<CryptoPaymentModalProps> = ({
             <CardHeader>
               <CardTitle className="text-lg">Payment Details</CardTitle>
               <CardDescription>
-                Amount: ${amount.toFixed(2)} USD
+                Amount: ${(amount || 0).toFixed(2)} USD
               </CardDescription>
             </CardHeader>
             <CardContent>
