@@ -30,6 +30,7 @@ import PWAInstallPrompt from './PWAInstallPrompt';
 import BackToTopButton from './BackToTopButton';
 import NavigationBreadcrumbs from './NavigationBreadcrumbs';
 import LoadingSpinner from './LoadingSpinner';
+import UserProfile from './UserProfile';
 import { 
   GameRoom, 
   PowerUp, 
@@ -58,6 +59,7 @@ const EnhancedAppLayout: React.FC = () => {
   const [leaderboardPlayers, setLeaderboardPlayers] = useState<Player[]>([]);
   const [showBingoGame, setShowBingoGame] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showUserProfile, setShowUserProfile] = useState(false);
 
   // Scroll to top when component mounts or activeTab changes
   useEffect(() => {
@@ -292,6 +294,7 @@ const EnhancedAppLayout: React.FC = () => {
               prizePool={gameState.currentRoom?.prizePool || 0}
               onSignOut={signOut}
               onAddFunds={handleAddFundsClick}
+              onViewProfile={() => setShowUserProfile(true)}
             />
           </div>
         )}
@@ -400,6 +403,14 @@ const EnhancedAppLayout: React.FC = () => {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
+
+      {/* User Profile Modal */}
+      {showUserProfile && user && (
+        <UserProfile
+          userId={user.id}
+          onClose={() => setShowUserProfile(false)}
+        />
+      )}
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-6 sm:py-8 mt-8 sm:mt-12">

@@ -10,6 +10,7 @@ interface GameHeaderProps {
   timeLeft?: number;
   onSignOut?: () => void;
   onAddFunds?: () => void;
+  onViewProfile?: () => void;
 }
 
 const GameHeader: React.FC<GameHeaderProps> = ({ 
@@ -18,7 +19,8 @@ const GameHeader: React.FC<GameHeaderProps> = ({
   prizePool, 
   timeLeft,
   onSignOut,
-  onAddFunds
+  onAddFunds,
+  onViewProfile
 }) => {
   const [isSigningOut, setIsSigningOut] = useState(false);
 
@@ -76,6 +78,14 @@ const GameHeader: React.FC<GameHeaderProps> = ({
               <div className="text-purple-200">Time Left</div>
             </div>
           )}
+          <Button 
+            onClick={onViewProfile}
+            variant="outline"
+            size="sm"
+            className="bg-white bg-opacity-20 border-white text-white hover:bg-white hover:text-purple-600"
+          >
+            Profile
+          </Button>
           <Button 
             onClick={handleSignOut}
             variant="outline"
