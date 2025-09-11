@@ -110,6 +110,13 @@ const LiveGameFeed: React.FC = () => {
                   size="sm" 
                   variant={game.status === 'starting' ? 'default' : 'outline'}
                   disabled={game.status === 'ending'}
+                  onClick={() => {
+                    if (game.status === 'starting') {
+                      alert(`Joined ${game.roomName}! Game starting soon.`);
+                    } else {
+                      alert(`Watching ${game.roomName}! Enjoy the game.`);
+                    }
+                  }}
                 >
                   {game.status === 'starting' ? 'Join' : 'Watch'}
                 </Button>

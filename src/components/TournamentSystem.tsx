@@ -65,7 +65,14 @@ const TournamentSystem: React.FC<TournamentSystemProps> = ({
 
       {/* Tournament Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filteredTournaments.map((tournament) => (
+        {filteredTournaments.length === 0 ? (
+          <div className="col-span-full text-center py-12">
+            <div className="text-6xl mb-4">🏆</div>
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">No {selectedTab} tournaments</h3>
+            <p className="text-gray-500">Check back later for new tournaments!</p>
+          </div>
+        ) : (
+          filteredTournaments.map((tournament) => (
           <Card key={tournament.id} className="hover:shadow-lg transition-shadow">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
@@ -108,7 +115,8 @@ const TournamentSystem: React.FC<TournamentSystemProps> = ({
               )}
             </CardContent>
           </Card>
-        ))}
+          ))
+        )}
       </div>
     </div>
   );

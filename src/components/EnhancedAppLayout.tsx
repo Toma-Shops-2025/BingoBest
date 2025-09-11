@@ -142,19 +142,19 @@ const EnhancedAppLayout: React.FC = () => {
       case 'achievements':
         return <AchievementSystem 
           achievements={[]} 
-          player={player} 
+          onClaimReward={(id) => alert(`Claimed reward for achievement ${id}!`)} 
         />;
       case 'challenges':
         return <DailyChallenges 
           challenges={[]} 
-          player={player} 
-          onCompleteChallenge={(id) => alert(`Completed challenge ${id}!`)} 
+          onClaimReward={(id) => alert(`Claimed reward for challenge ${id}!`)} 
         />;
       case 'friends':
         return <FriendsSystem 
           friends={[]} 
-          player={player} 
           onAddFriend={(username) => alert(`Added friend ${username}!`)} 
+          onInviteToGame={(id) => alert(`Invited friend ${id} to game!`)} 
+          onSendMessage={(id) => alert(`Sent message to friend ${id}!`)} 
         />;
       case 'events':
         return <SeasonalEvents 
