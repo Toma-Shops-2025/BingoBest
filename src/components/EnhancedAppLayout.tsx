@@ -255,40 +255,44 @@ const EnhancedAppLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100">
-      {/* Hero Section */}
+      {/* Hero Section - New Design */}
       <div 
-        className="relative h-[500px] bg-cover bg-center flex items-center justify-center"
+        className="relative h-[600px] bg-cover bg-center flex items-center justify-center"
         style={{ backgroundImage: `url(${heroImage})` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40"></div>
         
-        
-        <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-4">
-          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold mb-6 text-orange-400 drop-shadow-2xl">
+        <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-4">
+          {/* Main Title */}
+          <h1 className="text-7xl sm:text-8xl lg:text-9xl font-bold mb-8 text-orange-400 drop-shadow-2xl leading-tight">
             Ultimate Bingo Experience
           </h1>
-          <div className="mb-8">
-            <div className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-8 py-4 rounded-full text-3xl sm:text-4xl font-bold mb-4 shadow-2xl">
+          
+          {/* BingoBest Branding */}
+          <div className="mb-12">
+            <div className="inline-block bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black px-12 py-6 rounded-full text-4xl sm:text-5xl font-bold mb-6 shadow-2xl border-4 border-yellow-300">
               BingoBest
             </div>
-            <p className="text-2xl sm:text-3xl text-white font-semibold drop-shadow-lg">
+            <p className="text-3xl sm:text-4xl text-white font-bold drop-shadow-lg mb-4">
               Cash Bingo Adventure
             </p>
+            <p className="text-xl sm:text-2xl text-gray-200 drop-shadow-lg">
+              Tournaments, achievements, friends, and more!
+            </p>
           </div>
-          <p className="text-xl sm:text-2xl text-gray-200 mb-8 drop-shadow-lg">
-            Tournaments, achievements, friends, and more!
-          </p>
+          
+          {/* Call to Action Buttons */}
           {!user && (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-10 py-4 rounded-full font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl"
+                className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-12 py-5 rounded-full font-bold text-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl border-2 border-green-400"
               >
                 Sign Up to Play
               </button>
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-10 py-4 rounded-full font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-2xl"
+                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-12 py-5 rounded-full font-bold text-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl border-2 border-blue-400"
               >
                 Sign In
               </button>
