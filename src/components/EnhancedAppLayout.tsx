@@ -287,11 +287,11 @@ const EnhancedAppLayout: React.FC = () => {
       // Update local state
       setPlayer(prev => ({
         ...prev,
-        balance: prev.balance + paymentAmount
+        balance: (prev.balance || 0) + paymentAmount
       }));
       
       setShowPaymentModal(false);
-      alert(`Payment successful! Added $${paymentAmount} to your balance. Your new balance is $${(player.balance + paymentAmount).toFixed(2)}`);
+      alert(`Payment successful! Added $${paymentAmount} to your balance. Your new balance is $${((player.balance || 0) + paymentAmount).toFixed(2)}`);
     } catch (error) {
       console.error('Payment success error:', error);
       alert('Payment processed but there was an error updating your balance. Please contact support.');
@@ -496,12 +496,12 @@ const EnhancedAppLayout: React.FC = () => {
       <WinModal
         isOpen={showWinModal}
         onClose={() => setShowWinModal(false)}
-        winAmount={100}
         winType="line"
+        prize={100}
       />
       
       <GameInstructions />
-      <ChatSystem playerUsername={player.username} />
+      <ChatSystem playerUsername={player.username || 'Player'} />
       
       {/* Auth Modal */}
       <AuthModal

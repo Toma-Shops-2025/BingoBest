@@ -34,7 +34,7 @@ const WinModal: React.FC<WinModalProps> = ({ isOpen, onClose, winType, prize }) 
             <div className="flex items-center justify-center gap-2">
               <DollarSign className="w-6 h-6 text-green-600" />
               <span className="text-2xl font-bold text-green-600">
-                ${prize.toFixed(2)}
+                ${(prize || 0).toFixed(2)}
               </span>
             </div>
             <p className="text-sm text-green-700 mt-1">Added to your balance!</p>
