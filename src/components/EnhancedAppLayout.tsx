@@ -27,6 +27,8 @@ import SpectatorMode from './SpectatorMode';
 import LiveGameFeed from './LiveGameFeed';
 import BingoGame from './BingoGame';
 import PWAInstallPrompt from './PWAInstallPrompt';
+import BackToTopButton from './BackToTopButton';
+import NavigationBreadcrumbs from './NavigationBreadcrumbs';
 import { 
   GameRoom, 
   PowerUp, 
@@ -86,10 +88,14 @@ const EnhancedAppLayout: React.FC = () => {
   const handleAddFundsClick = () => {
     setPaymentAmount(25);
     setShowPaymentModal(true);
+    // Scroll to top when opening payment modal
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
+    // Scroll to top when changing tabs
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleJoinRoom = (roomId: string) => {
@@ -104,6 +110,8 @@ const EnhancedAppLayout: React.FC = () => {
       // Start the bingo game
       setShowBingoGame(true);
       setActiveTab('home'); // Switch to home tab to show the game
+      // Scroll to top when starting game
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       alert(`Joined ${room.name}! Starting bingo game...`);
     }
   };
@@ -304,6 +312,15 @@ const EnhancedAppLayout: React.FC = () => {
         {/* Tab Content */}
         {showBingoGame ? (
           <div className="space-y-4">
+            <NavigationBreadcrumbs
+              currentPage="Playing Bingo"
+              onGoHome={() => {
+                setActiveTab('home');
+                setShowBingoGame(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onGoBack={() => setShowBingoGame(false)}
+            />
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Playing Bingo</h2>
               <Button 
@@ -326,7 +343,18 @@ const EnhancedAppLayout: React.FC = () => {
             />
           </div>
         ) : (
-          renderTabContent()
+          <div>
+            {activeTab !== 'home' && (
+              <NavigationBreadcrumbs
+                currentPage={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                onGoHome={() => {
+                  setActiveTab('home');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+              />
+            )}
+            {renderTabContent()}
+          </div>
         )}
       </div>
       
@@ -357,6 +385,15 @@ const EnhancedAppLayout: React.FC = () => {
       {/* PWA Install Prompt */}
       <PWAInstallPrompt />
 
+      {/* Back to Top Button */}
+      <BackToTopButton 
+        onGoHome={() => {
+          setActiveTab('home');
+          setShowBingoGame(false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+      />
+
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-6 sm:py-8 mt-8 sm:mt-12">
         <div className="container mx-auto px-2 sm:px-4">
@@ -379,7 +416,32 @@ const EnhancedAppLayout: React.FC = () => {
             <div>
               <h4 className="font-semibold mb-4">Support</h4>
               <ul className="space-y-2 text-sm">
-                <li><a href="mailto:support@betbingo.live" className="text-gray-300 hover:text-white">Contact Us</a></li>
+                <li>
+                  <button 
+                    onClick={() => {
+                      // Try to open email client, fallback to copy email
+                      const email = 'support@betbingo.live';
+                      const subject = 'BetBingo Support Request';
+                      const body = 'Hello BetBingo Support Team,\n\nI need help with:\n\n';
+                      
+                      const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                      
+                      try {
+                        window.location.href = mailtoLink;
+                      } catch (error) {
+                        // Fallback: copy email to clipboard
+                        navigator.clipboard.writeText(email).then(() => {
+                          alert(`Email copied to clipboard: ${email}\n\nPlease paste it into your email client.`);
+                        }).catch(() => {
+                          alert(`Please email us at: ${email}`);
+                        });
+                      }
+                    }}
+                    className="text-gray-300 hover:text-white cursor-pointer"
+                  >
+                    Contact Us
+                  </button>
+                </li>
                 <li><button onClick={() => alert('Help Center coming soon!')} className="text-gray-300 hover:text-white cursor-pointer">Help Center</button></li>
                 <li><button onClick={() => alert('FAQ coming soon!')} className="text-gray-300 hover:text-white cursor-pointer">FAQ</button></li>
               </ul>
