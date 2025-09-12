@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAppContext } from '@/contexts/AppContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
@@ -159,7 +159,13 @@ const EnhancedAppLayout: React.FC = () => {
       maxLevel: 3
     }
   ]);
-  const [leaderboardPlayers, setLeaderboardPlayers] = useState<Player[]>([]);
+  const [leaderboardPlayers, setLeaderboardPlayers] = useState<Player[]>([
+    { id: '1', username: 'BingoMaster', avatar: '', balance: 1250, wins: 45, gamesPlayed: 120 },
+    { id: '2', username: 'LuckyPlayer', avatar: '', balance: 890, wins: 32, gamesPlayed: 95 },
+    { id: '3', username: 'Winner123', avatar: '', balance: 675, wins: 28, gamesPlayed: 80 },
+    { id: '4', username: 'BingoQueen', avatar: '', balance: 540, wins: 22, gamesPlayed: 65 },
+    { id: '5', username: 'GameChamp', avatar: '', balance: 420, wins: 18, gamesPlayed: 55 }
+  ]);
   const [showBingoGame, setShowBingoGame] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
@@ -252,7 +258,7 @@ const EnhancedAppLayout: React.FC = () => {
     }, 100);
   };
 
-  const handleJoinRoom = async (roomId: string) => {
+  const handleJoinRoom = useCallback(async (roomId: string) => {
     setIsLoading(true);
     try {
       // Find the room and join it
@@ -304,7 +310,7 @@ const EnhancedAppLayout: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [gameRooms, player.balance]);
 
   const handlePurchasePowerUp = (powerUpId: string) => {
     const powerUp = powerUps.find(p => p.id === powerUpId);
