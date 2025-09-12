@@ -15,62 +15,89 @@ export interface Database {
           username: string;
           email: string;
           balance: number;
-          wins: number;
-          games_played: number;
+          level: number;
+          experience: number;
+          avatar_url?: string;
           created_at: string;
           updated_at: string;
+          last_sign_in_at?: string;
+          is_online: boolean;
+          total_winnings: number;
+          games_played: number;
+          games_won: number;
+          win_rate: number;
         };
         Insert: {
           id?: string;
           username: string;
           email: string;
           balance?: number;
-          wins?: number;
-          games_played?: number;
+          level?: number;
+          experience?: number;
+          avatar_url?: string;
           created_at?: string;
           updated_at?: string;
+          last_sign_in_at?: string;
+          is_online?: boolean;
+          total_winnings?: number;
+          games_played?: number;
+          games_won?: number;
+          win_rate?: number;
         };
         Update: {
           id?: string;
           username?: string;
           email?: string;
           balance?: number;
-          wins?: number;
-          games_played?: number;
+          level?: number;
+          experience?: number;
+          avatar_url?: string;
           created_at?: string;
           updated_at?: string;
+          last_sign_in_at?: string;
+          is_online?: boolean;
+          total_winnings?: number;
+          games_played?: number;
+          games_won?: number;
+          win_rate?: number;
         };
       };
       game_rooms: {
         Row: {
           id: string;
           name: string;
+          description?: string;
           max_players: number;
           current_players: number;
           entry_fee: number;
           prize_pool: number;
           status: 'waiting' | 'playing' | 'finished';
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
           name: string;
+          description?: string;
           max_players: number;
           current_players?: number;
           entry_fee: number;
           prize_pool?: number;
           status?: 'waiting' | 'playing' | 'finished';
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
           name?: string;
+          description?: string;
           max_players?: number;
           current_players?: number;
           entry_fee?: number;
           prize_pool?: number;
           status?: 'waiting' | 'playing' | 'finished';
           created_at?: string;
+          updated_at?: string;
         };
       };
       bingo_cards: {
@@ -81,6 +108,7 @@ export interface Database {
           numbers: number[][];
           marked: boolean[][];
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -89,6 +117,7 @@ export interface Database {
           numbers: number[][];
           marked: boolean[][];
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -97,13 +126,14 @@ export interface Database {
           numbers?: number[][];
           marked?: boolean[][];
           created_at?: string;
+          updated_at?: string;
         };
       };
       tournaments: {
         Row: {
           id: string;
           name: string;
-          description: string;
+          description?: string;
           entry_fee: number;
           max_participants: number;
           current_participants: number;
@@ -111,22 +141,22 @@ export interface Database {
           start_time: string;
           end_time: string;
           status: 'upcoming' | 'active' | 'completed';
-          format: 'single_elimination' | 'double_elimination' | 'round_robin';
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
           name: string;
-          description: string;
+          description?: string;
           entry_fee: number;
           max_participants: number;
           current_participants?: number;
-          prize_pool: number;
+          prize_pool?: number;
           start_time: string;
           end_time: string;
           status?: 'upcoming' | 'active' | 'completed';
-          format: 'single_elimination' | 'double_elimination' | 'round_robin';
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -139,8 +169,8 @@ export interface Database {
           start_time?: string;
           end_time?: string;
           status?: 'upcoming' | 'active' | 'completed';
-          format?: 'single_elimination' | 'double_elimination' | 'round_robin';
           created_at?: string;
+          updated_at?: string;
         };
       };
       achievements: {
@@ -153,6 +183,7 @@ export interface Database {
           requirement: number;
           reward: number;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -163,6 +194,7 @@ export interface Database {
           requirement: number;
           reward: number;
           created_at?: string;
+          updated_at?: string;
         };
         Update: {
           id?: string;
@@ -172,6 +204,97 @@ export interface Database {
           category?: 'wins' | 'games' | 'money' | 'special';
           requirement?: number;
           reward?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      power_ups: {
+        Row: {
+          id: string;
+          name: string;
+          description: string;
+          cost: number;
+          icon: string;
+          type: 'auto_daub' | 'extra_ball' | 'peek_next' | 'double_prize';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description: string;
+          cost: number;
+          icon: string;
+          type: 'auto_daub' | 'extra_ball' | 'peek_next' | 'double_prize';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string;
+          cost?: number;
+          icon?: string;
+          type?: 'auto_daub' | 'extra_ball' | 'peek_next' | 'double_prize';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      game_sessions: {
+        Row: {
+          id: string;
+          user_id: string;
+          room_id: string;
+          entry_fee: number;
+          winnings: number;
+          duration: number;
+          status: 'active' | 'completed' | 'cancelled';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          room_id: string;
+          entry_fee: number;
+          winnings?: number;
+          duration?: number;
+          status?: 'active' | 'completed' | 'cancelled';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          room_id?: string;
+          entry_fee?: number;
+          winnings?: number;
+          duration?: number;
+          status?: 'active' | 'completed' | 'cancelled';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      chat_messages: {
+        Row: {
+          id: string;
+          room_id: string;
+          user_id: string;
+          message: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          room_id: string;
+          user_id: string;
+          message: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          room_id?: string;
+          user_id?: string;
+          message?: string;
           created_at?: string;
         };
       };

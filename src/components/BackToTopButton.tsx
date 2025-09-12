@@ -2,11 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowUp, Home } from 'lucide-react';
 
-interface BackToTopButtonProps {
-  onGoHome?: () => void;
-}
-
-const BackToTopButton: React.FC<BackToTopButtonProps> = ({ onGoHome }) => {
+const BackToTopButton: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -29,6 +25,10 @@ const BackToTopButton: React.FC<BackToTopButtonProps> = ({ onGoHome }) => {
     });
   };
 
+  const goHome = () => {
+    window.location.href = '/';
+  };
+
   if (!isVisible) {
     return null;
   }
@@ -38,23 +38,20 @@ const BackToTopButton: React.FC<BackToTopButtonProps> = ({ onGoHome }) => {
       <Button
         onClick={scrollToTop}
         size="sm"
-        className="bg-purple-600 hover:bg-purple-700 text-white shadow-lg"
-        title="Back to Top"
+        className="rounded-full w-12 h-12 shadow-lg bg-purple-600 hover:bg-purple-700"
+        title="Back to top"
       >
-        <ArrowUp className="w-4 h-4" />
+        <ArrowUp className="w-5 h-5" />
       </Button>
-      
-      {onGoHome && (
-        <Button
-          onClick={onGoHome}
-          size="sm"
-          variant="outline"
-          className="bg-white hover:bg-gray-50 text-purple-600 border-purple-200 shadow-lg"
-          title="Go to Home"
-        >
-          <Home className="w-4 h-4" />
-        </Button>
-      )}
+      <Button
+        onClick={goHome}
+        size="sm"
+        variant="outline"
+        className="rounded-full w-12 h-12 shadow-lg bg-white hover:bg-gray-50"
+        title="Go home"
+      >
+        <Home className="w-5 h-5" />
+      </Button>
     </div>
   );
 };

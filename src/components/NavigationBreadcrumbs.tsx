@@ -1,47 +1,55 @@
 import React from 'react';
+import { ChevronRight, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Home, ChevronRight } from 'lucide-react';
 
-interface NavigationBreadcrumbsProps {
-  currentPage: string;
-  onGoHome: () => void;
-  onGoBack?: () => void;
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+  onClick?: () => void;
 }
 
-const NavigationBreadcrumbs: React.FC<NavigationBreadcrumbsProps> = ({
-  currentPage,
-  onGoHome,
-  onGoBack
+interface NavigationBreadcrumbsProps {
+  items: BreadcrumbItem[];
+  className?: string;
+}
+
+const NavigationBreadcrumbs: React.FC<NavigationBreadcrumbsProps> = ({ 
+  items, 
+  className = '' 
 }) => {
+  const handleItemClick = (item: BreadcrumbItem) => {
+    if (item.onClick) {
+      item.onClick();
+    } else if (item.href) {
+      window.location.href = item.href;
+    }
+  };
+
   return (
-    <nav className="flex items-center space-x-2 text-sm text-gray-600 mb-4">
+    <nav className={`flex items-center space-x-1 text-sm text-gray-600 ${className}`}>
       <Button
         variant="ghost"
         size="sm"
-        onClick={onGoHome}
-        className="flex items-center gap-1 text-purple-600 hover:text-purple-700"
+        onClick={() => window.location.href = '/'}
+        className="p-1 h-auto text-gray-600 hover:text-purple-600"
       >
         <Home className="w-4 h-4" />
-        Home
       </Button>
       
-      <ChevronRight className="w-4 h-4" />
-      
-      <span className="text-gray-800 font-medium">{currentPage}</span>
-      
-      {onGoBack && (
-        <>
-          <ChevronRight className="w-4 h-4" />
+      {items.map((item, index) => (
+        <React.Fragment key={index}>
+          <ChevronRight className="w-4 h-4 text-gray-400" />
           <Button
             variant="ghost"
             size="sm"
-            onClick={onGoBack}
-            className="text-blue-600 hover:text-blue-700"
+            onClick={() => handleItemClick(item)}
+            className="p-1 h-auto text-gray-600 hover:text-purple-600"
+            disabled={index === items.length - 1}
           >
-            ← Back
+            {item.label}
           </Button>
-        </>
-      )}
+        </React.Fragment>
+      ))}
     </nav>
   );
 };

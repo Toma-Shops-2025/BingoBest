@@ -1,119 +1,91 @@
-import React, { useEffect, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-interface GameSoundsProps {
-  enabled: boolean;
-  onNumberCalled?: () => void;
-  onBingo?: () => void;
-  onWin?: () => void;
-  onButtonClick?: () => void;
-  onError?: () => void;
+interface SoundContextType {
+  playSound: (soundName: string) => void;
+  setSoundEnabled: (enabled: boolean) => void;
+  isSoundEnabled: boolean;
 }
 
-const GameSounds: React.FC<GameSoundsProps> = ({
-  enabled,
-  onNumberCalled,
-  onBingo,
-  onWin,
-  onButtonClick,
-  onError
-}) => {
-  const audioContextRef = useRef<AudioContext | null>(null);
+const SoundContext = createContext<SoundContextType>({
+  playSound: () => {},
+  setSoundEnabled: () => {},
+  isSoundEnabled: true
+});
 
+export const useGameSounds = () => useContext(SoundContext);
+
+interface GameSoundsProps {
+  children: React.ReactNode;
+}
+
+const GameSounds: React.FC<GameSoundsProps> = ({ children }) => {
+  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+
+  // Load sound preference from localStorage
   useEffect(() => {
-    if (enabled && !audioContextRef.current) {
-      // Initialize AudioContext on user interaction
-      const initAudio = () => {
-        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      };
-      
-      // Initialize on first user interaction
-      document.addEventListener('click', initAudio, { once: true });
-      document.addEventListener('keydown', initAudio, { once: true });
+    const saved = localStorage.getItem('game-sounds-enabled');
+    if (saved !== null) {
+      setIsSoundEnabled(JSON.parse(saved));
     }
-  }, [enabled]);
+  }, []);
 
-  const playTone = (frequency: number, duration: number, type: OscillatorType = 'sine') => {
-    if (!enabled || !audioContextRef.current) return;
+  const setSoundEnabled = (enabled: boolean) => {
+    setIsSoundEnabled(enabled);
+    localStorage.setItem('game-sounds-enabled', JSON.stringify(enabled));
+  };
+
+  const playSound = (soundName: string) => {
+    if (!isSoundEnabled) return;
 
     try {
-      const oscillator = audioContextRef.current.createOscillator();
-      const gainNode = audioContextRef.current.createGain();
+      // Create audio context for web audio
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Generate different sounds based on the sound name
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
       
       oscillator.connect(gainNode);
-      gainNode.connect(audioContextRef.current.destination);
+      gainNode.connect(audioContext.destination);
       
-      oscillator.frequency.setValueAtTime(frequency, audioContextRef.current.currentTime);
-      oscillator.type = type;
+      // Different frequencies for different sounds
+      const frequencies = {
+        'number-called': 440, // A4
+        'bingo-win': 880, // A5
+        'game-start': 660, // E5
+        'game-end': 330, // E4
+        'button-click': 220, // A3
+        'error': 150, // Low frequency
+        'success': 550, // C#5
+        'notification': 770 // G5
+      };
       
-      gainNode.gain.setValueAtTime(0.1, audioContextRef.current.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + duration);
+      const frequency = frequencies[soundName as keyof typeof frequencies] || 440;
       
-      oscillator.start(audioContextRef.current.currentTime);
-      oscillator.stop(audioContextRef.current.currentTime + duration);
+      oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.5);
     } catch (error) {
-      console.warn('Audio playback failed:', error);
+      console.log('Audio not supported or disabled');
     }
   };
 
-  const playChord = (frequencies: number[], duration: number) => {
-    if (!enabled || !audioContextRef.current) return;
-
-    frequencies.forEach((freq, index) => {
-      setTimeout(() => {
-        playTone(freq, duration);
-      }, index * 50);
-    });
+  const value = {
+    playSound,
+    setSoundEnabled,
+    isSoundEnabled
   };
 
-  // Sound effects
-  const sounds = {
-    numberCalled: () => {
-      playTone(440, 0.2); // A4 note
-      onNumberCalled?.();
-    },
-    
-    bingo: () => {
-      playChord([523, 659, 784], 0.5); // C-E-G chord
-      onBingo?.();
-    },
-    
-    win: () => {
-      playChord([523, 659, 784, 1047], 1.0); // C-E-G-C octave
-      onWin?.();
-    },
-    
-    buttonClick: () => {
-      playTone(800, 0.1, 'square');
-      onButtonClick?.();
-    },
-    
-    error: () => {
-      playTone(200, 0.3, 'sawtooth');
-      onError?.();
-    },
-    
-    notification: () => {
-      playTone(600, 0.2);
-      playTone(800, 0.2);
-    },
-    
-    powerUp: () => {
-      playChord([440, 554, 659], 0.3); // A-C#-E chord
-    },
-    
-    gameStart: () => {
-      playChord([261, 329, 392, 523], 0.8); // C-E-G-C chord
-    },
-    
-    gameEnd: () => {
-      playChord([392, 330, 261], 1.0); // G-E-C descending
-    }
-  };
-
-  // Expose sounds to parent components
-  React.useImperativeHandle(React.forwardRef(() => null), () => sounds);
-
-  return null; // This component doesn't render anything
+  return (
+    <SoundContext.Provider value={value}>
+      {children}
+    </SoundContext.Provider>
+  );
 };
 
 export default GameSounds;

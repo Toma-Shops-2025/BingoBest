@@ -31,6 +31,8 @@ import BackToTopButton from './BackToTopButton';
 import NavigationBreadcrumbs from './NavigationBreadcrumbs';
 import LoadingSpinner from './LoadingSpinner';
 import UserProfile from './UserProfile';
+import GameSounds from './GameSounds';
+import PushNotifications, { NotificationPermissionRequest } from './PushNotifications';
 import { analytics, trackPageView, trackUserAction } from '@/lib/analytics';
 import { 
   GameRoom, 
@@ -429,7 +431,9 @@ const EnhancedAppLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100">
+    <GameSounds>
+      <PushNotifications>
+        <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100">
       {/* Hero Section - New Design */}
       <div 
         className="relative h-[600px] bg-cover bg-center flex items-center justify-center"
@@ -438,6 +442,15 @@ const EnhancedAppLayout: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        {/* Notification Permission Request */}
+        <NotificationPermissionRequest />
+
+        {/* PWA Install Prompt */}
+        <PWAInstallPrompt />
+
+        {/* Back to Top Button */}
+        <BackToTopButton />
+
         {isLoading && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-xl">
@@ -483,13 +496,10 @@ const EnhancedAppLayout: React.FC = () => {
         {showBingoGame ? (
           <div className="space-y-4">
             <NavigationBreadcrumbs
-              currentPage="Playing Bingo"
-              onGoHome={() => {
-                setActiveTab('home');
-                setShowBingoGame(false);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              onGoBack={() => setShowBingoGame(false)}
+              items={[
+                { label: 'Game Rooms', onClick: () => setActiveTab('home') },
+                { label: 'Playing Bingo' }
+              ]}
             />
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-bold">Playing Bingo</h2>
@@ -516,11 +526,10 @@ const EnhancedAppLayout: React.FC = () => {
           <div>
             {activeTab !== 'home' && (
               <NavigationBreadcrumbs
-                currentPage={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-                onGoHome={() => {
-                  setActiveTab('home');
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
+                items={[
+                  { label: 'Game Rooms', onClick: () => setActiveTab('home') },
+                  { label: activeTab.charAt(0).toUpperCase() + activeTab.slice(1) }
+                ]}
               />
             )}
             {renderTabContent()}
@@ -636,7 +645,9 @@ const EnhancedAppLayout: React.FC = () => {
           </div>
         </div>
       </footer>
-    </div>
+        </div>
+      </PushNotifications>
+    </GameSounds>
   );
 };
 
