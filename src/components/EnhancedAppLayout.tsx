@@ -26,6 +26,7 @@ import VIPSystem from './VIPSystem';
 import SpectatorMode from './SpectatorMode';
 import LiveGameFeed from './LiveGameFeed';
 import BingoGame from './BingoGame';
+import BingoGameFallback from './BingoGameFallback';
 import PWAInstallPrompt from './PWAInstallPrompt';
 import BackToTopButton from './BackToTopButton';
 import NavigationBreadcrumbs from './NavigationBreadcrumbs';
@@ -33,6 +34,7 @@ import LoadingSpinner from './LoadingSpinner';
 import UserProfile from './UserProfile';
 import GameSounds from './GameSounds';
 import PushNotifications, { NotificationPermissionRequest } from './PushNotifications';
+import ErrorBoundary from './ErrorBoundary';
 import { analytics, trackPageView, trackUserAction } from '@/lib/analytics';
 import { 
   GameRoom, 
@@ -257,7 +259,7 @@ const EnhancedAppLayout: React.FC = () => {
       const room = gameRooms.find(r => r.id === roomId);
       if (room) {
         // Check if player has enough balance
-        if (player.balance < room.entryFee) {
+        if ((player.balance || 0) < room.entryFee) {
           alert(`Insufficient funds! You need $${room.entryFee} to join this game.`);
           return;
         }
@@ -281,13 +283,23 @@ const EnhancedAppLayout: React.FC = () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         
         // Track analytics
-        trackUserAction('join_room', { roomId, roomName: room.name, entryFee: room.entryFee });
+        try {
+          trackUserAction('join_room', { roomId, roomName: room.name, entryFee: room.entryFee });
+        } catch (analyticsError) {
+          console.warn('Analytics tracking failed:', analyticsError);
+        }
         
         alert(`🎉 Joined ${room.name}! Entry fee of $${room.entryFee} deducted. Starting bingo game...`);
+      } else {
+        alert('Room not found. Please try again.');
       }
     } catch (error) {
       console.error('Error joining room:', error);
-      trackUserAction('join_room_error', { roomId, error: error.message });
+      try {
+        trackUserAction('join_room_error', { roomId, error: error?.message || 'Unknown error' });
+      } catch (analyticsError) {
+        console.warn('Analytics tracking failed:', analyticsError);
+      }
       alert('Failed to join room. Please try again.');
     } finally {
       setIsLoading(false);
@@ -510,17 +522,19 @@ const EnhancedAppLayout: React.FC = () => {
                 Back to Game Rooms
               </Button>
             </div>
-            <BingoGame 
-              onWin={(winType, prize) => {
-                setShowWinModal(true);
-                setPlayer(prev => ({ ...prev, balance: prev.balance + prize }));
-                alert(`Congratulations! You won ${winType} and earned $${prize}!`);
-              }}
-              onGameEnd={() => {
-                setShowBingoGame(false);
-                setGameState(prev => ({ ...prev, gameStatus: 'finished' }));
-              }}
-            />
+            <ErrorBoundary>
+              <BingoGame 
+                onWin={(winType, prize) => {
+                  setShowWinModal(true);
+                  setPlayer(prev => ({ ...prev, balance: prev.balance + prize }));
+                  alert(`Congratulations! You won ${winType} and earned $${prize}!`);
+                }}
+                onGameEnd={() => {
+                  setShowBingoGame(false);
+                  setGameState(prev => ({ ...prev, gameStatus: 'finished' }));
+                }}
+              />
+            </ErrorBoundary>
           </div>
         ) : (
           <div>

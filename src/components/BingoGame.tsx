@@ -30,46 +30,53 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
   const [bingoCards, setBingoCards] = useState<BingoCard[]>([]);
   const [gameTimer, setGameTimer] = useState(300); // 5 minutes
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const letters = ['B', 'I', 'N', 'G', 'O'];
   const numbersPerLetter = 15;
 
   // Generate a random bingo card
   const generateBingoCard = (): BingoCard => {
-    const numbers: BingoNumber[][] = [];
-    
-    for (let col = 0; col < 5; col++) {
-      const columnNumbers: BingoNumber[] = [];
-      const usedNumbers = new Set<number>();
+    try {
+      const numbers: BingoNumber[][] = [];
       
-      for (let row = 0; row < 5; row++) {
-        let number: number;
-        do {
-          number = Math.floor(Math.random() * numbersPerLetter) + (col * numbersPerLetter) + 1;
-        } while (usedNumbers.has(number));
+      for (let col = 0; col < 5; col++) {
+        const columnNumbers: BingoNumber[] = [];
+        const usedNumbers = new Set<number>();
         
-        usedNumbers.add(number);
-        columnNumbers.push({
-          number,
-          called: false,
-          letter: letters[col]
-        });
+        for (let row = 0; row < 5; row++) {
+          let number: number;
+          do {
+            number = Math.floor(Math.random() * numbersPerLetter) + (col * numbersPerLetter) + 1;
+          } while (usedNumbers.has(number));
+          
+          usedNumbers.add(number);
+          columnNumbers.push({
+            number,
+            called: false,
+            letter: letters[col]
+          });
+        }
+        
+        // Sort the column
+        columnNumbers.sort((a, b) => a.number - b.number);
+        numbers.push(columnNumbers);
       }
       
-      // Sort the column
-      columnNumbers.sort((a, b) => a.number - b.number);
-      numbers.push(columnNumbers);
+      // Free space in the middle
+      numbers[2][2] = { number: 0, called: true, letter: 'FREE' };
+      
+      return {
+        id: Math.random().toString(36).substr(2, 9),
+        numbers,
+        marked: Array(5).fill(null).map(() => Array(5).fill(false)),
+        completed: false
+      };
+    } catch (error) {
+      console.error('Error generating bingo card:', error);
+      setError('Failed to generate bingo card');
+      throw error;
     }
-    
-    // Free space in the middle
-    numbers[2][2] = { number: 0, called: true, letter: 'FREE' };
-    
-    return {
-      id: Math.random().toString(36).substr(2, 9),
-      numbers,
-      marked: Array(5).fill(null).map(() => Array(5).fill(false)),
-      completed: false
-    };
   };
 
   // Call a random number
@@ -197,11 +204,17 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
 
   // Start the game
   const startGame = () => {
-    setGameStatus('playing');
-    setCalledNumbers([]);
-    setCurrentNumber(null);
-    setBingoCards([generateBingoCard()]);
-    setGameTimer(300);
+    try {
+      setError(null);
+      setGameStatus('playing');
+      setCalledNumbers([]);
+      setCurrentNumber(null);
+      setBingoCards([generateBingoCard()]);
+      setGameTimer(300);
+    } catch (error) {
+      console.error('Error starting game:', error);
+      setError('Failed to start game. Please try again.');
+    }
   };
 
   // Timer effect
@@ -220,6 +233,25 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  // Show error if there is one
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-red-600">Game Error</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-red-600 mb-4">{error}</p>
+            <Button onClick={() => setError(null)}>
+              Try Again
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
