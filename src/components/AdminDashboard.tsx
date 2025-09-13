@@ -14,6 +14,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import AdminPrizeDashboard from './AdminPrizeDashboard';
 
 interface AdminStats {
   totalUsers: number;
@@ -118,10 +119,11 @@ const AdminDashboard: React.FC = () => {
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="games">Games</TabsTrigger>
+          <TabsTrigger value="prizes">Prize System</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -278,6 +280,10 @@ const AdminDashboard: React.FC = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="prizes" className="space-y-6">
+          <AdminPrizeDashboard />
         </TabsContent>
 
         <TabsContent value="settings" className="space-y-6">

@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useBingoGame } from '@/hooks/useBingoGame';
+import { GAME_CONFIGS, GameSessionManager } from '@/lib/prizeDistribution';
 import AuthModal from './AuthModal';
 import GameHeader from './GameHeader';
 import BingoCard from './BingoCard';
@@ -94,72 +95,53 @@ const EnhancedAppLayout: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [activeTab, setActiveTab] = useState('home');
-  const [gameRooms, setGameRooms] = useState<GameRoom[]>([
-    {
-      id: 'speed-bingo',
-      name: 'Speed Bingo',
-      description: 'Fast-paced bingo with quick rounds',
-      playerCount: 12,
-      maxPlayers: 50,
-      entryFee: 5.00,
-      prizePool: 250.00,
-      gameType: 'speed',
-      status: 'waiting',
-      timeLeft: 300,
-      rules: 'First to complete any line wins!',
+  // Initialize game rooms from prize distribution config
+  const [gameRooms, setGameRooms] = useState<GameRoom[]>(() => {
+    return GAME_CONFIGS.map(config => ({
+      id: config.id,
+      name: config.name,
+      description: getGameDescription(config.id),
+      playerCount: Math.floor(Math.random() * (config.maxPlayers - config.minPlayers)) + config.minPlayers,
+      maxPlayers: config.maxPlayers,
+      entryFee: config.entryFee,
+      prizePool: calculatePrizePool(config),
+      gameType: config.gameType === 'bingo' ? 'bingo' : 'tournament',
+      status: 'waiting' as const,
+      timeLeft: config.duration * 60,
+      rules: getGameRules(config.id),
       powerUpsAllowed: true,
       minLevel: 1,
-      maxLevel: 10
-    },
-    {
-      id: 'classic-bingo',
-      name: 'Classic Bingo',
-      description: 'Traditional bingo with full house wins',
-      playerCount: 8,
-      maxPlayers: 30,
-      entryFee: 10.00,
-      prizePool: 300.00,
-      gameType: 'classic',
-      status: 'waiting',
-      timeLeft: 600,
-      rules: 'Complete any line or full house to win!',
-      powerUpsAllowed: true,
-      minLevel: 1,
-      maxLevel: 10
-    },
-    {
-      id: 'high-stakes',
-      name: 'High Stakes Arena',
-      description: 'Big prizes for experienced players',
-      playerCount: 5,
-      maxPlayers: 20,
-      entryFee: 25.00,
-      prizePool: 500.00,
-      gameType: 'high-stakes',
-      status: 'waiting',
-      timeLeft: 900,
-      rules: 'Multiple patterns win different prizes!',
-      powerUpsAllowed: true,
-      minLevel: 3,
-      maxLevel: 10
-    },
-    {
-      id: 'beginner-room',
-      name: 'Beginner Room',
-      description: 'Perfect for new players',
-      playerCount: 15,
-      maxPlayers: 40,
-      entryFee: 2.00,
-      prizePool: 80.00,
-      gameType: 'beginner',
-      status: 'waiting',
-      timeLeft: 450,
-      rules: 'Learn the basics with small stakes',
-      powerUpsAllowed: false,
-      minLevel: 1,
-      maxLevel: 3
-    }
-  ]);
+      maxLevel: 20
+    }));
+  });
+
+  // Helper functions for game room configuration
+  const getGameDescription = (gameId: string): string => {
+    const descriptions: Record<string, string> = {
+      'speed-bingo': 'Fast-paced bingo with quick rounds',
+      'classic-bingo': 'Traditional bingo with full house wins',
+      'high-stakes-arena': 'High-value games for serious players',
+      'daily-tournament': 'Daily tournament with big prizes',
+      'weekly-championship': 'Weekly championship event'
+    };
+    return descriptions[gameId] || 'Exciting bingo game';
+  };
+
+  const getGameRules = (gameId: string): string => {
+    const rules: Record<string, string> = {
+      'speed-bingo': 'First to complete any line wins!',
+      'classic-bingo': 'Complete any line, diagonal, or full house',
+      'high-stakes-arena': 'Multiple winning patterns with big prizes',
+      'daily-tournament': 'Tournament format with multiple rounds',
+      'weekly-championship': 'Championship format with elimination rounds'
+    };
+    return rules[gameId] || 'Standard bingo rules';
+  };
+
+  const calculatePrizePool = (config: any): number => {
+    // Calculate prize pool based on minimum players and 90% distribution
+    return (config.entryFee * config.minPlayers * 0.90);
+  };
   const [leaderboardPlayers, setLeaderboardPlayers] = useState<Player[]>([
     { id: '1', username: 'BingoMaster', avatar: '', balance: 1250, wins: 45, gamesPlayed: 120 },
     { id: '2', username: 'LuckyPlayer', avatar: '', balance: 890, wins: 32, gamesPlayed: 95 },
@@ -271,6 +253,16 @@ const EnhancedAppLayout: React.FC = () => {
           return;
         }
         
+        // Create a game session with the new prize distribution system
+        const realPlayer = {
+          id: user?.id || 'anonymous',
+          username: user?.user_metadata?.username || 'Player',
+          isBot: false,
+          entryFee: room.entryFee
+        };
+        
+        const gameSession = GameSessionManager.createGameSession(roomId, [realPlayer]);
+        
         // Deduct entry fee from balance
         setPlayer(prev => ({
           ...prev,
@@ -280,7 +272,8 @@ const EnhancedAppLayout: React.FC = () => {
         setGameState(prev => ({
           ...prev,
           currentRoom: room,
-          gameStatus: 'waiting'
+          gameStatus: 'waiting',
+          gameSessionId: gameSession.id
         }));
         
         // Start the bingo game with error handling
@@ -298,12 +291,18 @@ const EnhancedAppLayout: React.FC = () => {
         
         // Track analytics
         try {
-          trackUserAction('join_room', { roomId, roomName: room.name, entryFee: room.entryFee });
+          trackUserAction('join_room', { 
+            roomId, 
+            roomName: room.name, 
+            entryFee: room.entryFee,
+            sessionId: gameSession.id,
+            prizePool: gameSession.prizeDistribution.payoutPool
+          });
         } catch (analyticsError) {
           console.warn('Analytics tracking failed:', analyticsError);
         }
         
-        alert(`🎉 Joined ${room.name}! Entry fee of $${room.entryFee} deducted. Starting bingo game...`);
+        alert(`🎉 Joined ${room.name}!\n💰 Entry fee: $${room.entryFee}\n🏆 Prize Pool: $${gameSession.prizeDistribution.payoutPool.toFixed(2)}\n👥 Players: ${gameSession.players.length}\n\nStarting bingo game...`);
       } else {
         alert('Room not found. Please try again.');
       }
