@@ -26,6 +26,7 @@ import VIPSystem from './VIPSystem';
 import SpectatorMode from './SpectatorMode';
 import LiveGameFeed from './LiveGameFeed';
 import BingoGame from './BingoGame';
+import SimpleBingoGame from './SimpleBingoGame';
 import BingoGameFallback from './BingoGameFallback';
 import PWAInstallPrompt from './PWAInstallPrompt';
 import BackToTopButton from './BackToTopButton';
@@ -282,11 +283,18 @@ const EnhancedAppLayout: React.FC = () => {
           gameStatus: 'waiting'
         }));
         
-        // Start the bingo game
-        setShowBingoGame(true);
-        setActiveTab('home'); // Switch to home tab to show the game
-        // Scroll to top when starting game
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        // Start the bingo game with error handling
+        try {
+          setShowBingoGame(true);
+          setActiveTab('home'); // Switch to home tab to show the game
+          // Scroll to top when starting game
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (gameError) {
+          console.error('Error starting bingo game:', gameError);
+          setShowBingoGame(false);
+          alert('Failed to start the game. Please try again.');
+          return;
+        }
         
         // Track analytics
         try {
@@ -529,10 +537,10 @@ const EnhancedAppLayout: React.FC = () => {
               </Button>
             </div>
             <ErrorBoundary>
-              <BingoGame 
+              <SimpleBingoGame 
                 onWin={(winType, prize) => {
                   setShowWinModal(true);
-                  setPlayer(prev => ({ ...prev, balance: prev.balance + prize }));
+                  setPlayer(prev => ({ ...prev, balance: (prev.balance || 0) + prize }));
                   alert(`Congratulations! You won ${winType} and earned $${prize}!`);
                 }}
                 onGameEnd={() => {
