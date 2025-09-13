@@ -240,7 +240,7 @@ export class CryptoPrizeDistributor {
   static async distributePrizes(session: GameSession): Promise<{
     bingoBestTransfer: { amount: number; wallet: string };
     payoutTransfers: { playerId: string; amount: number; wallet: string }[];
-  } {
+  }> {
     const { prizeDistribution, players } = session;
     
     // Calculate BingoBest account transfer (10% cut)
