@@ -1,7 +1,4 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
 interface AppFallbackProps {
   error?: Error;
@@ -22,56 +19,106 @@ const AppFallback: React.FC<AppFallbackProps> = ({ error, onRetry }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 flex items-center justify-center p-4">
-      <Card className="max-w-md w-full">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-            <AlertTriangle className="w-8 h-8 text-red-600" />
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #f3e8ff 0%, #fdf2f8 50%, #dbeafe 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '1rem'
+    }}>
+      <div style={{
+        maxWidth: '28rem',
+        width: '100%',
+        backgroundColor: 'white',
+        borderRadius: '0.5rem',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        padding: '1.5rem'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{
+            margin: '0 auto 1rem',
+            width: '4rem',
+            height: '4rem',
+            backgroundColor: '#fef2f2',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <span style={{ fontSize: '2rem', color: '#dc2626' }}>⚠️</span>
           </div>
-          <CardTitle className="text-xl text-red-600">Oops! Something went wrong</CardTitle>
-        </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <p className="text-gray-600">
+          <h1 style={{ fontSize: '1.25rem', color: '#dc2626', marginBottom: '1rem' }}>
+            Oops! Something went wrong
+          </h1>
+          <p style={{ color: '#6b7280', marginBottom: '1.5rem' }}>
             We're sorry, but something unexpected happened. Don't worry, your progress is saved!
           </p>
           
           {error && process.env.NODE_ENV === 'development' && (
-            <details className="mt-4 text-left">
-              <summary className="cursor-pointer text-sm text-gray-500">
+            <details style={{ marginTop: '1rem', textAlign: 'left' }}>
+              <summary style={{ cursor: 'pointer', fontSize: '0.875rem', color: '#6b7280' }}>
                 Error Details (Development)
               </summary>
-              <pre className="mt-2 text-xs bg-gray-100 p-2 rounded overflow-auto">
+              <pre style={{
+                marginTop: '0.5rem',
+                fontSize: '0.75rem',
+                backgroundColor: '#f3f4f6',
+                padding: '0.5rem',
+                borderRadius: '0.25rem',
+                overflow: 'auto'
+              }}>
                 {error.toString()}
               </pre>
             </details>
           )}
           
-          <div className="space-y-2">
-            <Button onClick={handleRetry} className="w-full">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Reload Page
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={handleGoHome}
-              className="w-full"
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
+            <button
+              onClick={handleRetry}
+              style={{
+                width: '100%',
+                backgroundColor: '#7c3aed',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.375rem',
+                padding: '0.75rem 1rem',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                cursor: 'pointer'
+              }}
             >
-              <Home className="w-4 h-4 mr-2" />
-              Go Home
-            </Button>
+              🔄 Reload Page
+            </button>
+            <button
+              onClick={handleGoHome}
+              style={{
+                width: '100%',
+                backgroundColor: 'transparent',
+                color: '#374151',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.375rem',
+                padding: '0.75rem 1rem',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                cursor: 'pointer'
+              }}
+            >
+              🏠 Go Home
+            </button>
           </div>
           
-          <div className="text-xs text-gray-500 mt-4">
+          <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '1rem' }}>
             <p>If this problem persists, please:</p>
-            <ul className="list-disc list-inside mt-2 space-y-1">
+            <ul style={{ listStyle: 'disc', paddingLeft: '1.5rem', marginTop: '0.5rem' }}>
               <li>Check your internet connection</li>
               <li>Clear your browser cache</li>
               <li>Try using a different browser</li>
               <li>Contact support if the issue continues</li>
             </ul>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
