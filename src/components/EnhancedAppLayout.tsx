@@ -517,6 +517,23 @@ const EnhancedAppLayout: React.FC = () => {
           </div>
         </div>
 
+        {/* Quick Play Button */}
+        {!showBingoGame && (
+          <div className="mb-6 text-center">
+            <Button 
+              onClick={() => {
+                setShowBingoGame(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              size="lg"
+              className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-3 text-lg font-semibold"
+            >
+              🎮 Play Bingo Now! 🎮
+            </Button>
+            <p className="text-gray-600 mt-2">Click to start playing immediately!</p>
+          </div>
+        )}
+
         {/* Tab Content */}
         {showBingoGame ? (
           <div className="space-y-4">
