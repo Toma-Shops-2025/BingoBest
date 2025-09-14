@@ -911,9 +911,10 @@ const EnhancedAppLayout: React.FC = () => {
       <div 
         className="relative h-[600px] bg-cover bg-center flex items-center justify-center casino-glow"
         style={{ 
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/background.png')`,
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/background.jpg')`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center'
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
         }}
       >
         <div className="text-center z-10">
