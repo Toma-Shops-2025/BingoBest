@@ -37,6 +37,8 @@ import UserProfile from './UserProfile';
 import GameSounds from './GameSounds';
 import PushNotifications, { NotificationPermissionRequest } from './PushNotifications';
 import ErrorBoundary from './ErrorBoundary';
+import CasinoBackgroundMusic from './CasinoBackgroundMusic';
+import FloatingParticles from './FloatingParticles';
 import { analytics, trackPageView, trackUserAction } from '@/lib/analytics';
 import { 
   GameRoom, 
@@ -874,15 +876,36 @@ const EnhancedAppLayout: React.FC = () => {
   return (
     <GameSounds>
       <PushNotifications>
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100">
-      {/* Hero Section - New Design */}
+    <div className="min-h-screen casino-bg relative">
+      <FloatingParticles />
+      {/* Hero Section - Casino Design */}
       <div 
-        className="relative h-[600px] bg-cover bg-center flex items-center justify-center"
-        style={{ backgroundImage: `url(${heroImage})` }}
+        className="relative h-[600px] bg-cover bg-center flex items-center justify-center casino-glow"
+        style={{ 
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
       >
+        <div className="text-center z-10">
+          <h1 className="text-6xl font-bold text-white casino-text-glow mb-4">
+            🎰 BingoBest 🎰
+          </h1>
+          <p className="text-2xl text-yellow-300 casino-text-glow mb-8">
+            Crypto Bingo Adventures
+          </p>
+          <div className="flex justify-center gap-4">
+            <Button 
+              onClick={() => setShowBingoGame(true)}
+              className="casino-button text-lg px-8 py-4"
+            >
+              🎮 Play Now! 🎮
+            </Button>
+          </div>
+        </div>
       </div>
 
-      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 relative z-10">
         {/* Notification Permission Request */}
         <NotificationPermissionRequest />
 
@@ -1040,6 +1063,9 @@ const EnhancedAppLayout: React.FC = () => {
           onClose={() => setShowUserProfile(false)}
         />
       )}
+
+      {/* Casino Background Music */}
+      <CasinoBackgroundMusic enabled={true} />
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-6 sm:py-8 mt-8 sm:mt-12">

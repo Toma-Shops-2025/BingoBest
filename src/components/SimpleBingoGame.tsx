@@ -28,8 +28,63 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
   const [bingoCards, setBingoCards] = useState<BingoCard[]>([]);
   const [gameTimer, setGameTimer] = useState(300);
   const [error, setError] = useState<string | null>(null);
+  const [autoCallInterval, setAutoCallInterval] = useState<NodeJS.Timeout | null>(null);
+  const [audioEnabled, setAudioEnabled] = useState(true);
 
   const letters = ['B', 'I', 'N', 'G', 'O'];
+
+  // Audio functions
+  const playNumberCallSound = (number: number) => {
+    if (!audioEnabled) return;
+    
+    try {
+      // Create audio context for number calling sound
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Create a pleasant tone for number calling
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+      console.warn('Audio not available:', error);
+    }
+  };
+
+  const playBingoSound = () => {
+    if (!audioEnabled) return;
+    
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      // Create a celebratory bingo sound
+      oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+      oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.2); // E5
+      oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.4); // G5
+      
+      gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.6);
+    } catch (error) {
+      console.warn('Audio not available:', error);
+    }
+  };
 
   // Generate a simple bingo card
   const generateBingoCard = (): BingoCard => {
@@ -100,6 +155,9 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
       const randomNumber = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
       setCalledNumbers(prev => [...prev, randomNumber]);
       setCurrentNumber(randomNumber);
+      
+      // Play number call sound
+      playNumberCallSound(randomNumber);
       
       // Update bingo cards
       setBingoCards(prev => prev.map(card => {
@@ -230,10 +288,26 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
       setCurrentNumber(null);
       setBingoCards([generateBingoCard()]);
       setGameTimer(300);
+      
+      // Start automatic number calling every 3 seconds
+      const interval = setInterval(() => {
+        callNumber();
+      }, 3000);
+      setAutoCallInterval(interval);
     } catch (error) {
       console.error('Error starting game:', error);
       setError('Failed to start game. Please try again.');
     }
+  };
+
+  // Stop the game
+  const stopGame = () => {
+    if (autoCallInterval) {
+      clearInterval(autoCallInterval);
+      setAutoCallInterval(null);
+    }
+    setGameStatus('finished');
+    onGameEnd();
   };
 
   // Timer effect
@@ -242,10 +316,18 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
       const timer = setTimeout(() => setGameTimer(prev => prev - 1), 1000);
       return () => clearTimeout(timer);
     } else if (gameStatus === 'playing' && gameTimer === 0) {
-      setGameStatus('finished');
-      onGameEnd();
+      stopGame();
     }
   }, [gameStatus, gameTimer]);
+
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      if (autoCallInterval) {
+        clearInterval(autoCallInterval);
+      }
+    };
+  }, [autoCallInterval]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -283,7 +365,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
   return (
     <div className="space-y-6">
       {/* Game Header */}
-      <Card>
+      <Card className="casino-card">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>Speed Bingo</span>
@@ -313,12 +395,37 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
           
           {gameStatus === 'playing' && (
             <div className="space-y-4">
+              {/* Audio Controls */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Audio:</span>
+                  <Button
+                    variant={audioEnabled ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setAudioEnabled(!audioEnabled)}
+                  >
+                    {audioEnabled ? "🔊 On" : "🔇 Off"}
+                  </Button>
+                </div>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={stopGame}
+                >
+                  Stop Game
+                </Button>
+              </div>
+
               {/* Called Numbers */}
               <div>
                 <h4 className="font-semibold mb-2">Called Numbers ({calledNumbers.length})</h4>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
                   {calledNumbers.map((num, index) => (
-                    <Badge key={index} variant="outline">
+                    <Badge 
+                      key={index} 
+                      variant={num === currentNumber ? "default" : "outline"}
+                      className={num === currentNumber ? "animate-pulse bg-green-500" : ""}
+                    >
                       {getLetter(num)}{num}
                     </Badge>
                   ))}
@@ -328,12 +435,10 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
               {/* Current Number */}
               {currentNumber && (
                 <div className="text-center">
-                  <div className="text-4xl font-bold text-purple-600 mb-2">
+                  <div className="text-6xl font-bold text-green-500 mb-2 animate-bounce">
                     {getLetter(currentNumber)}{currentNumber}
                   </div>
-                  <Button onClick={callNumber}>
-                    Call Next Number
-                  </Button>
+                  <p className="text-sm text-gray-600">Numbers called automatically every 3 seconds</p>
                 </div>
               )}
             </div>
@@ -343,7 +448,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
 
       {/* Bingo Cards */}
       {bingoCards.map((card) => (
-        <Card key={card.id}>
+        <Card key={card.id} className="casino-card">
           <CardHeader>
             <CardTitle>Your Bingo Card</CardTitle>
           </CardHeader>
@@ -362,10 +467,10 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
                   <div
                     key={`${colIndex}-${rowIndex}`}
                     className={`
-                      aspect-square border-2 rounded-lg flex items-center justify-center text-sm font-semibold cursor-pointer transition-colors
-                      ${cell.called ? 'bg-green-100 border-green-400' : 'bg-gray-50 border-gray-300'}
-                      ${card.marked[rowIndex] && card.marked[rowIndex][colIndex] ? 'bg-yellow-200 border-yellow-400' : ''}
-                      ${cell.number === 0 ? 'bg-purple-200 border-purple-400' : ''}
+                      bingo-number aspect-square border-2 rounded-lg flex items-center justify-center text-sm font-semibold cursor-pointer transition-all duration-300
+                      ${cell.called ? 'called' : 'bg-gray-800 border-gray-600 text-white'}
+                      ${card.marked[rowIndex] && card.marked[rowIndex][colIndex] ? 'bg-yellow-400 border-yellow-300 text-black' : ''}
+                      ${cell.number === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 border-yellow-300 text-black font-bold' : ''}
                     `}
                     onClick={() => markNumber(card.id, rowIndex, colIndex)}
                   >
