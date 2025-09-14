@@ -35,14 +35,14 @@ const SpectatorMode: React.FC<SpectatorModeProps> = ({
         timeLeft: 180, // 3 minutes
         status: 'playing',
         players: [
-          { id: '1', username: 'BingoBeast318', isBot: false, position: 1, prize: 24.30 },
-          { id: '2', username: 'LuckyPlayer42', isBot: true, position: 2, prize: 10.13 },
-          { id: '3', username: 'CardMaster99', isBot: true, position: 3, prize: 6.08 },
-          { id: '4', username: 'NumberHunter', isBot: true, position: 0, prize: 0 },
-          { id: '5', username: 'BingoPro', isBot: true, position: 0, prize: 0 },
-          { id: '6', username: 'QuickDraw', isBot: true, position: 0, prize: 0 },
-          { id: '7', username: 'LuckyDuck', isBot: true, position: 0, prize: 0 },
-          { id: '8', username: 'BingoKing', isBot: true, position: 0, prize: 0 }
+          { id: '1', username: 'BingoBeast318', position: 1, prize: 24.30 },
+          { id: '2', username: 'LuckyPlayer42', position: 2, prize: 10.13 },
+          { id: '3', username: 'CardMaster99', position: 3, prize: 6.08 },
+          { id: '4', username: 'NumberHunter', position: 0, prize: 0 },
+          { id: '5', username: 'BingoPro', position: 0, prize: 0 },
+          { id: '6', username: 'QuickDraw', position: 0, prize: 0 },
+          { id: '7', username: 'LuckyDuck', position: 0, prize: 0 },
+          { id: '8', username: 'BingoKing', position: 0, prize: 0 }
         ]
       };
       setMockGame(mockGameData);
@@ -212,9 +212,6 @@ const SpectatorMode: React.FC<SpectatorModeProps> = ({
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">#{index + 1}</span>
                         <span className="text-sm">{player.username}</span>
-                        {!player.isBot && (
-                          <Badge variant="outline" className="text-xs">Real Player</Badge>
-                        )}
                       </div>
                       <div className="text-right">
                         <div className="text-sm font-semibold text-green-600">

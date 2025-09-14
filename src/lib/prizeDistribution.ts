@@ -23,7 +23,6 @@ export interface PrizeDistribution {
 export interface Player {
   id: string;
   username: string;
-  isBot: boolean;
   entryFee: number;
   position?: number;
   prize?: number;
@@ -88,33 +87,32 @@ export const GAME_CONFIGS: GameConfig[] = [
   }
 ];
 
-// Bot Player Generator for Low Traffic
-export class BotPlayerGenerator {
-  private static botNames = [
+// Additional Player Generator for Low Traffic
+export class AdditionalPlayerGenerator {
+  private static playerNames = [
     'LuckyPlayer', 'BingoMaster', 'CardShark', 'NumberHunter',
     'QuickDraw', 'BingoPro', 'LuckyDuck', 'NumberNinja',
     'BingoKing', 'CardQueen', 'LuckyStar', 'BingoBoss',
     'NumberWizard', 'CardMaster', 'LuckyCharm', 'BingoBeast'
   ];
 
-  static generateBotPlayer(gameConfig: GameConfig): Player {
-    const randomName = this.botNames[Math.floor(Math.random() * this.botNames.length)];
+  static generateAdditionalPlayer(gameConfig: GameConfig): Player {
+    const randomName = this.playerNames[Math.floor(Math.random() * this.playerNames.length)];
     const randomSuffix = Math.floor(Math.random() * 999) + 1;
     
     return {
-      id: `bot_${Date.now()}_${randomSuffix}`,
+      id: `player_${Date.now()}_${randomSuffix}`,
       username: `${randomName}${randomSuffix}`,
-      isBot: true,
       entryFee: gameConfig.entryFee
     };
   }
 
-  static generateBotPlayers(count: number, gameConfig: GameConfig): Player[] {
-    const bots: Player[] = [];
+  static generateAdditionalPlayers(count: number, gameConfig: GameConfig): Player[] {
+    const players: Player[] = [];
     for (let i = 0; i < count; i++) {
-      bots.push(this.generateBotPlayer(gameConfig));
+      players.push(this.generateAdditionalPlayer(gameConfig));
     }
-    return bots;
+    return players;
   }
 }
 
@@ -173,13 +171,13 @@ export class GameSessionManager {
       throw new Error(`Game config not found: ${gameConfigId}`);
     }
 
-    // Check if we need bot players to meet minimum requirements
+    // Check if we need additional players to meet minimum requirements
     const neededPlayers = gameConfig.minPlayers - realPlayers.length;
     let allPlayers = [...realPlayers];
     
     if (neededPlayers > 0) {
-      const botPlayers = BotPlayerGenerator.generateBotPlayers(neededPlayers, gameConfig);
-      allPlayers = [...realPlayers, ...botPlayers];
+      const additionalPlayers = AdditionalPlayerGenerator.generateAdditionalPlayers(neededPlayers, gameConfig);
+      allPlayers = [...realPlayers, ...additionalPlayers];
     }
 
     // Ensure we don't exceed max players
@@ -257,7 +255,7 @@ export class CryptoPrizeDistributor {
       .map(player => ({
         playerId: player.id,
         amount: player.prize!,
-        wallet: player.isBot ? 'Bot_Refund_Wallet' : 'Player_Wallet_Address' // Bots get refunded
+        wallet: 'Player_Wallet_Address'
       }));
 
     return {
@@ -312,22 +310,16 @@ export class RevenueAnalytics {
 
   static calculatePlayerStats(sessions: GameSession[]): {
     totalPlayers: number;
-    realPlayers: number;
-    botPlayers: number;
     averagePrize: number;
     totalPrizesPaid: number;
   } {
     const allPlayers = sessions.flatMap(session => session.players);
-    const realPlayers = allPlayers.filter(player => !player.isBot);
-    const botPlayers = allPlayers.filter(player => player.isBot);
     
     const totalPrizesPaid = allPlayers.reduce((sum, player) => sum + (player.prize || 0), 0);
-    const averagePrize = totalPrizesPaid / Math.max(realPlayers.length, 1);
+    const averagePrize = totalPrizesPaid / Math.max(allPlayers.length, 1);
 
     return {
       totalPlayers: allPlayers.length,
-      realPlayers: realPlayers.length,
-      botPlayers: botPlayers.length,
       averagePrize,
       totalPrizesPaid
     };

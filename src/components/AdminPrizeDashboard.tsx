@@ -43,11 +43,10 @@ const AdminPrizeDashboard: React.FC = () => {
     const gameConfig = GAME_CONFIGS.find(config => config.id === selectedGame);
     if (!gameConfig) return;
 
-    // Create a test session with 1 real player and bots
+    // Create a test session with players
     const realPlayer = {
       id: 'test_player_1',
       username: 'TestPlayer',
-      isBot: false,
       entryFee: gameConfig.entryFee
     };
 

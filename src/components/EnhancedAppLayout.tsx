@@ -257,7 +257,6 @@ const EnhancedAppLayout: React.FC = () => {
         const realPlayer = {
           id: user?.id || 'anonymous',
           username: user?.user_metadata?.username || 'Player',
-          isBot: false,
           entryFee: room.entryFee
         };
         
