@@ -35,7 +35,7 @@ const MainNavigation: React.FC<MainNavigationProps> = ({
   ];
 
   return (
-    <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <div className="bg-gray-900/90 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-10">
       <div className="container mx-auto px-4">
         <div className="flex items-center gap-1 py-3 overflow-x-auto">
           {navItems.map((item) => {
@@ -46,13 +46,17 @@ const MainNavigation: React.FC<MainNavigationProps> = ({
                 variant={activeTab === item.id ? "default" : "ghost"}
                 size="sm"
                 onClick={() => onTabChange(item.id)}
-                className="flex items-center gap-2 whitespace-nowrap relative"
+                className={`flex items-center gap-2 whitespace-nowrap relative ${
+                  activeTab === item.id 
+                    ? "bg-yellow-500 hover:bg-yellow-600 text-black font-bold" 
+                    : "text-white hover:bg-gray-800 hover:text-yellow-400"
+                }`}
               >
                 <Icon className="w-4 h-4" />
                 {item.label}
                 {item.badge && item.badge > 0 && (
                   <Badge 
-                    className="absolute -top-2 -right-2 h-5 w-5 p-0 text-xs bg-red-500"
+                    className="absolute -top-2 -right-2 h-5 w-5 p-0 text-xs bg-red-500 text-white"
                   >
                     {item.badge}
                   </Badge>
