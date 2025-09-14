@@ -911,22 +911,22 @@ const EnhancedAppLayout: React.FC = () => {
       <div 
         className="relative h-[600px] bg-cover bg-center flex items-center justify-center casino-glow"
         style={{ 
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(${heroImage})`,
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/background.png')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
       >
         <div className="text-center z-10">
-          <h1 className="text-6xl font-bold text-white casino-text-glow mb-4">
+          <h1 className="text-6xl font-bold text-white casino-text-glow mb-4 drop-shadow-2xl">
             🎰 BingoBest 🎰
           </h1>
-          <p className="text-2xl text-yellow-300 casino-text-glow mb-8">
+          <p className="text-2xl text-yellow-300 casino-text-glow mb-8 drop-shadow-lg">
             Crypto Bingo Adventures
           </p>
           <div className="flex justify-center gap-4">
             <Button 
               onClick={() => setShowBingoGame(true)}
-              className="casino-button text-lg px-8 py-4"
+              className="casino-button text-lg px-8 py-4 shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300"
             >
               🎮 Play Now! 🎮
             </Button>
