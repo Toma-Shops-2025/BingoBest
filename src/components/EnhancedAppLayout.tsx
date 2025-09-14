@@ -399,11 +399,67 @@ const EnhancedAppLayout: React.FC = () => {
           onClaimReward={(id) => alert(`Claimed reward for challenge ${id}!`)} 
         />;
       case 'friends':
+        // Mock friends data for demonstration
+        const mockFriends: Friend[] = [
+          {
+            id: 'friend1',
+            username: 'BingoMaster99',
+            avatar: '',
+            status: 'online',
+            lastSeen: new Date()
+          },
+          {
+            id: 'friend2', 
+            username: 'LuckyPlayer42',
+            avatar: '',
+            status: 'playing',
+            lastSeen: new Date()
+          },
+          {
+            id: 'friend3',
+            username: 'CardShark',
+            avatar: '',
+            status: 'offline',
+            lastSeen: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+          },
+          {
+            id: 'friend4',
+            username: 'NumberHunter',
+            avatar: '',
+            status: 'online',
+            lastSeen: new Date()
+          }
+        ];
+
         return <FriendsSystem 
-          friends={[]} 
-          onAddFriend={(username) => alert(`Added friend ${username}!`)} 
-          onInviteToGame={(id) => alert(`Invited friend ${id} to game!`)} 
-          onSendMessage={(id) => alert(`Sent message to friend ${id}!`)} 
+          friends={mockFriends} 
+          onAddFriend={(username) => {
+            // Check if friend already exists
+            const existingFriend = mockFriends.find(f => f.username.toLowerCase() === username.toLowerCase());
+            if (existingFriend) {
+              alert(`You're already friends with ${username}!`);
+              return;
+            }
+            
+            // Add new friend
+            const newFriend: Friend = {
+              id: `friend_${Date.now()}`,
+              username: username,
+              avatar: '',
+              status: 'offline',
+              lastSeen: new Date()
+            };
+            
+            alert(`Friend request sent to ${username}!\n\nThey will appear in your friends list once they accept.`);
+          }} 
+          onInviteToGame={(id) => {
+            const friend = mockFriends.find(f => f.id === id);
+            alert(`🎮 Game Invitation Sent!\n\nInvited ${friend?.username} to join your game!\n\nThey'll receive a notification and can join if they're online.`);
+          }} 
+          onSendMessage={(id) => {
+            const friend = mockFriends.find(f => f.id === id);
+            alert(`💬 Message Sent!\n\nYour message to ${friend?.username} has been sent!\n\nChat feature coming soon!`);
+          }} 
         />;
       case 'events':
         // Create exciting seasonal events
