@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS tournaments (
     current_participants INTEGER DEFAULT 0,
     prize_pool DECIMAL(10,2) DEFAULT 0.00,
     start_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    end_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    end_time TIMESTAMP WITH TIME ZONE,
     status VARCHAR(20) DEFAULT 'upcoming' CHECK (status IN ('upcoming', 'active', 'completed')),
     format VARCHAR(20) DEFAULT 'single_elimination' CHECK (format IN ('single_elimination', 'double_elimination', 'round_robin')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

@@ -39,19 +39,37 @@ const AdminDashboard: React.FC = () => {
     try {
       setIsLoading(true);
       
-      // Fetch user statistics
-      const { data: users, error: usersError } = await supabase
-        .from('users')
-        .select('id, created_at, last_sign_in_at');
-
-      if (usersError) throw usersError;
-
-      // Fetch game statistics
-      const { data: games, error: gamesError } = await supabase
-        .from('game_sessions')
-        .select('*');
-
-      if (gamesError) throw gamesError;
+      // Try to fetch user statistics with timeout
+      let users = [];
+      let games = [];
+      
+      try {
+        const usersPromise = supabase
+          .from('users')
+          .select('id, created_at, last_sign_in_at');
+        
+        const gamesPromise = supabase
+          .from('game_sessions')
+          .select('*');
+        
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Database timeout')), 5000)
+        );
+        
+        const [usersResult, gamesResult] = await Promise.race([
+          Promise.all([usersPromise, gamesPromise]),
+          timeoutPromise
+        ]) as any;
+        
+        users = usersResult[0]?.data || [];
+        games = gamesResult[1]?.data || [];
+      } catch (dbError) {
+        console.warn('Database connection failed, using mock data:', dbError);
+        // Use mock data if database fails
+        users = [];
+        games = [];
+      }
 
       // Calculate statistics
       const totalUsers = users?.length || 0;
@@ -71,8 +89,8 @@ const AdminDashboard: React.FC = () => {
       const popularRooms = [
         { name: 'Speed Bingo', games: 45 },
         { name: 'Classic Bingo', games: 32 },
-        { name: 'High Stakes', games: 28 },
-        { name: 'Beginner Room', games: 25 }
+        { name: 'High Stakes Arena', games: 28 },
+        { name: 'Daily Tournament', games: 25 }
       ];
 
       // Recent activity (mock data for now)
@@ -95,6 +113,23 @@ const AdminDashboard: React.FC = () => {
 
     } catch (error) {
       console.error('Error fetching admin stats:', error);
+      // Set fallback data if everything fails
+      setStats({
+        totalUsers: 0,
+        activeUsers: 0,
+        totalGames: 0,
+        totalRevenue: 0,
+        averageGameDuration: 0,
+        popularRooms: [
+          { name: 'Speed Bingo', games: 0 },
+          { name: 'Classic Bingo', games: 0 },
+          { name: 'High Stakes Arena', games: 0 },
+          { name: 'Daily Tournament', games: 0 }
+        ],
+        recentActivity: [
+          { type: 'system', description: 'Admin dashboard loaded', timestamp: 'Just now' }
+        ]
+      });
     } finally {
       setIsLoading(false);
     }
@@ -102,21 +137,27 @@ const AdminDashboard: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-700 mb-2">Loading Admin Dashboard</h2>
+          <p className="text-gray-600">Please wait while we load your data...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-        <Badge variant="outline" className="flex items-center gap-2">
-          <Shield className="w-4 h-4" />
-          Admin Access
-        </Badge>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100">
+      <div className="container mx-auto px-4 py-8">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+            <Badge variant="outline" className="flex items-center gap-2">
+              <Shield className="w-4 h-4" />
+              Admin Access
+            </Badge>
+          </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
         <TabsList className="grid w-full grid-cols-5">
@@ -317,6 +358,8 @@ const AdminDashboard: React.FC = () => {
           </Card>
         </TabsContent>
       </Tabs>
+        </div>
+      </div>
     </div>
   );
 };
