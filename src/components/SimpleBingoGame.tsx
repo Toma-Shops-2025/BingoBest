@@ -210,23 +210,9 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
                   break;
               }
               
-              // Check if we can afford to pay this prize
-              const payoutTransaction = await financialSafety.processPrizePayout(
-                'current_user', // In real app, use actual user ID
-                'bingo_game', // In real app, use actual game ID
-                prize
-              );
-
-              if (payoutTransaction) {
-                // Play bingo win sound
-                playBingoSound();
-                onWin(winType, prize);
-                return { ...card, marked: newMarked, completed: true };
-              } else {
-                // Insufficient funds - show message but don't pay
-                alert(`🎉 Congratulations! You won ${winType}!\n\nYour prize of $${prize} is being processed and will be added to your account shortly. Please check your balance in a few moments.\n\nThank you for playing!`);
-                return { ...card, marked: newMarked, completed: true };
-              }
+              // Handle win asynchronously
+              handleWin(winType, prize, card, newMarked);
+              return { ...card, marked: newMarked, completed: true };
             }
             
             return { ...card, marked: newMarked };
@@ -237,6 +223,31 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
     } catch (error) {
       console.error('Error marking number:', error);
       setError('Failed to mark number');
+    }
+  };
+
+  // Handle win asynchronously
+  const handleWin = async (winType: string, prize: number, card: BingoCard, newMarked: boolean[][]) => {
+    try {
+      // Check if we can afford to pay this prize
+      const payoutTransaction = await financialSafety.processPrizePayout(
+        'current_user', // In real app, use actual user ID
+        'bingo_game', // In real app, use actual game ID
+        prize
+      );
+
+      if (payoutTransaction) {
+        // Play bingo win sound
+        playBingoSound();
+        onWin(winType, prize);
+      } else {
+        // Insufficient funds - show message but don't pay
+        alert(`🎉 Congratulations! You won ${winType}!\n\nYour prize of $${prize} is being processed and will be added to your account shortly. Please check your balance in a few moments.\n\nThank you for playing!`);
+      }
+    } catch (error) {
+      console.error('Error processing win:', error);
+      // Still show win message even if payout fails
+      alert(`🎉 Congratulations! You won ${winType}!\n\nYour prize of $${prize} is being processed and will be added to your account shortly. Please check your balance in a few moments.\n\nThank you for playing!`);
     }
   };
 
