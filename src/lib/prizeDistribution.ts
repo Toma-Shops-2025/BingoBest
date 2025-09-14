@@ -234,8 +234,10 @@ export class GameSessionManager {
 
 // Crypto Integration for Prize Distribution
 export class CryptoPrizeDistributor {
-  private static bingoBestWallet = process.env.BINGOBEST_WALLET_ADDRESS || 'BingoBest_Wallet_Address';
-  private static payoutWallet = process.env.PAYOUT_WALLET_ADDRESS || 'Payout_Wallet_Address';
+  // BingoBest Account - Your Bitcoin wallet (10% platform cut)
+  private static bingoBestWallet = '19BgRYm2NZBzBdtwZFRogVSZhMCyXp2rck';
+  // Payout Account - Your Ethereum wallet (90% player prizes)
+  private static payoutWallet = '0x94476E0835bfA7F983aCa4090BF004994C9B38FA';
 
   static async distributePrizes(session: GameSession): Promise<{
     bingoBestTransfer: { amount: number; wallet: string };

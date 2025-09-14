@@ -34,9 +34,9 @@ const AdminPrizeDashboard: React.FC = () => {
   };
 
   const loadWalletAddresses = () => {
-    // Load from environment variables or localStorage
-    setBingoBestWallet(process.env.BINGOBEST_WALLET_ADDRESS || '');
-    setPayoutWallet(process.env.PAYOUT_WALLET_ADDRESS || '');
+    // Set your actual wallet addresses
+    setBingoBestWallet('19BgRYm2NZBzBdtwZFRogVSZhMCyXp2rck'); // Bitcoin wallet
+    setPayoutWallet('0x94476E0835bfA7F983aCa4090BF004994C9B38FA'); // Ethereum wallet
   };
 
   const createTestSession = async () => {
@@ -187,26 +187,31 @@ const AdminPrizeDashboard: React.FC = () => {
       <Card>
         <CardHeader>
           <CardTitle>Wallet Configuration</CardTitle>
+          <p className="text-sm text-gray-600">Your configured wallet addresses for prize distribution</p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="bingoBestWallet">BingoBest Account (10% cut)</Label>
+              <Label htmlFor="bingoBestWallet">BingoBest Account (10% cut) - Bitcoin</Label>
               <Input
                 id="bingoBestWallet"
                 value={bingoBestWallet}
-                onChange={(e) => setBingoBestWallet(e.target.value)}
-                placeholder="Enter BingoBest wallet address"
+                readOnly
+                className="bg-gray-50"
+                placeholder="Bitcoin wallet address"
               />
+              <p className="text-xs text-gray-500 mt-1">Platform revenue goes to this Bitcoin wallet</p>
             </div>
             <div>
-              <Label htmlFor="payoutWallet">Payout Account (90% distribution)</Label>
+              <Label htmlFor="payoutWallet">Payout Account (90% distribution) - Ethereum</Label>
               <Input
                 id="payoutWallet"
                 value={payoutWallet}
-                onChange={(e) => setPayoutWallet(e.target.value)}
-                placeholder="Enter Payout wallet address"
+                readOnly
+                className="bg-gray-50"
+                placeholder="Ethereum wallet address"
               />
+              <p className="text-xs text-gray-500 mt-1">Player prizes are distributed from this Ethereum wallet</p>
             </div>
           </div>
         </CardContent>
