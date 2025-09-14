@@ -39,6 +39,8 @@ import PushNotifications, { NotificationPermissionRequest } from './PushNotifica
 import ErrorBoundary from './ErrorBoundary';
 import CasinoBackgroundMusic from './CasinoBackgroundMusic';
 import FloatingParticles from './FloatingParticles';
+import FinancialDashboard from './FinancialDashboard';
+import { financialSafety } from '@/lib/financialSafety';
 import { analytics, trackPageView, trackUserAction } from '@/lib/analytics';
 import { 
   GameRoom, 
@@ -158,6 +160,7 @@ const EnhancedAppLayout: React.FC = () => {
   const [roomTimers, setRoomTimers] = useState<Record<string, number>>({});
   const [showSpectatorMode, setShowSpectatorMode] = useState(false);
   const [spectatingTournament, setSpectatingTournament] = useState<string | null>(null);
+  const [showFinancialDashboard, setShowFinancialDashboard] = useState(false);
 
   // Scroll to top when component mounts or activeTab changes
   useEffect(() => {
@@ -257,6 +260,20 @@ const EnhancedAppLayout: React.FC = () => {
           alert(`Insufficient funds! You need $${room.entryFee} to join this game.`);
           return;
         }
+
+        // Financial Safety Check - Ensure platform can cover payouts
+        const financialCheck = financialSafety.canStartGame({
+          entryFee: room.entryFee,
+          minPlayers: room.maxPlayers * 0.3, // Assume 30% of max players
+          maxPlayers: room.maxPlayers,
+          estimatedPlayers: room.playerCount
+        });
+
+        if (!financialCheck.canStart) {
+          alert(`🎰 Game Temporarily Unavailable\n\nThis game room is currently being prepared for the next round. Please try again in a few moments or join a different game room.\n\nThank you for your patience!`);
+          setIsLoading(false);
+          return;
+        }
         
         // Create a game session with the new prize distribution system
         const realPlayer = {
@@ -267,6 +284,13 @@ const EnhancedAppLayout: React.FC = () => {
         
         const gameSession = GameSessionManager.createGameSession(roomId, [realPlayer]);
         
+        // Record entry fee transaction
+        await financialSafety.processEntryFee(
+          user?.id || 'anonymous',
+          gameSession.id,
+          room.entryFee
+        );
+
         // Deduct entry fee from balance
         setPlayer(prev => ({
           ...prev,
@@ -341,6 +365,13 @@ const EnhancedAppLayout: React.FC = () => {
   const handlePaymentSuccess = async () => {
     setIsLoading(true);
     try {
+      // Record deposit in financial system
+      await financialSafety.processDeposit(
+        user?.id || 'anonymous',
+        paymentAmount,
+        'credit_card'
+      );
+
       // Update balance in database
       if (user) {
         const { error } = await supabase
@@ -933,6 +964,16 @@ const EnhancedAppLayout: React.FC = () => {
               onAddFunds={handleAddFundsClick}
               onViewProfile={() => setShowUserProfile(true)}
           />
+          {/* Financial Dashboard Button */}
+          <div className="flex justify-center mt-4">
+            <Button
+              onClick={() => setShowFinancialDashboard(true)}
+              variant="outline"
+              className="casino-button"
+            >
+              💰 Financial Dashboard
+            </Button>
+          </div>
         </div>
         )}
 
@@ -1066,6 +1107,12 @@ const EnhancedAppLayout: React.FC = () => {
 
       {/* Casino Background Music */}
       <CasinoBackgroundMusic enabled={true} />
+
+      {/* Financial Dashboard */}
+      <FinancialDashboard 
+        isOpen={showFinancialDashboard}
+        onClose={() => setShowFinancialDashboard(false)}
+      />
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-6 sm:py-8 mt-8 sm:mt-12">

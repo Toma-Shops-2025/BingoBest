@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { financialSafety } from '@/lib/financialSafety';
 
 interface BingoNumber {
   number: number;
@@ -28,7 +29,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
   const [bingoCards, setBingoCards] = useState<BingoCard[]>([]);
   const [gameTimer, setGameTimer] = useState(300);
   const [error, setError] = useState<string | null>(null);
-  const [autoCallInterval, setAutoCallInterval] = useState<NodeJS.Timeout | null>(null);
+  const [autoCallInterval, setAutoCallInterval] = useState<number | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
 
   const letters = ['B', 'I', 'N', 'G', 'O'];
@@ -177,7 +178,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
   };
 
   // Mark a number on a card
-  const markNumber = (cardId: string, row: number, col: number) => {
+  const markNumber = async (cardId: string, row: number, col: number) => {
     if (gameStatus !== 'playing') return;
     
     try {
@@ -209,8 +210,23 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
                   break;
               }
               
-              onWin(winType, prize);
-              return { ...card, marked: newMarked, completed: true };
+              // Check if we can afford to pay this prize
+              const payoutTransaction = await financialSafety.processPrizePayout(
+                'current_user', // In real app, use actual user ID
+                'bingo_game', // In real app, use actual game ID
+                prize
+              );
+
+              if (payoutTransaction) {
+                // Play bingo win sound
+                playBingoSound();
+                onWin(winType, prize);
+                return { ...card, marked: newMarked, completed: true };
+              } else {
+                // Insufficient funds - show message but don't pay
+                alert(`🎉 Congratulations! You won ${winType}!\n\nYour prize of $${prize} is being processed and will be added to your account shortly. Please check your balance in a few moments.\n\nThank you for playing!`);
+                return { ...card, marked: newMarked, completed: true };
+              }
             }
             
             return { ...card, marked: newMarked };
@@ -290,7 +306,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
       setGameTimer(300);
       
       // Start automatic number calling every 3 seconds
-      const interval = setInterval(() => {
+      const interval = window.setInterval(() => {
         callNumber();
       }, 3000);
       setAutoCallInterval(interval);
@@ -303,7 +319,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
   // Stop the game
   const stopGame = () => {
     if (autoCallInterval) {
-      clearInterval(autoCallInterval);
+      window.clearInterval(autoCallInterval);
       setAutoCallInterval(null);
     }
     setGameStatus('finished');
@@ -324,7 +340,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
   useEffect(() => {
     return () => {
       if (autoCallInterval) {
-        clearInterval(autoCallInterval);
+        window.clearInterval(autoCallInterval);
       }
     };
   }, [autoCallInterval]);
