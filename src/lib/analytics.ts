@@ -23,11 +23,16 @@ class Analytics {
   private initializeAnalytics() {
     if (typeof window !== 'undefined' && this.isEnabled) {
       // Initialize Google Analytics if available
-      if (typeof gtag !== 'undefined') {
-        gtag('config', 'GA_MEASUREMENT_ID', {
-          page_title: 'BingoBest',
-          page_location: window.location.href,
-        });
+      const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID || 'GA_MEASUREMENT_ID';
+      if (typeof gtag !== 'undefined' && gaId !== 'GA_MEASUREMENT_ID') {
+        try {
+          gtag('config', gaId, {
+            page_title: 'BingoBest',
+            page_location: window.location.href,
+          });
+        } catch (error) {
+          console.warn('Failed to initialize Google Analytics:', error);
+        }
       }
     }
   }
@@ -35,9 +40,16 @@ class Analytics {
   setUserId(userId: string) {
     this.userId = userId;
     if (this.isEnabled && typeof gtag !== 'undefined') {
-      gtag('config', 'GA_MEASUREMENT_ID', {
-        user_id: userId,
-      });
+      const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID || 'GA_MEASUREMENT_ID';
+      if (gaId !== 'GA_MEASUREMENT_ID') {
+        try {
+          gtag('config', gaId, {
+            user_id: userId,
+          });
+        } catch (error) {
+          console.warn('Failed to set user ID in Google Analytics:', error);
+        }
+      }
     }
   }
 
@@ -58,12 +70,19 @@ class Analytics {
 
     // Send to Google Analytics
     if (typeof gtag !== 'undefined') {
-      gtag('event', event, {
-        event_category: properties?.category || 'General',
-        event_label: properties?.label || '',
-        value: properties?.value || 0,
-        custom_map: properties,
-      });
+      const gaId = import.meta.env.VITE_GA_MEASUREMENT_ID || 'GA_MEASUREMENT_ID';
+      if (gaId !== 'GA_MEASUREMENT_ID') {
+        try {
+          gtag('event', event, {
+            event_category: properties?.category || 'General',
+            event_label: properties?.label || '',
+            value: properties?.value || 0,
+            custom_map: properties,
+          });
+        } catch (error) {
+          console.warn('Failed to send event to Google Analytics:', error);
+        }
+      }
     }
 
     // Send to custom analytics endpoint

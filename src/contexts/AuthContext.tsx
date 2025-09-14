@@ -40,8 +40,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Get initial session with error handling
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error getting initial session:', error);
+        setLoading(false);
+        return;
+      }
+      
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -49,24 +55,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } else {
         setLoading(false);
       }
+    }).catch((error) => {
+      console.error('Failed to get initial session:', error);
+      setLoading(false);
     });
 
-    // Listen for auth changes
+    // Listen for auth changes with error handling
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        await fetchUserProfile(session.user.id);
-      } else {
-        setUserProfile(null);
+      try {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          await fetchUserProfile(session.user.id);
+        } else {
+          setUserProfile(null);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error in auth state change:', error);
         setLoading(false);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      try {
+        subscription.unsubscribe();
+      } catch (error) {
+        console.error('Error unsubscribing from auth changes:', error);
+      }
+    };
   }, []);
 
   const fetchUserProfile = async (userId: string) => {
@@ -75,6 +95,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUserProfile(profile);
     } catch (error) {
       console.error('Error fetching user profile:', error);
+      // Set a fallback profile if Supabase is unavailable
+      setUserProfile({
+        id: userId,
+        username: 'Player',
+        balance: 100.00,
+        level: 1,
+        experience: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        is_online: true,
+        total_winnings: 0,
+        games_played: 0,
+        games_won: 0,
+        win_rate: 0
+      });
     } finally {
       setLoading(false);
     }

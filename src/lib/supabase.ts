@@ -3,6 +3,11 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://lykaexuftxqwuwnvrakr.supabase.co';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sbp_b50161dc6327c9999a86debc655a2b17502fe232';
 
+// Validate Supabase configuration
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Supabase configuration is missing. Please check your environment variables.');
+}
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 // Database types

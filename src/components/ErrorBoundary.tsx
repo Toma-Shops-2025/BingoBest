@@ -1,7 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import AppFallback from './AppFallback';
 
 interface Props {
   children: ReactNode;
@@ -25,6 +23,24 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+    
+    // Log additional debugging information
+    console.error('Error stack:', error.stack);
+    console.error('Component stack:', errorInfo.componentStack);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    
+    // Check for common issues
+    if (error.message.includes('Supabase')) {
+      console.error('Supabase connection issue detected');
+    }
+    if (error.message.includes('gtag')) {
+      console.error('Google Analytics issue detected');
+    }
+    if (error.message.includes('import')) {
+      console.error('Module import issue detected');
+    }
+    
     this.setState({ error, errorInfo });
   }
 
@@ -34,47 +50,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100 flex items-center justify-center p-4">
-          <Card className="max-w-md w-full">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4 w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-                <AlertTriangle className="w-8 h-8 text-red-600" />
-              </div>
-              <CardTitle className="text-xl text-red-600">Oops! Something went wrong</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center space-y-4">
-              <p className="text-gray-600">
-                We're sorry, but something unexpected happened. Don't worry, your progress is saved!
-              </p>
-              <div className="space-y-2">
-                <Button onClick={this.handleReload} className="w-full">
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Reload Page
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => window.location.href = '/'}
-                  className="w-full"
-                >
-                  Go Home
-                </Button>
-              </div>
-              {process.env.NODE_ENV === 'development' && this.state.error && (
-                <details className="mt-4 text-left">
-                  <summary className="cursor-pointer text-sm text-gray-500">
-                    Error Details (Development)
-                  </summary>
-                  <pre className="mt-2 text-xs bg-gray-100 p-2 rounded overflow-auto">
-                    {this.state.error.toString()}
-                    {this.state.errorInfo?.componentStack}
-                  </pre>
-                </details>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      );
+      return <AppFallback error={this.state.error} onRetry={this.handleReload} />;
     }
 
     return this.props.children;

@@ -10,6 +10,7 @@ import { AppProvider } from "@/contexts/AppContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
+import AppFallback from "./components/AppFallback";
 import AdminDashboard from "./components/AdminDashboard";
 
 const queryClient = new QueryClient();
