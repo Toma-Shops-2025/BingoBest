@@ -1,4 +1,4 @@
-const CACHE_NAME = 'betbingo-v1.0.0';
+const CACHE_NAME = 'bingobest-v1.0.0';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
@@ -98,7 +98,7 @@ self.addEventListener('push', (event) => {
   console.log('Service Worker: Push event');
   
   const options = {
-    body: event.data ? event.data.text() : 'New bingo game available!',
+    body: event.data ? event.data.text() : 'New BingoBest game available!',
     icon: '/icon-192x192.png',
     badge: '/icon-96x96.png',
     vibrate: [100, 50, 100],
@@ -121,7 +121,7 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(
-    self.registration.showNotification('BetBingo', options)
+    self.registration.showNotification('BingoBest', options)
   );
 });
 

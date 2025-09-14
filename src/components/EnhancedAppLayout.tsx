@@ -1045,9 +1045,9 @@ const EnhancedAppLayout: React.FC = () => {
         <div className="container mx-auto px-2 sm:px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
             <div>
-              <h3 className="text-lg font-bold mb-4">BetBingo</h3>
+              <h3 className="text-lg font-bold mb-4">BingoBest</h3>
               <p className="text-gray-300 text-sm">
-                The ultimate online bingo experience with real money prizes, tournaments, and social features.
+                Crypto Bingo Adventures - The ultimate online bingo experience with real money prizes, tournaments, and social features.
               </p>
             </div>
             <div>
@@ -1064,13 +1064,13 @@ const EnhancedAppLayout: React.FC = () => {
               <ul className="space-y-2 text-sm">
                 <li>
                   <a 
-                    href="mailto:support@betbingo.live?subject=BetBingo Support Request&body=Hello BetBingo Support Team,%0D%0A%0D%0AI need help with:%0D%0A%0D%0A"
+                    href="mailto:support@bingobest.live?subject=BingoBest Support Request&body=Hello BingoBest Support Team,%0D%0A%0D%0AI need help with:%0D%0A%0D%0A"
                     className="text-gray-300 hover:text-white"
                     onClick={(e) => {
                       // Fallback for browsers that don't support mailto
                       if (!e.defaultPrevented) {
                         e.preventDefault();
-                        const email = 'support@betbingo.live';
+                        const email = 'support@bingobest.live';
                         if (navigator.clipboard) {
                           navigator.clipboard.writeText(email).then(() => {
                             alert(`Email copied to clipboard: ${email}\n\nPlease paste it into your email client.`);
@@ -1100,7 +1100,7 @@ const EnhancedAppLayout: React.FC = () => {
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2025 BetBingo. All rights reserved. | 18+ Only | Play Responsibly</p>
+            <p>&copy; 2025 BingoBest. All rights reserved. | 18+ Only | Play Responsibly</p>
           </div>
         </div>
       </footer>
