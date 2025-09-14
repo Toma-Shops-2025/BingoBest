@@ -406,9 +406,127 @@ const EnhancedAppLayout: React.FC = () => {
           onSendMessage={(id) => alert(`Sent message to friend ${id}!`)} 
         />;
       case 'events':
+        // Create exciting seasonal events
+        const seasonalEvents = [
+          {
+            id: 'summer-splash-2024',
+            name: 'Summer Splash Bingo',
+            description: 'Dive into summer with special water-themed bingo games and splash prizes!',
+            startDate: new Date('2024-06-01'),
+            endDate: new Date('2024-08-31'),
+            active: true,
+            rewards: [
+              {
+                id: 'summer-daily',
+                name: 'Daily Summer Bonus',
+                description: 'Play 3 games in a day',
+                requirement: 'Complete 3 games in 24 hours',
+                reward: 25,
+                claimed: false
+              },
+              {
+                id: 'summer-weekly',
+                name: 'Weekly Wave Rider',
+                description: 'Win 5 games in a week',
+                requirement: 'Win 5 games within 7 days',
+                reward: 100,
+                claimed: false
+              },
+              {
+                id: 'summer-monthly',
+                name: 'Summer Champion',
+                description: 'Play 50 games this month',
+                requirement: 'Complete 50 games in June',
+                reward: 500,
+                claimed: false
+              }
+            ]
+          },
+          {
+            id: 'back-to-school-2024',
+            name: 'Back to School Bingo',
+            description: 'Get ready for the school year with educational bingo challenges!',
+            startDate: new Date('2024-08-15'),
+            endDate: new Date('2024-09-15'),
+            active: false,
+            rewards: [
+              {
+                id: 'school-study',
+                name: 'Study Session',
+                description: 'Play 10 games in a day',
+                requirement: 'Complete 10 games in 24 hours',
+                reward: 50,
+                claimed: false
+              },
+              {
+                id: 'school-homework',
+                name: 'Homework Helper',
+                description: 'Win 3 games in a row',
+                requirement: 'Win 3 consecutive games',
+                reward: 75,
+                claimed: false
+              }
+            ]
+          },
+          {
+            id: 'halloween-spooky-2024',
+            name: 'Spooky Halloween Bingo',
+            description: 'Trick or treat with our haunted bingo games and ghostly prizes!',
+            startDate: new Date('2024-10-01'),
+            endDate: new Date('2024-10-31'),
+            active: false,
+            rewards: [
+              {
+                id: 'halloween-trick',
+                name: 'Trick or Treat',
+                description: 'Play during Halloween week',
+                requirement: 'Play any game Oct 25-31',
+                reward: 30,
+                claimed: false
+              },
+              {
+                id: 'halloween-costume',
+                name: 'Costume Contest',
+                description: 'Win with a special pattern',
+                requirement: 'Win with X-pattern on Halloween',
+                reward: 200,
+                claimed: false
+              }
+            ]
+          },
+          {
+            id: 'holiday-jackpot-2024',
+            name: 'Holiday Jackpot Extravaganza',
+            description: 'Celebrate the holidays with our biggest prize pool ever!',
+            startDate: new Date('2024-12-01'),
+            endDate: new Date('2024-12-31'),
+            active: false,
+            rewards: [
+              {
+                id: 'holiday-daily',
+                name: 'Daily Gift',
+                description: 'Play every day in December',
+                requirement: 'Play at least 1 game daily',
+                reward: 20,
+                claimed: false
+              },
+              {
+                id: 'holiday-mega',
+                name: 'Mega Jackpot',
+                description: 'Win the grand prize',
+                requirement: 'Win 100 games in December',
+                reward: 1000,
+                claimed: false
+              }
+            ]
+          }
+        ];
+
         return <SeasonalEvents 
-          events={[]} 
-          player={player} 
+          events={seasonalEvents} 
+          onClaimReward={(eventId, rewardId) => {
+            alert(`🎉 Reward claimed!\n\nEvent: ${seasonalEvents.find(e => e.id === eventId)?.name}\nReward: ${seasonalEvents.find(e => e.id === eventId)?.rewards.find(r => r.id === rewardId)?.name}\n\nYou earned $${seasonalEvents.find(e => e.id === eventId)?.rewards.find(r => r.id === rewardId)?.reward}!`);
+          }} 
         />;
       case 'vip':
         // VIP Benefits data
