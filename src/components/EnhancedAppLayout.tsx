@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { GAME_CONFIGS, GameSessionManager } from '@/lib/prizeDistribution';
+import { Button } from '@/components/ui/button';
 import AuthModal from './AuthModal';
 import GameHeader from './GameHeader';
 import BingoCard from './BingoCard';
