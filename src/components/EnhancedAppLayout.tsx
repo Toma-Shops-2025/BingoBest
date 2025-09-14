@@ -918,12 +918,16 @@ const EnhancedAppLayout: React.FC = () => {
         }}
       >
         <div className="text-center z-10">
-          <h1 className="text-6xl font-bold text-white casino-text-glow mb-4 drop-shadow-2xl">
-            🎰 BingoBest 🎰
-          </h1>
-          <p className="text-2xl text-yellow-300 casino-text-glow mb-8 drop-shadow-lg">
-            Crypto Bingo Adventures
-          </p>
+          {/* Hero Logo Overlay */}
+          <div className="mb-8">
+            <img 
+              src="/Hero-Logo-Overlay.png" 
+              alt="BingoBest Logo" 
+              className="mx-auto max-w-full h-auto max-h-96 drop-shadow-2xl"
+            />
+          </div>
+          
+          {/* Play Now Button */}
           <div className="flex justify-center gap-4">
             <Button 
               onClick={() => setShowBingoGame(true)}
