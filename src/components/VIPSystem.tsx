@@ -39,7 +39,7 @@ const VIPSystem: React.FC<VIPSystemProps> = ({
     5: 'Diamond VIP'
   };
 
-  const progressToNext = currentTier < 5 ? (player.gamesPlayed / nextTierRequirement) * 100 : 100;
+  const progressToNext = currentTier < 5 ? ((player.gamesPlayed || 0) / nextTierRequirement) * 100 : 100;
 
   return (
     <div className="space-y-6">
@@ -64,7 +64,7 @@ const VIPSystem: React.FC<VIPSystemProps> = ({
             <div>
               <div className="flex justify-between text-sm mb-2">
                 <span>Progress to {tierNames[(currentTier + 1) as keyof typeof tierNames]}</span>
-                <span>{player.gamesPlayed}/{nextTierRequirement} games</span>
+                <span>{player.gamesPlayed || 0}/{nextTierRequirement} games</span>
               </div>
               <Progress value={progressToNext} className="h-3" />
             </div>
@@ -72,11 +72,11 @@ const VIPSystem: React.FC<VIPSystemProps> = ({
 
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
-              <p className="text-2xl font-bold text-blue-600">{player.wins}</p>
+              <p className="text-2xl font-bold text-blue-600">{player.wins || 0}</p>
               <p className="text-sm text-gray-600">Total Wins</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-green-600">${player.balance}</p>
+              <p className="text-2xl font-bold text-green-600">${(player.balance || 0).toFixed(2)}</p>
               <p className="text-sm text-gray-600">Balance</p>
             </div>
           </div>

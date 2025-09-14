@@ -411,12 +411,71 @@ const EnhancedAppLayout: React.FC = () => {
           player={player} 
         />;
       case 'vip':
+        // VIP Benefits data
+        const vipBenefits = [
+          {
+            id: '1',
+            name: 'Bonus Entry Fees',
+            description: 'Get 10% bonus on all entry fees paid',
+            tier: 1,
+            active: true
+          },
+          {
+            id: '2', 
+            name: 'Exclusive Game Rooms',
+            description: 'Access to VIP-only high-stakes rooms',
+            tier: 2,
+            active: true
+          },
+          {
+            id: '3',
+            name: 'Priority Support',
+            description: 'Get faster customer support response',
+            tier: 2,
+            active: true
+          },
+          {
+            id: '4',
+            name: 'Daily Bonus',
+            description: 'Receive daily bonus credits',
+            tier: 3,
+            active: true
+          },
+          {
+            id: '5',
+            name: 'Double Prizes',
+            description: 'Win double prizes in special events',
+            tier: 4,
+            active: true
+          },
+          {
+            id: '6',
+            name: 'Personal Manager',
+            description: 'Dedicated VIP account manager',
+            tier: 5,
+            active: true
+          }
+        ];
+
+        // Calculate VIP tier based on games played
+        const gamesPlayed = player.gamesPlayed || 0;
+        let currentTier = 0;
+        let nextTierRequirement = 10;
+        
+        if (gamesPlayed >= 50) currentTier = 5;
+        else if (gamesPlayed >= 30) { currentTier = 4; nextTierRequirement = 50; }
+        else if (gamesPlayed >= 20) { currentTier = 3; nextTierRequirement = 30; }
+        else if (gamesPlayed >= 10) { currentTier = 2; nextTierRequirement = 20; }
+        else if (gamesPlayed >= 5) { currentTier = 1; nextTierRequirement = 10; }
+
         return <VIPSystem 
           player={player} 
-          vipBenefits={[]} 
-          currentTier={0} 
-          nextTierRequirement={10} 
-          onUpgradeVIP={() => alert('VIP upgrade feature coming soon!')} 
+          vipBenefits={vipBenefits} 
+          currentTier={currentTier} 
+          nextTierRequirement={nextTierRequirement}
+          onUpgradeVIP={() => {
+            alert(`Keep playing to reach the next VIP tier!\n\nCurrent: ${currentTier === 0 ? 'Regular' : `Tier ${currentTier}`}\nNext: ${currentTier < 5 ? `Tier ${currentTier + 1}` : 'Max Level'}\n\nPlay ${nextTierRequirement - gamesPlayed} more games to upgrade!`);
+          }}
         />;
       case 'spectate':
         return <SpectatorMode 
@@ -457,7 +516,7 @@ const EnhancedAppLayout: React.FC = () => {
   return (
     <GameSounds>
       <PushNotifications>
-        <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100">
+    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100">
       {/* Hero Section - New Design */}
       <div 
         className="relative h-[600px] bg-cover bg-center flex items-center justify-center"
@@ -484,16 +543,16 @@ const EnhancedAppLayout: React.FC = () => {
         )}
         
         {user && (
-          <div className="mb-8">
-            <GameHeader 
-              player={player}
-              currentRoom={gameState.currentRoom?.name}
-              prizePool={gameState.currentRoom?.prizePool || 0}
+        <div className="mb-8">
+          <GameHeader 
+            player={player}
+            currentRoom={gameState.currentRoom?.name}
+            prizePool={gameState.currentRoom?.prizePool || 0}
               onSignOut={signOut}
               onAddFunds={handleAddFundsClick}
               onViewProfile={() => setShowUserProfile(true)}
-            />
-          </div>
+          />
+        </div>
         )}
 
         {/* Navigation Tabs */}
@@ -532,7 +591,7 @@ const EnhancedAppLayout: React.FC = () => {
             <p className="text-gray-600 mt-2">Click to start playing immediately!</p>
           </div>
         )}
-
+        
         {/* Tab Content */}
         {showBingoGame ? (
           <div className="space-y-4">
@@ -575,7 +634,7 @@ const EnhancedAppLayout: React.FC = () => {
                 ]}
               />
             )}
-            {renderTabContent()}
+        {renderTabContent()}
           </div>
         )}
       </div>
@@ -688,7 +747,7 @@ const EnhancedAppLayout: React.FC = () => {
           </div>
         </div>
       </footer>
-        </div>
+    </div>
       </PushNotifications>
     </GameSounds>
   );
