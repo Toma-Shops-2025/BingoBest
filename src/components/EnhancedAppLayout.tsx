@@ -923,7 +923,8 @@ const EnhancedAppLayout: React.FC = () => {
             <img 
               src="/Hero-Logo-Overlay.png" 
               alt="BingoBest Logo" 
-              className="mx-auto max-w-full h-auto max-h-96 drop-shadow-2xl"
+              className="mx-auto max-w-full h-auto max-h-[30rem] drop-shadow-2xl opacity-75"
+              style={{ transform: 'scale(1.25)' }}
             />
           </div>
           
