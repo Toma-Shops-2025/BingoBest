@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import AdminPrizeDashboard from './AdminPrizeDashboard';
+import FinancialDashboard from './FinancialDashboard';
 
 interface AdminStats {
   totalUsers: number;
@@ -30,6 +31,7 @@ const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState('overview');
+  const [showFinancialDashboard, setShowFinancialDashboard] = useState(false);
 
   useEffect(() => {
     fetchAdminStats();
@@ -153,10 +155,18 @@ const AdminDashboard: React.FC = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <Badge variant="outline" className="flex items-center gap-2">
-              <Shield className="w-4 h-4" />
-              Admin Access
-            </Badge>
+            <div className="flex items-center gap-4">
+              <Button
+                onClick={() => setShowFinancialDashboard(true)}
+                className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-500 hover:to-yellow-700 text-black font-bold px-4 py-2 rounded-lg shadow-lg transition-all duration-300"
+              >
+                💰 Financial Dashboard
+              </Button>
+              <Badge variant="outline" className="flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                Admin Access
+              </Badge>
+            </div>
           </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
@@ -360,6 +370,12 @@ const AdminDashboard: React.FC = () => {
       </Tabs>
         </div>
       </div>
+
+      {/* Financial Dashboard */}
+      <FinancialDashboard 
+        isOpen={showFinancialDashboard}
+        onClose={() => setShowFinancialDashboard(false)}
+      />
     </div>
   );
 };

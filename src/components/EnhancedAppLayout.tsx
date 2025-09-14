@@ -39,7 +39,6 @@ import PushNotifications, { NotificationPermissionRequest } from './PushNotifica
 import ErrorBoundary from './ErrorBoundary';
 import CasinoBackgroundMusic from './CasinoBackgroundMusic';
 import FloatingParticles from './FloatingParticles';
-import FinancialDashboard from './FinancialDashboard';
 import { financialSafety } from '@/lib/financialSafety';
 import { analytics, trackPageView, trackUserAction } from '@/lib/analytics';
 import { 
@@ -160,7 +159,6 @@ const EnhancedAppLayout: React.FC = () => {
   const [roomTimers, setRoomTimers] = useState<Record<string, number>>({});
   const [showSpectatorMode, setShowSpectatorMode] = useState(false);
   const [spectatingTournament, setSpectatingTournament] = useState<string | null>(null);
-  const [showFinancialDashboard, setShowFinancialDashboard] = useState(false);
 
   // Scroll to top when component mounts or activeTab changes
   useEffect(() => {
@@ -964,16 +962,6 @@ const EnhancedAppLayout: React.FC = () => {
               onAddFunds={handleAddFundsClick}
               onViewProfile={() => setShowUserProfile(true)}
           />
-          {/* Financial Dashboard Button */}
-          <div className="flex justify-center mt-4">
-            <Button
-              onClick={() => setShowFinancialDashboard(true)}
-              variant="outline"
-              className="casino-button"
-            >
-              💰 Financial Dashboard
-            </Button>
-          </div>
         </div>
         )}
 
@@ -1108,11 +1096,6 @@ const EnhancedAppLayout: React.FC = () => {
       {/* Casino Background Music */}
       <CasinoBackgroundMusic enabled={true} />
 
-      {/* Financial Dashboard */}
-      <FinancialDashboard 
-        isOpen={showFinancialDashboard}
-        onClose={() => setShowFinancialDashboard(false)}
-      />
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-6 sm:py-8 mt-8 sm:mt-12">

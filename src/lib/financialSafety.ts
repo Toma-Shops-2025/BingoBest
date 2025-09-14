@@ -49,6 +49,7 @@ export class FinancialSafetyManager {
     platformProfit: 0,
     lastUpdated: new Date()
   };
+  private testMode: boolean = false;
 
   // Safety thresholds
   private readonly MINIMUM_BALANCE_RATIO = 0.15; // 15% minimum balance for safety
@@ -88,6 +89,21 @@ export class FinancialSafetyManager {
     maxPlayers: number;
     estimatedPlayers: number;
   }): GameFinancialCheck {
+    // If in test mode, always allow games to start
+    if (this.testMode) {
+      const estimatedPayouts = this.calculateEstimatedPayouts(gameConfig);
+      const platformFee = estimatedPayouts * this.PLATFORM_FEE_PERCENTAGE;
+      return {
+        canStart: true,
+        reason: undefined,
+        requiredBalance: estimatedPayouts,
+        availableBalance: this.balance.availableBalance,
+        estimatedPayouts,
+        platformFee,
+        safetyMargin: 0
+      };
+    }
+
     const estimatedPayouts = this.calculateEstimatedPayouts(gameConfig);
     const platformFee = estimatedPayouts * this.PLATFORM_FEE_PERCENTAGE;
     const requiredBalance = estimatedPayouts + (estimatedPayouts * this.SAFETY_MARGIN_MULTIPLIER);
@@ -312,6 +328,27 @@ export class FinancialSafetyManager {
     }
   }
 
+  // Test mode controls
+  public enableTestMode(): void {
+    this.testMode = true;
+    console.log('🧪 Financial Safety Test Mode ENABLED - All games can start regardless of funds');
+  }
+
+  public disableTestMode(): void {
+    this.testMode = false;
+    console.log('🔒 Financial Safety Test Mode DISABLED - Normal safety checks active');
+  }
+
+  public isTestMode(): boolean {
+    return this.testMode;
+  }
+
+  // Add test funds for testing purposes
+  public async addTestFunds(amount: number = 10000): Promise<void> {
+    await this.processDeposit('test_admin', amount, 'test_funds');
+    console.log(`💰 Added $${amount} test funds to the system`);
+  }
+
   // Get financial dashboard data
   public getDashboardData(): {
     balance: FinancialBalance;
@@ -323,6 +360,7 @@ export class FinancialSafetyManager {
       profit: number;
       gamesPlayed: number;
     };
+    testMode: boolean;
   } {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -351,7 +389,8 @@ export class FinancialSafetyManager {
       balance: this.getFinancialStatus(),
       recentTransactions: this.getTransactionHistory(20),
       healthCheck: this.emergencyFundCheck(),
-      dailyStats
+      dailyStats,
+      testMode: this.testMode
     };
   }
 }

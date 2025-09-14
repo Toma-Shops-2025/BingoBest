@@ -83,6 +83,64 @@ const FinancialDashboard: React.FC<FinancialDashboardProps> = ({ isOpen, onClose
 
           {dashboardData && (
             <div className="space-y-6">
+              {/* Test Mode Controls */}
+              <Card className="casino-card">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-white">
+                    🧪 Test Mode Controls
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-white font-medium">
+                        Test Mode: {dashboardData.testMode ? 'ENABLED' : 'DISABLED'}
+                      </p>
+                      <p className="text-sm text-gray-300">
+                        {dashboardData.testMode 
+                          ? 'All games can start regardless of funds (for testing)' 
+                          : 'Normal financial safety checks are active'}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => {
+                          financialSafety.enableTestMode();
+                          refreshData();
+                        }}
+                        variant={dashboardData.testMode ? "default" : "outline"}
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700"
+                      >
+                        Enable Test Mode
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          financialSafety.disableTestMode();
+                          refreshData();
+                        }}
+                        variant={!dashboardData.testMode ? "default" : "outline"}
+                        size="sm"
+                        className="bg-red-600 hover:bg-red-700"
+                      >
+                        Disable Test Mode
+                      </Button>
+                      <Button
+                        onClick={async () => {
+                          await financialSafety.addTestFunds(10000);
+                          refreshData();
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        Add $10K Test Funds
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Health Status */}
               <Card className="casino-card">
                 <CardHeader>
