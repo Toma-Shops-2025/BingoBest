@@ -332,12 +332,4 @@ export class RevenueAnalytics {
   }
 }
 
-// Export everything for use in components
-export {
-  GAME_CONFIGS,
-  BotPlayerGenerator,
-  PrizeDistributionCalculator,
-  GameSessionManager,
-  CryptoPrizeDistributor,
-  RevenueAnalytics
-};
+// All exports are already defined above as individual exports
