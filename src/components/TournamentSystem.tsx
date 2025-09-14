@@ -9,12 +9,14 @@ interface TournamentSystemProps {
   tournaments: Tournament[];
   player: Player;
   onJoinTournament: (tournamentId: string) => void;
+  onSpectateTournament?: (tournamentId: string) => void;
 }
 
 const TournamentSystem: React.FC<TournamentSystemProps> = ({
   tournaments,
   player,
-  onJoinTournament
+  onJoinTournament,
+  onSpectateTournament
 }) => {
   const [selectedTab, setSelectedTab] = useState<'upcoming' | 'active' | 'completed'>('upcoming');
 
@@ -244,7 +246,14 @@ const TournamentSystem: React.FC<TournamentSystemProps> = ({
               {tournament.status === 'active' && (
                 <div className="space-y-2">
                   <Button
-                    onClick={() => alert(`🎮 Spectating ${tournament.name}!\n\nWatch the live action unfold!`)}
+                    onClick={() => {
+                      if (onSpectateTournament) {
+                        onSpectateTournament(tournament.id);
+                      } else {
+                        // Fallback: show alert if no spectate handler provided
+                        alert(`🎮 Spectating ${tournament.name}!\n\nWatch the live action unfold!`);
+                      }
+                    }}
                     className="w-full bg-green-600 hover:bg-green-700"
                   >
                     <Eye className="w-4 h-4 mr-2" />

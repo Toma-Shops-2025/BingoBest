@@ -153,6 +153,8 @@ const EnhancedAppLayout: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [roomTimers, setRoomTimers] = useState<Record<string, number>>({});
+  const [showSpectatorMode, setShowSpectatorMode] = useState(false);
+  const [spectatingTournament, setSpectatingTournament] = useState<string | null>(null);
 
   // Scroll to top when component mounts or activeTab changes
   useEffect(() => {
@@ -366,6 +368,14 @@ const EnhancedAppLayout: React.FC = () => {
     }
   };
 
+  const handleSpectateTournament = (tournamentId: string) => {
+    setSpectatingTournament(tournamentId);
+    setShowSpectatorMode(true);
+    setActiveTab('spectate');
+    // Scroll to top when starting spectating
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const renderTabContent = () => {
     if (!user) {
       return (
@@ -487,7 +497,8 @@ const EnhancedAppLayout: React.FC = () => {
               }
               alert(`🎉 Tournament Joined!\n\n${tournament.name}\n\nEntry Fee: $${tournament.entryFee}\nPrize Pool: $${tournament.prizePool}\n\nGood luck!`);
             }
-          }} 
+          }}
+          onSpectateTournament={handleSpectateTournament}
         />;
       case 'achievements':
         return <AchievementSystem 
@@ -807,11 +818,28 @@ const EnhancedAppLayout: React.FC = () => {
           }}
         />;
       case 'spectate':
-        return <SpectatorMode 
-          activeGames={[]} 
-          onJoinAsSpectator={(id) => alert(`Watching game ${id} as spectator!`)} 
-          onJoinAsPlayer={(id) => alert(`Joined game ${id} as player!`)} 
-        />;
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Spectating Tournament</h2>
+              <Button 
+                onClick={() => {
+                  setShowSpectatorMode(false);
+                  setSpectatingTournament(null);
+                  setActiveTab('tournaments');
+                }}
+                variant="outline"
+              >
+                Back to Tournaments
+              </Button>
+            </div>
+            <SpectatorMode 
+              activeGames={[]} 
+              onJoinAsSpectator={(id) => alert(`Watching game ${id} as spectator!`)} 
+              onJoinAsPlayer={(id) => alert(`Joined game ${id} as player!`)} 
+            />
+          </div>
+        );
       default:
         return (
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
