@@ -383,10 +383,111 @@ const EnhancedAppLayout: React.FC = () => {
 
     switch (activeTab) {
       case 'tournaments':
+        // Create exciting tournaments
+        const now = new Date();
+        const tournaments = [
+          {
+            id: 'daily-quick-fire',
+            name: 'Daily Quick Fire',
+            description: 'Fast-paced bingo tournament with quick rounds',
+            entryFee: 5.00,
+            maxParticipants: 50,
+            currentParticipants: 23,
+            prizePool: 200.00,
+            startTime: new Date(now.getTime() + 2 * 60 * 60 * 1000), // 2 hours from now
+            endTime: new Date(now.getTime() + 4 * 60 * 60 * 1000), // 4 hours from now
+            status: 'upcoming' as const,
+            rounds: [],
+            winners: [],
+            format: 'single_elimination' as const
+          },
+          {
+            id: 'weekend-championship',
+            name: 'Weekend Championship',
+            description: 'The ultimate bingo championship with massive prizes',
+            entryFee: 25.00,
+            maxParticipants: 100,
+            currentParticipants: 67,
+            prizePool: 2000.00,
+            startTime: new Date(now.getTime() + 24 * 60 * 60 * 1000), // 1 day from now
+            endTime: new Date(now.getTime() + 48 * 60 * 60 * 1000), // 2 days from now
+            status: 'upcoming' as const,
+            rounds: [],
+            winners: [],
+            format: 'double_elimination' as const
+          },
+          {
+            id: 'speed-masters',
+            name: 'Speed Masters',
+            description: 'Currently running - join the action!',
+            entryFee: 10.00,
+            maxParticipants: 30,
+            currentParticipants: 28,
+            prizePool: 250.00,
+            startTime: new Date(now.getTime() - 30 * 60 * 1000), // 30 minutes ago
+            endTime: new Date(now.getTime() + 30 * 60 * 1000), // 30 minutes from now
+            status: 'active' as const,
+            rounds: [],
+            winners: [],
+            format: 'round_robin' as const
+          },
+          {
+            id: 'mega-jackpot',
+            name: 'Mega Jackpot Tournament',
+            description: 'The biggest tournament of the month!',
+            entryFee: 50.00,
+            maxParticipants: 200,
+            currentParticipants: 156,
+            prizePool: 8000.00,
+            startTime: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
+            endTime: new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000), // 1 week + 1 day
+            status: 'upcoming' as const,
+            rounds: [],
+            winners: [],
+            format: 'single_elimination' as const
+          },
+          {
+            id: 'yesterday-winner',
+            name: 'Yesterday\'s Winner',
+            description: 'Completed tournament - see who won!',
+            entryFee: 15.00,
+            maxParticipants: 40,
+            currentParticipants: 40,
+            prizePool: 500.00,
+            startTime: new Date(now.getTime() - 48 * 60 * 60 * 1000), // 2 days ago
+            endTime: new Date(now.getTime() - 24 * 60 * 60 * 1000), // 1 day ago
+            status: 'completed' as const,
+            rounds: [],
+            winners: [
+              {
+                id: 'winner1',
+                username: 'BingoChamp',
+                balance: 1000,
+                wins: 25,
+                gamesPlayed: 50
+              }
+            ],
+            format: 'single_elimination' as const
+          }
+        ];
+
         return <TournamentSystem 
-          tournaments={[]} 
+          tournaments={tournaments} 
           player={player} 
-          onJoinTournament={(id) => alert(`Joined tournament ${id}!`)} 
+          onJoinTournament={(id) => {
+            const tournament = tournaments.find(t => t.id === id);
+            if (tournament) {
+              if (player.balance < tournament.entryFee) {
+                alert(`❌ Insufficient Funds!\n\nYou need $${tournament.entryFee} to join this tournament.\n\nCurrent balance: $${player.balance}`);
+                return;
+              }
+              if (tournament.currentParticipants >= tournament.maxParticipants) {
+                alert(`❌ Tournament Full!\n\n${tournament.name} is already full.\n\nTry joining another tournament!`);
+                return;
+              }
+              alert(`🎉 Tournament Joined!\n\n${tournament.name}\n\nEntry Fee: $${tournament.entryFee}\nPrize Pool: $${tournament.prizePool}\n\nGood luck!`);
+            }
+          }} 
         />;
       case 'achievements':
         return <AchievementSystem 
@@ -394,9 +495,63 @@ const EnhancedAppLayout: React.FC = () => {
           onClaimReward={(id) => alert(`Claimed reward for achievement ${id}!`)} 
         />;
       case 'challenges':
+        // Create dynamic daily challenges
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0); // Reset to start of day
+
+        const dailyChallenges = [
+          {
+            id: 'daily-play-3',
+            name: 'Daily Player',
+            description: 'Play 3 games today to earn bonus credits',
+            requirement: 3,
+            reward: 25,
+            progress: Math.floor(Math.random() * 4), // Random progress 0-3
+            completed: false,
+            expiresAt: tomorrow
+          },
+          {
+            id: 'daily-win-1',
+            name: 'Lucky Winner',
+            description: 'Win at least 1 game today',
+            requirement: 1,
+            reward: 50,
+            progress: Math.floor(Math.random() * 2), // Random progress 0-1
+            completed: false,
+            expiresAt: tomorrow
+          },
+          {
+            id: 'daily-spend-10',
+            name: 'Big Spender',
+            description: 'Spend $10 on entry fees today',
+            requirement: 10,
+            reward: 30,
+            progress: Math.floor(Math.random() * 11), // Random progress 0-10
+            completed: false,
+            expiresAt: tomorrow
+          },
+          {
+            id: 'daily-streak',
+            name: 'Streak Master',
+            description: 'Play games for 3 consecutive days',
+            requirement: 3,
+            reward: 100,
+            progress: Math.floor(Math.random() * 4), // Random progress 0-3
+            completed: false,
+            expiresAt: tomorrow
+          }
+        ];
+
         return <DailyChallenges 
-          challenges={[]} 
-          onClaimReward={(id) => alert(`Claimed reward for challenge ${id}!`)} 
+          challenges={dailyChallenges} 
+          onClaimReward={(id) => {
+            const challenge = dailyChallenges.find(c => c.id === id);
+            if (challenge) {
+              alert(`🎉 Challenge Completed!\n\n${challenge.name}\n\nYou earned $${challenge.reward}!\n\nKeep playing to complete more challenges!`);
+            }
+          }} 
         />;
       case 'friends':
         // Mock friends data for demonstration

@@ -32,6 +32,21 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        {/* Current Date Display */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg">
+            <Calendar className="w-5 h-5 text-blue-500" />
+            <span className="font-semibold text-blue-700">
+              {new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </span>
+          </div>
+        </div>
+
         {challenges.length === 0 ? (
           <div className="text-center py-8">
             <div className="text-6xl mb-4">📅</div>
