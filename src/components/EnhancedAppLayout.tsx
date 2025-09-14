@@ -3,7 +3,6 @@ import { useAppContext } from '@/contexts/AppContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useBingoGame } from '@/hooks/useBingoGame';
 import { GAME_CONFIGS, GameSessionManager } from '@/lib/prizeDistribution';
 import AuthModal from './AuthModal';
 import GameHeader from './GameHeader';
@@ -95,25 +94,6 @@ const EnhancedAppLayout: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [activeTab, setActiveTab] = useState('home');
-  // Initialize game rooms from prize distribution config
-  const [gameRooms, setGameRooms] = useState<GameRoom[]>(() => {
-    return GAME_CONFIGS.map(config => ({
-      id: config.id,
-      name: config.name,
-      description: getGameDescription(config.id),
-      playerCount: Math.floor(Math.random() * (config.maxPlayers - config.minPlayers)) + config.minPlayers,
-      maxPlayers: config.maxPlayers,
-      entryFee: config.entryFee,
-      prizePool: calculatePrizePool(config),
-      gameType: config.gameType === 'bingo' ? 'bingo' : 'tournament',
-      status: 'waiting' as const,
-      timeLeft: config.duration * 60,
-      rules: getGameRules(config.id),
-      powerUpsAllowed: true,
-      minLevel: 1,
-      maxLevel: 20
-    }));
-  });
 
   // Helper functions for game room configuration
   const getGameDescription = (gameId: string): string => {
@@ -142,6 +122,26 @@ const EnhancedAppLayout: React.FC = () => {
     // Calculate prize pool based on minimum players and 90% distribution
     return (config.entryFee * config.minPlayers * 0.90);
   };
+
+  // Initialize game rooms from prize distribution config
+  const [gameRooms, setGameRooms] = useState<GameRoom[]>(() => {
+    return GAME_CONFIGS.map(config => ({
+      id: config.id,
+      name: config.name,
+      description: getGameDescription(config.id),
+      playerCount: Math.floor(Math.random() * (config.maxPlayers - config.minPlayers)) + config.minPlayers,
+      maxPlayers: config.maxPlayers,
+      entryFee: config.entryFee,
+      prizePool: calculatePrizePool(config),
+      gameType: config.gameType === 'bingo' ? 'bingo' : 'tournament',
+      status: 'waiting' as const,
+      timeLeft: config.duration * 60,
+      rules: getGameRules(config.id),
+      powerUpsAllowed: true,
+      minLevel: 1,
+      maxLevel: 20
+    }));
+  });
   const [leaderboardPlayers, setLeaderboardPlayers] = useState<Player[]>([
     { id: '1', username: 'BingoMaster', avatar: '', balance: 1250, wins: 45, gamesPlayed: 120 },
     { id: '2', username: 'LuckyPlayer', avatar: '', balance: 890, wins: 32, gamesPlayed: 95 },
