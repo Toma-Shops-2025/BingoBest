@@ -875,7 +875,15 @@ const EnhancedAppLayout: React.FC = () => {
       default:
         return (
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-            <div className="xl:col-span-2">
+            <div 
+              className="xl:col-span-2 p-6 rounded-lg"
+              style={{
+                backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/game-cards-background.jpg')`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }}
+            >
               <GameRooms
                 rooms={gameRooms.map(room => ({
                   ...room,

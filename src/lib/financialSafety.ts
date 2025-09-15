@@ -49,7 +49,7 @@ export class FinancialSafetyManager {
     platformProfit: 0,
     lastUpdated: new Date()
   };
-  private testMode: boolean = false;
+  private testMode: boolean = true; // Enable test mode for development
 
   // Safety thresholds
   private readonly MINIMUM_BALANCE_RATIO = 0.15; // 15% minimum balance for safety

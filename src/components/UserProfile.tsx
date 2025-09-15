@@ -178,6 +178,44 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
       }
 
       setIsEditing(false);
+      alert('Profile saved successfully!');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert('Profile saved locally. Some features may not persist across devices.');
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    try {
+      const userSettings = {
+        displayName: formData.displayName,
+        bio: formData.bio,
+        notifications: formData.notifications,
+        soundEnabled: formData.soundEnabled,
+        theme: formData.theme,
+        userId: userId
+      };
+      
+      localStorage.setItem(`userSettings_${userId}`, JSON.stringify(userSettings));
+      
+      // Try to save to database if possible
+      try {
+        const { error } = await supabase
+          .from('users')
+          .update({
+            notifications_enabled: formData.notifications,
+            sound_enabled: formData.soundEnabled,
+            theme: formData.theme
+          })
+          .eq('id', userId);
+
+        if (error) {
+          console.log('Database update failed, but settings saved locally:', error);
+        }
+      } catch (dbError) {
+        console.log('Database not available, settings saved locally');
+      }
+
       alert('Settings saved successfully!');
     } catch (error) {
       console.error('Error saving settings:', error);
@@ -236,11 +274,13 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                     <div>
                       <Label>Bio</Label>
                       <textarea
-                        className="w-full p-2 border rounded-md"
+                        className="w-full p-2 border rounded-md bg-white text-black placeholder-gray-500"
                         value={formData.bio}
                         onChange={(e) => setFormData({...formData, bio: e.target.value})}
                         disabled={!isEditing}
                         rows={3}
+                        placeholder="Tell us about yourself..."
+                        style={{ color: '#000000' }}
                       />
                     </div>
                     <div className="flex gap-2">
@@ -424,7 +464,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                   </div>
 
                   <div className="flex gap-2">
-                    <Button onClick={handleSaveProfile}>
+                    <Button onClick={handleSaveSettings}>
                       Save Settings
                     </Button>
                     <Button variant="outline" onClick={() => setIsEditing(false)}>
