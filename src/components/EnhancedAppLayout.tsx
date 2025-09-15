@@ -927,16 +927,6 @@ const EnhancedAppLayout: React.FC = () => {
               style={{ transform: 'scale(1.25)' }}
             />
           </div>
-          
-          {/* Play Now Button */}
-          <div className="flex justify-center gap-4">
-            <Button 
-              onClick={() => setShowBingoGame(true)}
-              className="casino-button text-lg px-8 py-4 shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300"
-            >
-              🎮 Play Now! 🎮
-            </Button>
-          </div>
         </div>
       </div>
 
