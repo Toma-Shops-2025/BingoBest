@@ -68,6 +68,32 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       // Start all oscillators
       oscillators.forEach(osc => osc.start());
       lfo.start();
+      
+      // Store cleanup function for proper disposal
+      (audioContext as any).cleanup = () => {
+        oscillators.forEach(osc => {
+          try {
+            osc.stop();
+            osc.disconnect();
+          } catch (e) {
+            // Already stopped
+          }
+        });
+        gainNodes.forEach(gain => {
+          try {
+            gain.disconnect();
+          } catch (e) {
+            // Already disconnected
+          }
+        });
+        try {
+          lfo.stop();
+          lfo.disconnect();
+          lfoGain.disconnect();
+        } catch (e) {
+          // Already stopped
+        }
+      };
 
       oscillatorRef.current = oscillators[0]; // Store reference for cleanup
       gainNodeRef.current = gainNodes[0];

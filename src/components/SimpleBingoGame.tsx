@@ -57,11 +57,21 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
       oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
       
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
       
       oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.3);
+      oscillator.stop(audioContext.currentTime + 0.5);
+      
+      // Clean up after sound finishes
+      setTimeout(() => {
+        try {
+          oscillator.disconnect();
+          gainNode.disconnect();
+        } catch (e) {
+          // Already disconnected
+        }
+      }, 600);
     } catch (error) {
       console.warn('Audio not available:', error);
     }
@@ -89,11 +99,21 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
       oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.2); // E5
       oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.4); // G5
       
-      gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
       
       oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.6);
+      oscillator.stop(audioContext.currentTime + 0.8);
+      
+      // Clean up after sound finishes
+      setTimeout(() => {
+        try {
+          oscillator.disconnect();
+          gainNode.disconnect();
+        } catch (e) {
+          // Already disconnected
+        }
+      }, 900);
     } catch (error) {
       console.warn('Audio not available:', error);
     }
@@ -481,10 +501,11 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
               {/* Current Number */}
               {currentNumber && (
                 <div className="text-center">
-                  <div className="text-6xl font-bold text-green-500 mb-2 animate-bounce">
+                  <div className="text-8xl font-bold text-yellow-400 mb-4 animate-pulse casino-text-glow bg-gradient-to-br from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
                     {getLetter(currentNumber)}{currentNumber}
                   </div>
-                  <p className="text-sm text-gray-600">Numbers called automatically every 3 seconds</p>
+                  <p className="text-sm text-white">🎯 Current Number Called</p>
+                  <p className="text-xs text-gray-300">Numbers called automatically every 3 seconds</p>
                 </div>
               )}
             </div>
@@ -501,29 +522,40 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
           <CardContent>
             <div className="grid grid-cols-5 gap-1 max-w-md mx-auto">
               {/* Header */}
-              {letters.map((letter) => (
-                <div key={letter} className="text-center font-bold text-lg p-2 bg-purple-100">
+              {letters.map((letter, index) => (
+                <div 
+                  key={letter} 
+                  className={`
+                    text-center font-bold text-lg p-2 rounded-xl shadow-lg text-white
+                    ${index === 0 ? 'bg-gradient-to-br from-red-500 to-red-700' : ''}
+                    ${index === 1 ? 'bg-gradient-to-br from-orange-500 to-orange-700' : ''}
+                    ${index === 2 ? 'bg-gradient-to-br from-yellow-500 to-yellow-700' : ''}
+                    ${index === 3 ? 'bg-gradient-to-br from-green-500 to-green-700' : ''}
+                    ${index === 4 ? 'bg-gradient-to-br from-blue-500 to-blue-700' : ''}
+                  `}
+                >
                   {letter}
                 </div>
               ))}
               
-              {/* Numbers */}
-              {card.numbers.map((column, colIndex) => 
-                column.map((cell, rowIndex) => (
-                  <div
-                    key={`${colIndex}-${rowIndex}`}
-                    className={`
-                      bingo-number aspect-square border-2 rounded-lg flex items-center justify-center text-sm font-semibold cursor-pointer transition-all duration-300
-                      ${cell.called ? 'called' : 'bg-gray-800 border-gray-600 text-white'}
-                      ${card.marked[rowIndex] && card.marked[rowIndex][colIndex] ? 'bg-yellow-400 border-yellow-300 text-black' : ''}
-                      ${cell.number === 0 ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 border-yellow-300 text-black font-bold' : ''}
-                    `}
-                    onClick={() => markNumber(card.id, rowIndex, colIndex)}
-                  >
-                    {cell.number === 0 ? 'FREE' : cell.number}
-                  </div>
-                ))
-              )}
+                      {/* Numbers */}
+                      {card.numbers.map((column, colIndex) => 
+                        column.map((cell, rowIndex) => (
+                          <div
+                            key={`${colIndex}-${rowIndex}`}
+                            className={`
+                              bingo-number aspect-square border-2 rounded-xl flex items-center justify-center text-sm font-bold cursor-pointer transition-all duration-300 shadow-lg
+                              ${cell.called ? 'called' : 'bg-gradient-to-br from-blue-500 to-blue-700 border-blue-400 text-white shadow-blue-500/50'}
+                              ${card.marked[rowIndex] && card.marked[rowIndex][colIndex] ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 border-yellow-300 text-black shadow-yellow-400/50' : ''}
+                              ${cell.number === 0 ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-300 text-white font-bold shadow-green-400/50' : ''}
+                              hover:scale-105 hover:shadow-xl
+                            `}
+                            onClick={() => markNumber(card.id, rowIndex, colIndex)}
+                          >
+                            {cell.number === 0 ? 'FREE' : cell.number}
+                          </div>
+                        ))
+                      )}
             </div>
           </CardContent>
         </Card>

@@ -14,10 +14,11 @@ const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
       <DialogContent 
         className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto p-0"
         style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/HTPBB-background.jpg')`,
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/HTPBB-background.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
+          minHeight: '500px'
         }}
       >
         <div className="p-6">
