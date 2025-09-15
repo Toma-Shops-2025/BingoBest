@@ -3,6 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 
+// Import the background image
+import htpbBackground from '/HTPBB-background.jpg';
+
 interface HowToPlayModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -12,16 +15,18 @@ const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto p-0"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/HTPBB-background.jpg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          minHeight: '500px'
-        }}
+        className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto p-0 bg-transparent border-none"
       >
-        <div className="p-6">
+        <div 
+          className="p-6 rounded-lg"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/HTPBB-background.jpg'), url(${htpbBackground})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            minHeight: '500px'
+          }}
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between text-white">
               <span>How to Play Bingo</span>

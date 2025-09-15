@@ -40,15 +40,15 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ players }) => {
                 {index + 1}
               </div>
               <div>
-                <div className="font-semibold">{player.username}</div>
-                <div className="text-sm text-gray-600">
+                <div className="font-bold text-lg text-gray-900">{player.username}</div>
+                <div className="text-sm text-gray-700 font-medium">
                   {player.gamesPlayed} games played
                 </div>
               </div>
             </div>
             <div className="text-right">
-              <div className="font-bold text-lg">{player.wins}</div>
-              <div className="text-sm text-gray-600">wins</div>
+              <div className="font-bold text-xl text-gray-900">{player.wins}</div>
+              <div className="text-sm text-gray-700 font-medium">wins</div>
             </div>
           </div>
         ))}
