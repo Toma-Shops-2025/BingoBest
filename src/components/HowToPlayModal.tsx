@@ -15,18 +15,36 @@ const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
-        className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto p-0 bg-transparent border-none"
+        className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto p-0 border-none"
+        style={{
+          background: 'transparent',
+          boxShadow: 'none'
+        }}
       >
         <div 
-          className="p-6 rounded-lg"
+          className="p-6 rounded-lg relative how-to-play-bg"
           style={{
-            backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/HTPBB-background.jpg'), url(${htpbBackground})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            minHeight: '500px'
+            minHeight: '500px',
+            backgroundColor: '#1a1a2e'
           }}
         >
+          {/* Debug: Check if image loads */}
+          <img 
+            src="/HTPBB-background.jpg" 
+            alt="Background" 
+            style={{ 
+              position: 'absolute', 
+              top: 0, 
+              left: 0, 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover', 
+              zIndex: -1,
+              opacity: 0.3
+            }} 
+            onLoad={() => console.log('HTPBB background loaded successfully')}
+            onError={() => console.log('HTPBB background failed to load')}
+          />
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between text-white">
               <span>How to Play Bingo</span>

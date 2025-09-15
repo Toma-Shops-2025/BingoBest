@@ -250,3 +250,12 @@
     opacity: 0;
   }
 }
+
+/* How to Play Background */
+.how-to-play-bg {
+  background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/HTPBB-background.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
