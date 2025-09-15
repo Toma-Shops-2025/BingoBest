@@ -333,6 +333,13 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
         callNumber();
       }, 3000);
       setAutoCallInterval(interval);
+      
+      // Start the first number call immediately
+      setTimeout(() => {
+        callNumber();
+      }, 1000);
+      
+      console.log('Game started - numbers will be called every 3 seconds');
     } catch (error) {
       console.error('Error starting game:', error);
       setError('Failed to start game. Please try again.');

@@ -11,26 +11,35 @@ interface HowToPlayModalProps {
 const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
-            <span>How to Play Bingo</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="h-6 w-6 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </DialogTitle>
-        </DialogHeader>
-        
-        <div className="space-y-6">
+      <DialogContent 
+        className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto p-0"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/HTPBB-background.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
+        <div className="p-6">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between text-white">
+              <span>How to Play Bingo</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="h-6 w-6 p-0 text-white hover:bg-white/20"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-6 text-white">
           {/* Basic Rules */}
           <div>
-            <h3 className="text-lg font-semibold text-purple-600 mb-3">Basic Rules</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-lg font-semibold text-yellow-400 mb-3">Basic Rules</h3>
+            <ul className="space-y-2 text-sm text-white">
               <li>• Each player gets one or more bingo cards with 25 squares.</li>
               <li>• Numbers are called randomly from 1-75.</li>
               <li>• Mark matching numbers on your card.</li>
@@ -40,8 +49,8 @@ const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
 
           {/* Power-Ups */}
           <div>
-            <h3 className="text-lg font-semibold text-purple-600 mb-3">Power-Ups</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-lg font-semibold text-yellow-400 mb-3">Power-Ups</h3>
+            <ul className="space-y-2 text-sm text-white">
               <li>• <strong>Auto Daub</strong>: Automatically marks numbers for you.</li>
               <li>• <strong>Extra Ball</strong>: Get an additional number called.</li>
               <li>• <strong>Peek Next</strong>: See the next number to be called.</li>
@@ -51,33 +60,34 @@ const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
 
           {/* Winning Patterns */}
           <div>
-            <h3 className="text-lg font-semibold text-purple-600 mb-3">Winning Patterns</h3>
-            <ul className="space-y-2 text-sm">
-              <li>• <strong>Horizontal line</strong>: 5 in a row - <span className="text-green-600 font-semibold">$50</span></li>
-              <li>• <strong>Vertical line</strong>: 5 in a column - <span className="text-green-600 font-semibold">$50</span></li>
-              <li>• <strong>Diagonal line</strong>: 5 from corner to corner - <span className="text-green-600 font-semibold">$75</span></li>
-              <li>• <strong>4 Corners</strong>: All four corner squares - <span className="text-green-600 font-semibold">$25</span></li>
-              <li>• <strong>X Pattern</strong>: Both diagonal lines - <span className="text-green-600 font-semibold">$150</span></li>
-              <li>• <strong>Full house</strong>: All 25 squares marked - <span className="text-green-600 font-semibold">$200</span></li>
+            <h3 className="text-lg font-semibold text-yellow-400 mb-3">Winning Patterns</h3>
+            <ul className="space-y-2 text-sm text-white">
+              <li>• <strong>Horizontal line</strong>: 5 in a row - <span className="text-green-400 font-semibold">$50</span></li>
+              <li>• <strong>Vertical line</strong>: 5 in a column - <span className="text-green-400 font-semibold">$50</span></li>
+              <li>• <strong>Diagonal line</strong>: 5 from corner to corner - <span className="text-green-400 font-semibold">$75</span></li>
+              <li>• <strong>4 Corners</strong>: All four corner squares - <span className="text-green-400 font-semibold">$25</span></li>
+              <li>• <strong>X Pattern</strong>: Both diagonal lines - <span className="text-green-400 font-semibold">$150</span></li>
+              <li>• <strong>Full house</strong>: All 25 squares marked - <span className="text-green-400 font-semibold">$200</span></li>
             </ul>
           </div>
 
           {/* Tips */}
           <div>
-            <h3 className="text-lg font-semibold text-purple-600 mb-3">Pro Tips</h3>
-            <ul className="space-y-2 text-sm">
+            <h3 className="text-lg font-semibold text-yellow-400 mb-3">Pro Tips</h3>
+            <ul className="space-y-2 text-sm text-white">
               <li>• Pay attention to the called numbers display</li>
               <li>• Use power-ups strategically to increase your chances</li>
               <li>• Multiple cards give you more winning opportunities</li>
               <li>• The center square is always free!</li>
             </ul>
           </div>
-        </div>
+          </div>
 
-        <div className="flex justify-end pt-4">
-          <Button onClick={onClose} className="bg-purple-600 hover:bg-purple-700">
-            Got it!
-          </Button>
+          <div className="flex justify-end pt-4">
+            <Button onClick={onClose} className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold">
+              Got it!
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
