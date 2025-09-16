@@ -18,33 +18,54 @@ const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
         className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto p-0 border-none"
         style={{
           background: 'transparent',
-          boxShadow: 'none'
+          boxShadow: 'none',
+          padding: 0
         }}
       >
         <div 
-          className="p-6 rounded-lg relative how-to-play-bg"
+          className="p-6 rounded-lg relative"
           style={{
             minHeight: '500px',
-            backgroundColor: '#1a1a2e'
+            position: 'relative'
           }}
         >
-          {/* Debug: Check if image loads */}
-          <img 
-            src="/HTPBB-background.jpg" 
-            alt="Background" 
-            style={{ 
-              position: 'absolute', 
-              top: 0, 
-              left: 0, 
-              width: '100%', 
-              height: '100%', 
-              objectFit: 'cover', 
-              zIndex: -1,
-              opacity: 0.3
-            }} 
-            onLoad={() => console.log('HTPBB background loaded successfully')}
-            onError={() => console.log('HTPBB background failed to load')}
+          {/* Background Image Layer */}
+          <div 
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: `url('/HTPBB-background.jpg')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+              zIndex: -2
+            }}
           />
+          
+          {/* Dark Overlay */}
+          <div 
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(0,0,0,0.6)',
+              zIndex: -1
+            }}
+          />
+          
+          {/* Force image load for debugging */}
+          <div style={{ display: 'none' }}>
+            <img 
+              src="/HTPBB-background.jpg" 
+              onLoad={() => console.log('✅ HTPBB-background.jpg loaded successfully!')}
+              onError={(e) => console.log('❌ HTPBB-background.jpg failed to load:', e)}
+            />
+          </div>
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between text-white">
               <span>How to Play Bingo</span>
