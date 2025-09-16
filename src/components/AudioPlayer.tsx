@@ -150,7 +150,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
   };
 
   return (
-    <div className={`fixed bottom-4 right-4 z-50 ${className}`}>
+    <div className={`fixed bottom-4 right-1 sm:right-4 z-50 ${className}`}>
       {/* Main Audio Controls */}
       <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3 shadow-lg border border-white/20">
         <div className="flex items-center gap-2 mb-2">

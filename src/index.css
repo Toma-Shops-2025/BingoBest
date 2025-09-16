@@ -6,6 +6,17 @@
 @tailwind utilities;
 
 @layer base {
+  /* Prevent horizontal overflow on mobile */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+  
+  /* Ensure all fixed positioned elements stay within viewport */
+  .fixed {
+    max-width: calc(100vw - 1rem);
+  }
+  
   :root {
     --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
