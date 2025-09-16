@@ -1009,6 +1009,17 @@ const EnhancedAppLayout: React.FC = () => {
             unreadChallenges={2} 
           />
         </div>
+
+        {/* Important Disclaimer */}
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="flex items-center gap-2">
+            <span className="text-yellow-600">⚠️</span>
+            <p className="text-sm text-yellow-800 font-medium">
+              <strong>Important:</strong> All rewards, bonuses, and winnings from challenges, events, and mini-games are 
+              <strong> non-withdrawable</strong> and can only be used for gameplay. They help you save money on deposits!
+            </p>
+          </div>
+        </div>
         
         {/* AdSense Banner Ad */}
         <div className="mb-4 sm:mb-6">

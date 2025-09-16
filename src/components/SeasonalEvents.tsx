@@ -116,12 +116,17 @@ const SeasonalEvents: React.FC<SeasonalEventsProps> = ({
                         <p className="text-xs text-gray-500 mt-1">{reward.requirement}</p>
                       </div>
                       <div className="text-right">
-                        <Badge 
-                          variant={reward.claimed ? "default" : "outline"}
-                          className={reward.claimed ? "bg-green-500" : ""}
-                        >
-                          ${reward.reward}
-                        </Badge>
+                        <div className="flex flex-col">
+                          <Badge 
+                            variant={reward.claimed ? "default" : "outline"}
+                            className={reward.claimed ? "bg-green-500" : ""}
+                          >
+                            ${reward.reward}
+                          </Badge>
+                          <p className="text-xs text-gray-500 mt-1">
+                            ⚠️ Non-withdrawable
+                          </p>
+                        </div>
                         {reward.claimed ? (
                           <p className="text-xs text-green-600 mt-1">✓ Claimed</p>
                         ) : eventStatus.status === 'active' ? (

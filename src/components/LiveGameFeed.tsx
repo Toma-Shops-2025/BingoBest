@@ -216,6 +216,11 @@ const LiveGameFeed: React.FC = () => {
                   <span className="text-sm text-white/60 font-medium">Cost: ${game.cost}</span>
                   <Badge variant="outline" className="border-yellow-400/50 text-yellow-300 bg-yellow-400/10">Max: ${game.maxWin}</Badge>
                 </div>
+                <div className="mt-2">
+                  <p className="text-xs text-white/50">
+                    ⚠️ Winnings are non-withdrawable - for gameplay only
+                  </p>
+                </div>
                 {selectedGame === game.id && (
                   <div className="mt-3 text-center">
                     <span className="text-xs text-yellow-300 font-medium">✓ Selected</span>

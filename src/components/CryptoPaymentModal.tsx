@@ -88,6 +88,11 @@ const CryptoPaymentModal: React.FC<CryptoPaymentModalProps> = ({
               <CardDescription>
                 Amount: ${(amount || 0).toFixed(2)} USD
               </CardDescription>
+              <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
+                <p className="text-xs text-green-800">
+                  ✅ <strong>Deposited funds are withdrawable</strong> - This is real money you can cash out
+                </p>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">

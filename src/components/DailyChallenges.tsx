@@ -93,9 +93,14 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({
             </div>
 
             <div className="flex items-center justify-between mt-3">
-              <Badge variant="outline" className="text-green-600">
-                Reward: ${challenge.reward}
-              </Badge>
+              <div className="flex flex-col">
+                <Badge variant="outline" className="text-green-600 mb-1">
+                  Reward: ${challenge.reward}
+                </Badge>
+                <p className="text-xs text-gray-500">
+                  ⚠️ Rewards are non-withdrawable - for gameplay only
+                </p>
+              </div>
               {challenge.completed && (
                 <Button
                   size="sm"
