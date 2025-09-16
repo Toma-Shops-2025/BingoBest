@@ -2,148 +2,198 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, Coins, Zap } from 'lucide-react';
 
-interface LiveGame {
+interface MiniGame {
   id: string;
-  roomName: string;
-  players: number;
-  maxPlayers: number;
-  prizePool: number;
-  status: 'starting' | 'in-progress' | 'ending';
-  timeRemaining?: string;
-  lastWinner?: string;
-  winAmount?: number;
+  name: string;
+  description: string;
+  cost: number;
+  maxWin: number;
+  icon: React.ReactNode;
 }
 
 const LiveGameFeed: React.FC = () => {
-  const [liveGames, setLiveGames] = useState<LiveGame[]>([]);
-  const [recentWins, setRecentWins] = useState<Array<{
-    player: string;
-    amount: number;
-    room: string;
+  const [diceResult, setDiceResult] = useState<number>(0);
+  const [isRolling, setIsRolling] = useState(false);
+  const [balance, setBalance] = useState(1000);
+  const [lastWin, setLastWin] = useState<number | null>(null);
+  const [gameHistory, setGameHistory] = useState<Array<{
+    dice: number;
+    win: number;
     time: string;
   }>>([]);
 
-  useEffect(() => {
-    // Simulate live games
-    const games: LiveGame[] = [
-      {
-        id: '1',
-        roomName: 'High Stakes Arena',
-        players: 18,
-        maxPlayers: 20,
-        prizePool: 450,
-        status: 'in-progress',
-        timeRemaining: '3:45'
-      },
-      {
-        id: '2',
-        roomName: 'Speed Bingo',
-        players: 12,
-        maxPlayers: 15,
-        prizePool: 180,
-        status: 'starting',
-        timeRemaining: '0:30'
-      },
-      {
-        id: '3',
-        roomName: 'VIP Lounge',
-        players: 4,
-        maxPlayers: 5,
-        prizePool: 200,
-        status: 'ending',
-        lastWinner: 'LuckyPlayer',
-        winAmount: 200
-      }
-    ];
-    setLiveGames(games);
-
-    // Simulate recent wins
-    const wins = [
-      { player: 'BingoMaster', amount: 125, room: 'Beginner Room', time: '2 min ago' },
-      { player: 'NumberWiz', amount: 300, room: 'High Stakes', time: '5 min ago' },
-      { player: 'CardShark', amount: 75, room: 'Speed Bingo', time: '8 min ago' },
-      { player: 'LuckyPlayer', amount: 200, room: 'VIP Lounge', time: '12 min ago' }
-    ];
-    setRecentWins(wins);
-  }, []);
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'starting': return 'bg-yellow-500';
-      case 'in-progress': return 'bg-green-500';
-      case 'ending': return 'bg-red-500';
-      default: return 'bg-gray-500';
+  const miniGames: MiniGame[] = [
+    {
+      id: '1',
+      name: 'Lucky Dice Roll',
+      description: 'Roll the dice and win instant prizes!',
+      cost: 10,
+      maxWin: 100,
+      icon: <Dice1 className="w-6 h-6" />
+    },
+    {
+      id: '2',
+      name: 'Double or Nothing',
+      description: 'Double your bet or lose it all!',
+      cost: 25,
+      maxWin: 200,
+      icon: <Coins className="w-6 h-6" />
+    },
+    {
+      id: '3',
+      name: 'Lightning Strike',
+      description: 'Quick wins with electric energy!',
+      cost: 15,
+      maxWin: 150,
+      icon: <Zap className="w-6 h-6" />
     }
+  ];
+
+  const rollDice = () => {
+    if (isRolling || balance < 10) return;
+    
+    setIsRolling(true);
+    setBalance(prev => prev - 10);
+    
+    // Animate dice roll
+    let rollCount = 0;
+    const rollInterval = setInterval(() => {
+      setDiceResult(Math.floor(Math.random() * 6) + 1);
+      rollCount++;
+      
+      if (rollCount >= 10) {
+        clearInterval(rollInterval);
+        const finalResult = Math.floor(Math.random() * 6) + 1;
+        setDiceResult(finalResult);
+        setIsRolling(false);
+        
+        // Calculate winnings
+        let winAmount = 0;
+        if (finalResult === 6) winAmount = 100;
+        else if (finalResult === 5) winAmount = 50;
+        else if (finalResult === 4) winAmount = 25;
+        else if (finalResult === 3) winAmount = 15;
+        else if (finalResult === 2) winAmount = 10;
+        
+        if (winAmount > 0) {
+          setBalance(prev => prev + winAmount);
+          setLastWin(winAmount);
+          setGameHistory(prev => [{
+            dice: finalResult,
+            win: winAmount,
+            time: new Date().toLocaleTimeString()
+          }, ...prev.slice(0, 4)]);
+        } else {
+          setLastWin(0);
+        }
+      }
+    }, 100);
+  };
+
+  const getDiceIcon = (number: number) => {
+    const diceIcons = [Dice1, Dice2, Dice3, Dice4, Dice5, Dice6];
+    const IconComponent = diceIcons[number - 1];
+    return <IconComponent className="w-12 h-12" />;
   };
 
   return (
     <div className="space-y-6">
-      {/* Live Games */}
+      {/* Mini Games Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            🔴 Live Games
-            <Badge variant="secondary">{liveGames.length} Active</Badge>
+            🎮 Mini Games
+            <Badge variant="secondary">Fun & Rewards</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {liveGames.map((game) => (
-              <div key={game.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${getStatusColor(game.status)}`}></div>
-                    <span className="font-semibold">{game.roomName}</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {miniGames.map((game) => (
+              <div key={game.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-2">
+                  {game.icon}
+                  <div>
+                    <h3 className="font-semibold">{game.name}</h3>
+                    <p className="text-sm text-gray-600">{game.description}</p>
                   </div>
-                  <div className="text-sm text-gray-600">
-                    {game.players}/{game.maxPlayers} players • ${game.prizePool} prize
-                    {game.timeRemaining && ` • ${game.timeRemaining} left`}
-                  </div>
-                  {game.lastWinner && (
-                    <div className="text-sm text-green-600">
-                      🎉 {game.lastWinner} won ${game.winAmount}!
-                    </div>
-                  )}
                 </div>
-                <Button 
-                  size="sm" 
-                  variant={game.status === 'starting' ? 'default' : 'outline'}
-                  disabled={game.status === 'ending'}
-                  onClick={() => {
-                    if (game.status === 'starting') {
-                      alert(`Joined ${game.roomName}! Game starting soon.`);
-                    } else {
-                      alert(`Watching ${game.roomName}! Enjoy the game.`);
-                    }
-                  }}
-                >
-                  {game.status === 'starting' ? 'Join' : 'Watch'}
-                </Button>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-500">Cost: ${game.cost}</span>
+                  <Badge variant="outline">Max: ${game.maxWin}</Badge>
+                </div>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Recent Winners */}
+      {/* Lucky Dice Roll Game */}
       <Card>
         <CardHeader>
-          <CardTitle>🏆 Recent Winners</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            🎲 Lucky Dice Roll
+            <Badge variant="success">Active</Badge>
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {recentWins.map((win, index) => (
-              <div key={index} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded">
-                <div>
-                  <span className="font-semibold text-green-600">{win.player}</span>
-                  <span className="text-sm text-gray-600 ml-2">won ${win.amount}</span>
-                  <div className="text-xs text-gray-500">{win.room} • {win.time}</div>
-                </div>
-                <Badge variant="outline">${win.amount}</Badge>
+          <div className="text-center space-y-4">
+            {/* Balance Display */}
+            <div className="flex justify-center gap-4 mb-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">${balance}</div>
+                <div className="text-sm text-gray-600">Balance</div>
               </div>
-            ))}
+              {lastWin !== null && (
+                <div className="text-center">
+                  <div className={`text-xl font-bold ${lastWin > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {lastWin > 0 ? `+$${lastWin}` : 'No Win'}
+                  </div>
+                  <div className="text-sm text-gray-600">Last Roll</div>
+                </div>
+              )}
+            </div>
+
+            {/* Dice Display */}
+            <div className="flex justify-center">
+              <div className={`p-6 rounded-lg border-2 ${isRolling ? 'animate-pulse bg-yellow-50' : 'bg-gray-50'}`}>
+                {diceResult > 0 ? getDiceIcon(diceResult) : <Dice1 className="w-12 h-12 text-gray-400" />}
+              </div>
+            </div>
+
+            {/* Roll Button */}
+            <Button 
+              onClick={rollDice}
+              disabled={isRolling || balance < 10}
+              size="lg"
+              className="w-full"
+            >
+              {isRolling ? 'Rolling...' : 'Roll Dice ($10)'}
+            </Button>
+
+            {/* Game History */}
+            {gameHistory.length > 0 && (
+              <div className="mt-6">
+                <h4 className="font-semibold mb-3">Recent Rolls</h4>
+                <div className="space-y-2">
+                  {gameHistory.map((roll, index) => (
+                    <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                      <div className="flex items-center gap-2">
+                        {getDiceIcon(roll.dice)}
+                        <span className="font-medium">Rolled {roll.dice}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className={`font-bold ${roll.win > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {roll.win > 0 ? `+$${roll.win}` : 'No Win'}
+                        </span>
+                        <span className="text-xs text-gray-500">{roll.time}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
