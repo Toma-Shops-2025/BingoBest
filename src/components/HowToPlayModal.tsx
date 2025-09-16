@@ -21,6 +21,7 @@ const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
           boxShadow: 'none',
           padding: 0
         }}
+        aria-describedby="how-to-play-description"
       >
         <div 
           className="p-6 rounded-lg relative"
@@ -78,6 +79,9 @@ const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
                 <X className="h-4 w-4" />
               </Button>
             </DialogTitle>
+            <div id="how-to-play-description" className="sr-only">
+              Learn how to play BingoBest with rules, winning patterns, and power-ups
+            </div>
           </DialogHeader>
           
           <div className="space-y-6 text-white">
