@@ -42,7 +42,8 @@ const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
               backgroundSize: 'cover',
               backgroundPosition: 'center',
               backgroundRepeat: 'no-repeat',
-              zIndex: -2
+              zIndex: -2,
+              borderRadius: '8px'
             }}
           />
           

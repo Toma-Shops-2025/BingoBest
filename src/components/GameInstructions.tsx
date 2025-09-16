@@ -18,21 +18,50 @@ const GameInstructions: React.FC = () => {
   ];
 
   return (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <Card className="mb-6 relative overflow-hidden">
+      {/* Background Image Layer */}
+      <div 
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundImage: `url('/HTPBB-background.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          zIndex: -2
+        }}
+      />
+      
+      {/* Dark Overlay */}
+      <div 
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          zIndex: -1
+        }}
+      />
+      
+      <CardHeader className="relative z-10">
+        <CardTitle className="flex items-center gap-2 text-white">
           <Info className="w-5 h-5" />
           How to Play BingoBest
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 relative z-10">
         {/* Basic Rules */}
         <div>
-          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-white">
             <Target className="w-5 h-5" />
             Basic Rules
           </h3>
-          <ul className="space-y-2 text-sm text-gray-600">
+          <ul className="space-y-2 text-sm text-white">
             <li>• Numbers are called randomly and appear in the center display</li>
             <li>• Mark numbers on your card when they're called</li>
             <li>• Complete winning patterns to win cash prizes</li>
@@ -43,18 +72,18 @@ const GameInstructions: React.FC = () => {
 
         {/* Winning Patterns */}
         <div>
-          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-white">
             <Star className="w-5 h-5" />
             Winning Patterns
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {winningPatterns.map((pattern, index) => (
-              <div key={index} className="border rounded-lg p-3">
+              <div key={index} className="border border-white/20 rounded-lg p-3 bg-white/10 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium">{pattern.name}</span>
+                  <span className="font-medium text-white">{pattern.name}</span>
                   <Badge variant="success">{pattern.prize}</Badge>
                 </div>
-                <p className="text-sm text-gray-600">{pattern.description}</p>
+                <p className="text-sm text-white/90">{pattern.description}</p>
               </div>
             ))}
           </div>
@@ -62,27 +91,27 @@ const GameInstructions: React.FC = () => {
 
         {/* Power-Ups */}
         <div>
-          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-white">
             <Zap className="w-5 h-5" />
             Power-Ups
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {powerUps.map((powerUp, index) => (
-              <div key={index} className="border rounded-lg p-3">
+              <div key={index} className="border border-white/20 rounded-lg p-3 bg-white/10 backdrop-blur-sm">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium">{powerUp.name}</span>
+                  <span className="font-medium text-white">{powerUp.name}</span>
                   <Badge variant="warning">{powerUp.cost}</Badge>
                 </div>
-                <p className="text-sm text-gray-600">{powerUp.description}</p>
+                <p className="text-sm text-white/90">{powerUp.description}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Pro Tips */}
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-2 text-purple-800">Pro Tips</h3>
-          <ul className="space-y-1 text-sm text-purple-700">
+        <div className="bg-purple-500/20 border border-purple-300/30 rounded-lg p-4 backdrop-blur-sm">
+          <h3 className="text-lg font-semibold mb-2 text-purple-200">Pro Tips</h3>
+          <ul className="space-y-1 text-sm text-purple-100">
             <li>• Watch for multiple patterns simultaneously</li>
             <li>• Use power-ups strategically during busy games</li>
             <li>• Play during peak hours for bigger prize pools</li>
