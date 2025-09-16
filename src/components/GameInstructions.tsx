@@ -21,7 +21,7 @@ const GameInstructions: React.FC = () => {
     <div 
       className="mb-6 rounded-lg overflow-hidden"
       style={{
-        backgroundImage: `url('/leaderboard-background.jpg')`,
+        backgroundImage: `url('/HTPBB-background.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -44,10 +44,10 @@ const GameInstructions: React.FC = () => {
       {/* Force image load for debugging */}
       <div style={{ display: 'none' }}>
         <img 
-          src="/leaderboard-background.jpg" 
-          onLoad={() => console.log('✅ leaderboard-background.jpg loaded successfully!')}
-          onError={(e) => console.log('❌ leaderboard-background.jpg failed to load:', e)}
-          alt="Leaderboard Background"
+          src="/HTPBB-background.jpg" 
+          onLoad={() => console.log('✅ HTPBB-background.jpg loaded successfully!')}
+          onError={(e) => console.log('❌ HTPBB-background.jpg failed to load:', e)}
+          alt="HTPBB Background"
         />
       </div>
       
