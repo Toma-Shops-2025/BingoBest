@@ -132,15 +132,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
           >
             {isPlaying ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </Button>
-          
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleMute}
-            className="text-white hover:bg-white/20"
-          >
-            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-          </Button>
 
           <Button
             variant="ghost"
@@ -183,6 +174,14 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
                 className="text-white hover:bg-white/20 text-xs"
               >
                 🎲
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={toggleMute}
+                className="text-white hover:bg-white/20 text-xs"
+              >
+                {isMuted ? '🔇' : '🔊'}
               </Button>
             </div>
 
