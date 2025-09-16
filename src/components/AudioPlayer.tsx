@@ -12,6 +12,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
   const [currentTrack, setCurrentTrack] = useState(1);
   const [volume, setVolume] = useState(0.3); // 30% volume by default
   const [showControls, setShowControls] = useState(false);
+  const [playlist, setPlaylist] = useState<number[]>([]);
+  const [playlistIndex, setPlaylistIndex] = useState(0);
   
   const audioRef = useRef<HTMLAudioElement>(null);
   const soundEffectsRef = useRef<HTMLAudioElement>(null);
@@ -22,6 +24,21 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
   // Generate track and effect file paths
   const getTrackPath = (trackNumber: number) => `/audio/music/casino-ambient-${trackNumber.toString().padStart(2, '0')}.mp3`;
   const getEffectPath = (effectNumber: number) => `/audio/effects/casino-sound-${effectNumber.toString().padStart(2, '0')}.mp3`;
+
+  // Create shuffled playlist
+  const createShuffledPlaylist = () => {
+    const tracks = Array.from({ length: totalTracks }, (_, i) => i + 1);
+    const shuffled = [...tracks].sort(() => Math.random() - 0.5);
+    setPlaylist(shuffled);
+    setPlaylistIndex(0);
+    return shuffled[0];
+  };
+
+  // Initialize playlist on component mount
+  useEffect(() => {
+    const firstTrack = createShuffledPlaylist();
+    setCurrentTrack(firstTrack);
+  }, []);
 
   // Initialize audio
   useEffect(() => {
@@ -76,22 +93,28 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
     }
   };
 
-  // Next track
+  // Next track (from shuffled playlist)
   const nextTrack = () => {
-    const next = currentTrack === totalTracks ? 1 : currentTrack + 1;
-    setCurrentTrack(next);
+    if (playlist.length === 0) return;
+    
+    const nextIndex = (playlistIndex + 1) % playlist.length;
+    setPlaylistIndex(nextIndex);
+    setCurrentTrack(playlist[nextIndex]);
   };
 
-  // Previous track
+  // Previous track (from shuffled playlist)
   const prevTrack = () => {
-    const prev = currentTrack === 1 ? totalTracks : currentTrack - 1;
-    setCurrentTrack(prev);
+    if (playlist.length === 0) return;
+    
+    const prevIndex = playlistIndex === 0 ? playlist.length - 1 : playlistIndex - 1;
+    setPlaylistIndex(prevIndex);
+    setCurrentTrack(playlist[prevIndex]);
   };
 
-  // Play random track
+  // Play random track (shuffle playlist and play first track)
   const playRandomTrack = () => {
-    const randomTrack = Math.floor(Math.random() * totalTracks) + 1;
-    setCurrentTrack(randomTrack);
+    const firstTrack = createShuffledPlaylist();
+    setCurrentTrack(firstTrack);
   };
 
   // Play sound effect
@@ -147,7 +170,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
         {showControls && (
           <div className="space-y-2">
             <div className="text-xs text-white/80">
-              Track {currentTrack}/{totalTracks}
+              Track {playlistIndex + 1}/{playlist.length} (Shuffled)
             </div>
             
             <div className="flex gap-1">
@@ -217,7 +240,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
         ref={audioRef}
         preload="metadata"
         onEnded={() => {
-          // Auto-play next track when current ends
+          // Auto-play next track from shuffled playlist when current ends
           nextTrack();
         }}
       />
