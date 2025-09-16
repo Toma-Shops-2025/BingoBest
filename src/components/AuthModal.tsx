@@ -156,6 +156,11 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <CardDescription>
                   Join BingoBest and start winning today!
                 </CardDescription>
+                <div className="mt-3 p-3 bg-green-500/10 border border-green-500/30 rounded-md">
+                  <p className="text-sm text-green-300 font-medium">
+                    🎉 New players get $100 welcome bonus to start playing!
+                  </p>
+                </div>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-4">

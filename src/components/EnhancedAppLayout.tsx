@@ -1016,6 +1016,21 @@ const EnhancedAppLayout: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 relative z-10">
+        {/* Welcome Bonus Banner */}
+        <div className="mb-6 p-4 bg-gradient-to-r from-green-500/20 to-blue-500/20 border border-green-400/30 rounded-lg text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="text-2xl">🎉</span>
+            <h3 className="text-lg font-bold text-white">New Player Welcome Bonus</h3>
+            <span className="text-2xl">🎉</span>
+          </div>
+          <p className="text-green-300 font-medium">
+            Start with $100 free credits to explore all our games!
+          </p>
+          <p className="text-sm text-gray-300 mt-1">
+            One-time bonus for new players only
+          </p>
+        </div>
+
         {/* Notification Permission Request */}
         <NotificationPermissionRequest />
 
@@ -1263,6 +1278,11 @@ const EnhancedAppLayout: React.FC = () => {
               <p className="text-gray-300 text-sm mb-3">
                 Subscribe for exclusive bonuses, game tips, and special offers!
               </p>
+              <div className="mb-3 p-2 bg-green-500/10 border border-green-500/30 rounded-md">
+                <p className="text-xs text-green-300 font-medium">
+                  ✨ New players start with $100 welcome bonus!
+                </p>
+              </div>
               <div className="space-y-2">
                 <input 
                   type="email" 
