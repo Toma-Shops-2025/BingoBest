@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import AppFallback from "./components/AppFallback";
 import AdminDashboard from "./components/AdminDashboard";
+import AudioPlayer from "./components/AudioPlayer";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
               </BrowserRouter>
+              <AudioPlayer />
             </TooltipProvider>
           </AppProvider>
         </AuthProvider>

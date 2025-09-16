@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, Coins, Zap } from 'lucide-react';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 
 interface MiniGame {
   id: string;
@@ -23,6 +24,8 @@ const LiveGameFeed: React.FC = () => {
     win: number;
     time: string;
   }>>([]);
+  
+  const { playDiceRoll, playWin, playButtonClick } = useSoundEffects();
 
   const miniGames: MiniGame[] = [
     {
@@ -53,6 +56,9 @@ const LiveGameFeed: React.FC = () => {
 
   const rollDice = () => {
     if (isRolling || balance < 10) return;
+    
+    // Play dice roll sound
+    playDiceRoll();
     
     setIsRolling(true);
     setBalance(prev => prev - 10);
@@ -85,6 +91,8 @@ const LiveGameFeed: React.FC = () => {
             win: winAmount,
             time: new Date().toLocaleTimeString()
           }, ...prev.slice(0, 4)]);
+          // Play win sound
+          playWin();
         } else {
           setLastWin(0);
         }
