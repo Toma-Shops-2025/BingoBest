@@ -31,24 +31,24 @@ const LiveGameFeed: React.FC = () => {
   const { playDiceRoll, playWin, playButtonClick } = useSoundEffects();
 
   const miniGames: MiniGame[] = [
-    {
-      id: '1',
+      {
+        id: '1',
       name: 'Lucky Dice Roll',
       description: 'Roll the dice and win instant prizes!',
       cost: 10,
       maxWin: 25,
       icon: <Dice1 className="w-6 h-6" />
-    },
-    {
-      id: '2',
+      },
+      {
+        id: '2',
       name: 'Double or Nothing',
       description: 'Double your bet or lose it all!',
       cost: 5,
       maxWin: 10,
       icon: <Coins className="w-6 h-6" />
-    },
-    {
-      id: '3',
+      },
+      {
+        id: '3',
       name: 'Lightning Strike',
       description: 'Quick wins with electric energy!',
       cost: 15,
@@ -211,15 +211,10 @@ const LiveGameFeed: React.FC = () => {
                     }`}>{game.name}</h3>
                     <p className="text-sm text-white/70 group-hover:text-white/90 transition-colors duration-300">{game.description}</p>
                   </div>
-                </div>
+                    </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-white/60 font-medium">Cost: ${game.cost}</span>
                   <Badge variant="outline" className="border-yellow-400/50 text-yellow-300 bg-yellow-400/10">Max: ${game.maxWin}</Badge>
-                </div>
-                <div className="mt-2">
-                  <p className="text-xs text-white/50">
-                    ⚠️ Winnings are non-withdrawable - for gameplay only
-                  </p>
                 </div>
                 {selectedGame === game.id && (
                   <div className="mt-3 text-center">
@@ -323,7 +318,7 @@ const LiveGameFeed: React.FC = () => {
             {gameHistory.length > 0 && (
               <div className="mt-8">
                 <h4 className="font-semibold mb-4 text-white text-lg">Recent Rolls</h4>
-                <div className="space-y-3">
+          <div className="space-y-3">
                   {gameHistory.map((roll, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-gradient-to-r from-white/10 to-white/5 rounded-lg border border-white/20 backdrop-blur-sm hover:bg-white/15 transition-all duration-300">
                       <div className="flex items-center gap-3">
