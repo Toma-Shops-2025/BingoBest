@@ -60,7 +60,7 @@ const EnhancedAppLayout: React.FC = () => {
   const [player, setPlayer] = useState<Player>({
     id: user?.id || 'guest',
     username: user?.email?.split('@')[0] || 'Player1',
-    balance: 100.00,
+    balance: 25.00,
     level: 1,
     experience: 0,
     avatar: '',
@@ -145,11 +145,11 @@ const EnhancedAppLayout: React.FC = () => {
     }));
   });
   const [leaderboardPlayers, setLeaderboardPlayers] = useState<Player[]>([
-    { id: '1', username: 'BingoMaster', avatar: '', balance: 1250, wins: 45, gamesPlayed: 120 },
-    { id: '2', username: 'LuckyPlayer', avatar: '', balance: 890, wins: 32, gamesPlayed: 95 },
-    { id: '3', username: 'Winner123', avatar: '', balance: 675, wins: 28, gamesPlayed: 80 },
-    { id: '4', username: 'BingoQueen', avatar: '', balance: 540, wins: 22, gamesPlayed: 65 },
-    { id: '5', username: 'GameChamp', avatar: '', balance: 420, wins: 18, gamesPlayed: 55 }
+    { id: '1', username: 'BingoMaster', avatar: '', balance: 250, wins: 45, gamesPlayed: 120 },
+    { id: '2', username: 'LuckyPlayer', avatar: '', balance: 180, wins: 32, gamesPlayed: 95 },
+    { id: '3', username: 'Winner123', avatar: '', balance: 135, wins: 28, gamesPlayed: 80 },
+    { id: '4', username: 'BingoQueen', avatar: '', balance: 108, wins: 22, gamesPlayed: 65 },
+    { id: '5', username: 'GameChamp', avatar: '', balance: 84, wins: 18, gamesPlayed: 55 }
   ]);
   const [showBingoGame, setShowBingoGame] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -213,7 +213,7 @@ const EnhancedAppLayout: React.FC = () => {
 
 
   const handleAddFundsClick = () => {
-    setPaymentAmount(25);
+    setPaymentAmount(10);
     setShowPaymentModal(true);
     // Scroll to top when opening payment modal
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -398,10 +398,10 @@ const EnhancedAppLayout: React.FC = () => {
             id: 'daily-quick-fire',
             name: 'Daily Quick Fire',
             description: 'Fast-paced bingo tournament with quick rounds',
-            entryFee: 5.00,
+            entryFee: 2.00,
             maxParticipants: 50,
             currentParticipants: 23,
-            prizePool: 200.00,
+            prizePool: 80.00,
             startTime: new Date(now.getTime() + 2 * 60 * 60 * 1000), // 2 hours from now
             endTime: new Date(now.getTime() + 4 * 60 * 60 * 1000), // 4 hours from now
             status: 'upcoming' as const,
@@ -413,10 +413,10 @@ const EnhancedAppLayout: React.FC = () => {
             id: 'weekend-championship',
             name: 'Weekend Championship',
             description: 'The ultimate bingo championship with massive prizes',
-            entryFee: 25.00,
+            entryFee: 10.00,
             maxParticipants: 100,
             currentParticipants: 67,
-            prizePool: 2000.00,
+            prizePool: 800.00,
             startTime: new Date(now.getTime() + 24 * 60 * 60 * 1000), // 1 day from now
             endTime: new Date(now.getTime() + 48 * 60 * 60 * 1000), // 2 days from now
             status: 'upcoming' as const,
@@ -428,10 +428,10 @@ const EnhancedAppLayout: React.FC = () => {
             id: 'speed-masters',
             name: 'Speed Masters',
             description: 'Currently running - join the action!',
-            entryFee: 10.00,
+            entryFee: 5.00,
             maxParticipants: 30,
             currentParticipants: 28,
-            prizePool: 250.00,
+            prizePool: 120.00,
             startTime: new Date(now.getTime() - 30 * 60 * 1000), // 30 minutes ago
             endTime: new Date(now.getTime() + 30 * 60 * 1000), // 30 minutes from now
             status: 'active' as const,
@@ -443,10 +443,10 @@ const EnhancedAppLayout: React.FC = () => {
             id: 'mega-jackpot',
             name: 'Mega Jackpot Tournament',
             description: 'The biggest tournament of the month!',
-            entryFee: 50.00,
+            entryFee: 20.00,
             maxParticipants: 200,
             currentParticipants: 156,
-            prizePool: 8000.00,
+            prizePool: 3200.00,
             startTime: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
             endTime: new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000), // 1 week + 1 day
             status: 'upcoming' as const,
@@ -458,10 +458,10 @@ const EnhancedAppLayout: React.FC = () => {
             id: 'yesterday-winner',
             name: 'Yesterday\'s Winner',
             description: 'Completed tournament - see who won!',
-            entryFee: 15.00,
+            entryFee: 8.00,
             maxParticipants: 40,
             currentParticipants: 40,
-            prizePool: 500.00,
+            prizePool: 280.00,
             startTime: new Date(now.getTime() - 48 * 60 * 60 * 1000), // 2 days ago
             endTime: new Date(now.getTime() - 24 * 60 * 60 * 1000), // 1 day ago
             status: 'completed' as const,
@@ -516,7 +516,7 @@ const EnhancedAppLayout: React.FC = () => {
             name: 'Daily Player',
             description: 'Play 3 games today to earn bonus credits',
             requirement: 3,
-            reward: 25,
+            reward: 10,
             progress: Math.floor(Math.random() * 4), // Random progress 0-3
             completed: false,
             expiresAt: tomorrow
@@ -526,7 +526,7 @@ const EnhancedAppLayout: React.FC = () => {
             name: 'Lucky Winner',
             description: 'Win at least 1 game today',
             requirement: 1,
-            reward: 50,
+            reward: 20,
             progress: Math.floor(Math.random() * 2), // Random progress 0-1
             completed: false,
             expiresAt: tomorrow
@@ -534,9 +534,9 @@ const EnhancedAppLayout: React.FC = () => {
           {
             id: 'daily-spend-10',
             name: 'Big Spender',
-            description: 'Spend $10 on entry fees today',
-            requirement: 10,
-            reward: 30,
+            description: 'Spend $5 on entry fees today',
+            requirement: 5,
+            reward: 15,
             progress: Math.floor(Math.random() * 11), // Random progress 0-10
             completed: false,
             expiresAt: tomorrow
@@ -546,7 +546,7 @@ const EnhancedAppLayout: React.FC = () => {
             name: 'Streak Master',
             description: 'Play games for 3 consecutive days',
             requirement: 3,
-            reward: 100,
+            reward: 40,
             progress: Math.floor(Math.random() * 4), // Random progress 0-3
             completed: false,
             expiresAt: tomorrow
@@ -644,7 +644,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'New Year Daily',
                 description: 'Play every day in January',
                 requirement: 'Play at least 1 game daily',
-                reward: 15,
+                reward: 8,
                 claimed: false
               },
               {
@@ -652,7 +652,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Resolution Keeper',
                 description: 'Win 10 games in January',
                 requirement: 'Win 10 games this month',
-                reward: 75,
+                reward: 30,
                 claimed: false
               },
               {
@@ -660,7 +660,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'New Year Champion',
                 description: 'Play 25 games in January',
                 requirement: 'Complete 25 games this month',
-                reward: 200,
+                reward: 80,
                 claimed: false
               }
             ]
@@ -678,7 +678,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Heart of Gold',
                 description: 'Play on Valentine\'s Day',
                 requirement: 'Play any game on Feb 14',
-                reward: 50,
+                reward: 25,
                 claimed: false
               },
               {
@@ -686,7 +686,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Love Birds',
                 description: 'Win 5 games in February',
                 requirement: 'Win 5 games this month',
-                reward: 100,
+                reward: 40,
                 claimed: false
               }
             ]
@@ -704,7 +704,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Spring Daily',
                 description: 'Play every day in spring',
                 requirement: 'Play at least 1 game daily',
-                reward: 20,
+                reward: 12,
                 claimed: false
               },
               {
@@ -712,7 +712,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Spring Bloom',
                 description: 'Win 15 games in spring',
                 requirement: 'Win 15 games this season',
-                reward: 150,
+                reward: 60,
                 claimed: false
               },
               {
@@ -720,7 +720,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Spring Master',
                 description: 'Play 50 games in spring',
                 requirement: 'Complete 50 games this season',
-                reward: 300,
+                reward: 120,
                 claimed: false
               }
             ]
@@ -738,7 +738,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Summer Daily',
                 description: 'Play every day in summer',
                 requirement: 'Play at least 1 game daily',
-                reward: 25,
+                reward: 15,
                 claimed: false
               },
               {
@@ -746,7 +746,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Wave Rider',
                 description: 'Win 20 games in summer',
                 requirement: 'Win 20 games this season',
-                reward: 200,
+                reward: 80,
                 claimed: false
               },
               {
@@ -754,7 +754,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Summer Champion',
                 description: 'Play 75 games in summer',
                 requirement: 'Complete 75 games this season',
-                reward: 500,
+                reward: 200,
                 claimed: false
               }
             ]
@@ -772,7 +772,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Trick or Treat',
                 description: 'Play during Halloween week',
                 requirement: 'Play any game Oct 25-31',
-                reward: 30,
+                reward: 15,
                 claimed: false
               },
               {
@@ -780,7 +780,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Costume Contest',
                 description: 'Win with a special pattern',
                 requirement: 'Win with X-pattern on Halloween',
-                reward: 200,
+                reward: 80,
                 claimed: false
               }
             ]
@@ -798,7 +798,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Daily Gift',
                 description: 'Play every day in December',
                 requirement: 'Play at least 1 game daily',
-                reward: 20,
+                reward: 12,
                 claimed: false
               },
               {
@@ -806,7 +806,7 @@ const EnhancedAppLayout: React.FC = () => {
                 name: 'Mega Jackpot',
                 description: 'Win the grand prize',
                 requirement: 'Win 100 games in December',
-                reward: 1000,
+                reward: 400,
                 claimed: false
               }
             ]

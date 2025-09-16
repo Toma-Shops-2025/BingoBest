@@ -41,7 +41,7 @@ const SkillBasedMatchmaking: React.FC = () => {
       skillRange: '0-800 SR',
       avgWaitTime: '30s',
       playersInQueue: 24,
-      entryFee: 5,
+      entryFee: 2,
       prizeMultiplier: 1.2
     },
     {
@@ -51,7 +51,7 @@ const SkillBasedMatchmaking: React.FC = () => {
       skillRange: '801-1200 SR',
       avgWaitTime: '45s',
       playersInQueue: 18,
-      entryFee: 10,
+      entryFee: 5,
       prizeMultiplier: 1.5
     },
     {
@@ -61,7 +61,7 @@ const SkillBasedMatchmaking: React.FC = () => {
       skillRange: '1201-1600 SR',
       avgWaitTime: '1m 15s',
       playersInQueue: 12,
-      entryFee: 20,
+      entryFee: 10,
       prizeMultiplier: 2.0
     },
     {
@@ -71,7 +71,7 @@ const SkillBasedMatchmaking: React.FC = () => {
       skillRange: '1601-2000 SR',
       avgWaitTime: '2m 30s',
       playersInQueue: 8,
-      entryFee: 35,
+      entryFee: 15,
       prizeMultiplier: 3.0
     },
     {
@@ -81,7 +81,7 @@ const SkillBasedMatchmaking: React.FC = () => {
       skillRange: '2001-2400 SR',
       avgWaitTime: '4m',
       playersInQueue: 4,
-      entryFee: 50,
+      entryFee: 25,
       prizeMultiplier: 4.5
     },
     {
@@ -91,7 +91,7 @@ const SkillBasedMatchmaking: React.FC = () => {
       skillRange: '2401+ SR',
       avgWaitTime: '8m',
       playersInQueue: 2,
-      entryFee: 100,
+      entryFee: 50,
       prizeMultiplier: 6.0
     }
   ];

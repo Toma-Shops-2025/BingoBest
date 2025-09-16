@@ -29,7 +29,7 @@ const GameModeVariations: React.FC = () => {
       difficulty: 'Medium',
       duration: '5-10 min',
       maxPlayers: 50,
-      entryFee: 10,
+      entryFee: 5,
       specialFeatures: ['Auto-daub available', 'Bonus for quick wins', 'No chat during game']
     },
     {
@@ -40,7 +40,7 @@ const GameModeVariations: React.FC = () => {
       difficulty: 'Hard',
       duration: '15-25 min',
       maxPlayers: 30,
-      entryFee: 25,
+      entryFee: 10,
       specialFeatures: ['Multiple patterns', 'Pattern preview', 'Bonus points for style']
     },
     {
@@ -51,7 +51,7 @@ const GameModeVariations: React.FC = () => {
       difficulty: 'Expert',
       duration: '10-20 min',
       maxPlayers: 20,
-      entryFee: 35,
+      entryFee: 15,
       specialFeatures: ['Hidden numbers', 'Reveal power-ups', 'Memory challenge'],
       unlockRequirement: 'Win 50 regular games'
     },
@@ -63,7 +63,7 @@ const GameModeVariations: React.FC = () => {
       difficulty: 'Medium',
       duration: '12-18 min',
       maxPlayers: 100,
-      entryFee: 20,
+      entryFee: 8,
       specialFeatures: ['Growing jackpot', 'Multiple winners possible', 'Bonus rounds']
     },
     {
@@ -74,7 +74,7 @@ const GameModeVariations: React.FC = () => {
       difficulty: 'Medium',
       duration: '20-30 min',
       maxPlayers: 32,
-      entryFee: 15,
+      entryFee: 6,
       specialFeatures: ['Team coordination', 'Shared cards', 'Captain bonuses']
     },
     {
@@ -85,7 +85,7 @@ const GameModeVariations: React.FC = () => {
       difficulty: 'Expert',
       duration: '8-15 min',
       maxPlayers: 25,
-      entryFee: 40,
+      entryFee: 18,
       specialFeatures: ['Dynamic shuffling', 'Adaptation required', 'Chaos multiplier'],
       unlockRequirement: 'Reach Gold rank'
     },
@@ -97,7 +97,7 @@ const GameModeVariations: React.FC = () => {
       difficulty: 'Hard',
       duration: '2 hours',
       maxPlayers: 50,
-      entryFee: 50,
+      entryFee: 25,
       specialFeatures: ['Multiple rounds', 'Stamina system', 'Mega prizes']
     },
     {
@@ -108,7 +108,7 @@ const GameModeVariations: React.FC = () => {
       difficulty: 'Expert',
       duration: '45-60 min',
       maxPlayers: 16,
-      entryFee: 100,
+      entryFee: 50,
       specialFeatures: ['Elimination rounds', 'Crown title', 'Exclusive rewards'],
       unlockRequirement: 'Diamond rank required'
     }
