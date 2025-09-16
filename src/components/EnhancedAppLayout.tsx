@@ -9,7 +9,6 @@ import AuthModal from './AuthModal';
 import GameHeader from './GameHeader';
 import BingoCard from './BingoCard';
 import NumberDisplay from './NumberDisplay';
-import PowerUpShop from './PowerUpShop';
 import GameRooms from './GameRooms';
 import PaymentModal from './PaymentModal';
 import Leaderboard from './Leaderboard';
@@ -43,7 +42,6 @@ import { financialSafety } from '@/lib/financialSafety';
 import { analytics, trackPageView, trackUserAction } from '@/lib/analytics';
 import { 
   GameRoom, 
-  PowerUp, 
   Player, 
   Tournament, 
   Achievement, 
@@ -213,24 +211,6 @@ const EnhancedAppLayout: React.FC = () => {
     "https://d64gsuwffb70l.cloudfront.net/68c18cfaf53345a2b0f3b279_1757515329263_e8f5a258.webp"
   ];
 
-  const powerUps: PowerUp[] = [
-    {
-      id: '1',
-      name: 'Auto Daub',
-      description: 'Automatically mark numbers',
-      cost: 5,
-      icon: '',
-      type: 'auto_daub'
-    },
-    {
-      id: '2', 
-      name: 'Extra Ball',
-      description: 'Get one extra number',
-      cost: 10,
-      icon: '',
-      type: 'extra_ball'
-    }
-  ];
 
   const handleAddFundsClick = () => {
     setPaymentAmount(25);
@@ -345,20 +325,6 @@ const EnhancedAppLayout: React.FC = () => {
     }
   }, [gameRooms, player.balance]);
 
-  const handlePurchasePowerUp = (powerUpId: string) => {
-    const powerUp = powerUps.find(p => p.id === powerUpId);
-    if (powerUp && player.balance >= powerUp.cost) {
-      // Deduct cost from balance
-      setPlayer(prev => ({
-        ...prev,
-        balance: prev.balance - powerUp.cost
-      }));
-      // Show success message
-      alert(`Purchased ${powerUp.name} for $${powerUp.cost}!`);
-    } else {
-      alert('Insufficient funds!');
-    }
-  };
 
   const handlePaymentSuccess = async () => {
     setIsLoading(true);
@@ -894,11 +860,6 @@ const EnhancedAppLayout: React.FC = () => {
               />
             </div>
             <div className="space-y-6">
-              <PowerUpShop
-                powerUps={powerUps}
-                playerBalance={player.balance}
-                onPurchase={handlePurchasePowerUp}
-              />
               <Leaderboard players={leaderboardPlayers} />
               <GameStats player={player} />
             </div>

@@ -97,16 +97,6 @@ const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
             </ul>
           </div>
 
-          {/* Power-Ups */}
-          <div>
-            <h3 className="text-lg font-semibold text-yellow-400 mb-3">Power-Ups</h3>
-            <ul className="space-y-2 text-sm text-white">
-              <li>• <strong>Auto Daub</strong>: Automatically marks numbers for you.</li>
-              <li>• <strong>Extra Ball</strong>: Get an additional number called.</li>
-              <li>• <strong>Peek Next</strong>: See the next number to be called.</li>
-              <li>• <strong>Double Prize</strong>: Double your winnings if you win.</li>
-            </ul>
-          </div>
 
           {/* Winning Patterns */}
           <div>
