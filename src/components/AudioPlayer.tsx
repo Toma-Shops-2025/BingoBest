@@ -44,7 +44,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
-      audioRef.current.loop = true;
+      audioRef.current.loop = false; // Don't loop individual tracks
     }
     if (soundEffectsRef.current) {
       soundEffectsRef.current.volume = volume * 0.5; // Effects at 50% of music volume
@@ -56,6 +56,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
     if (audioRef.current) {
       const trackPath = getTrackPath(currentTrack);
       audioRef.current.src = trackPath;
+      audioRef.current.loop = false; // Ensure no looping
       
       audioRef.current.addEventListener('loadeddata', () => {
         if (isPlaying) {
@@ -66,8 +67,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
       audioRef.current.addEventListener('error', () => {
         console.log(`Failed to load track ${currentTrack}, trying next...`);
         // Try next track if current one fails
-        const nextTrack = currentTrack === totalTracks ? 1 : currentTrack + 1;
-        setCurrentTrack(nextTrack);
+        nextTrack();
       });
     }
   }, [currentTrack, isPlaying]);
@@ -100,6 +100,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
     const nextIndex = (playlistIndex + 1) % playlist.length;
     setPlaylistIndex(nextIndex);
     setCurrentTrack(playlist[nextIndex]);
+    
+    // If we've reached the end of the playlist, create a new shuffled one
+    if (nextIndex === 0 && playlistIndex === playlist.length - 1) {
+      setTimeout(() => {
+        createShuffledPlaylist();
+      }, 1000); // Small delay to avoid immediate reshuffle
+    }
   };
 
   // Previous track (from shuffled playlist)
@@ -239,6 +246,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ className = '' }) => {
       <audio
         ref={audioRef}
         preload="metadata"
+        loop={false}
         onEnded={() => {
           // Auto-play next track from shuffled playlist when current ends
           nextTrack();
