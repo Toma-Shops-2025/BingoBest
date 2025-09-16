@@ -516,7 +516,7 @@ const EnhancedAppLayout: React.FC = () => {
             name: 'Daily Player',
             description: 'Play 3 games today to earn bonus credits',
             requirement: 3,
-            reward: 10,
+            reward: 5, // Reduced from 10
             progress: Math.floor(Math.random() * 4), // Random progress 0-3
             completed: false,
             expiresAt: tomorrow
@@ -526,7 +526,7 @@ const EnhancedAppLayout: React.FC = () => {
             name: 'Lucky Winner',
             description: 'Win at least 1 game today',
             requirement: 1,
-            reward: 20,
+            reward: 10, // Reduced from 20
             progress: Math.floor(Math.random() * 2), // Random progress 0-1
             completed: false,
             expiresAt: tomorrow
@@ -536,7 +536,7 @@ const EnhancedAppLayout: React.FC = () => {
             name: 'Big Spender',
             description: 'Spend $5 on entry fees today',
             requirement: 5,
-            reward: 15,
+            reward: 8, // Reduced from 15
             progress: Math.floor(Math.random() * 11), // Random progress 0-10
             completed: false,
             expiresAt: tomorrow
@@ -546,7 +546,7 @@ const EnhancedAppLayout: React.FC = () => {
             name: 'Streak Master',
             description: 'Play games for 3 consecutive days',
             requirement: 3,
-            reward: 40,
+            reward: 20, // Reduced from 40
             progress: Math.floor(Math.random() * 4), // Random progress 0-3
             completed: false,
             expiresAt: tomorrow
@@ -1014,10 +1014,12 @@ const EnhancedAppLayout: React.FC = () => {
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
           <div className="flex items-center gap-2">
             <span className="text-yellow-600">⚠️</span>
-            <p className="text-sm text-yellow-800 font-medium">
-              <strong>Important:</strong> All rewards, bonuses, and winnings from challenges, events, and mini-games are 
-              <strong> non-withdrawable</strong> and can only be used for gameplay. They help you save money on deposits!
-            </p>
+            <div className="text-sm text-yellow-800 font-medium">
+              <p className="font-bold text-yellow-900 mb-1">IMPORTANT - PLEASE READ:</p>
+              <p className="mb-1">Any bonus monies or rewards monies are to be used for game play entry fees. All actual winnings are added to your account and are withdrawable.</p>
+              <p className="mb-1">When a player does not have any bonus or rewards monies, players can enter any games or tournaments by Adding Funds to their account!</p>
+              <p className="font-bold text-yellow-900">Thank You and Win Big with BingoBest!!!</p>
+            </div>
           </div>
         </div>
         
