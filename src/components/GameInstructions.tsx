@@ -18,8 +18,17 @@ const GameInstructions: React.FC = () => {
   ];
 
   return (
-    <Card className="mb-6 relative overflow-hidden">
-      {/* Background Image Layer */}
+    <div 
+      className="mb-6 rounded-lg overflow-hidden"
+      style={{
+        backgroundImage: `url('/leaderboard-background.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        position: 'relative'
+      }}
+    >
+      {/* Dark Overlay */}
       <div 
         style={{
           position: 'absolute',
@@ -27,14 +36,9 @@ const GameInstructions: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundImage: `url('/leaderboard-background.jpg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          zIndex: -2
+          backgroundColor: 'rgba(0,0,0,0.6)',
+          zIndex: 1
         }}
-        onLoad={() => console.log('✅ HTPBB-background.jpg loaded in GameInstructions!')}
-        onError={() => console.log('❌ HTPBB-background.jpg failed to load in GameInstructions!')}
       />
       
       {/* Force image load for debugging */}
@@ -47,26 +51,12 @@ const GameInstructions: React.FC = () => {
         />
       </div>
       
-      {/* Dark Overlay */}
-      <div 
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.6)',
-          zIndex: -1
-        }}
-      />
-      
-      <CardHeader className="relative z-10">
-        <CardTitle className="flex items-center gap-2 text-white">
+      <div className="relative z-10 p-6">
+        <div className="flex items-center gap-2 text-white mb-6">
           <Info className="w-5 h-5" />
-          How to Play BingoBest
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6 relative z-10">
+          <h2 className="text-xl font-semibold">How to Play BingoBest</h2>
+        </div>
+        <div className="space-y-6">
         {/* Basic Rules */}
         <div>
           <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-white">
@@ -130,8 +120,8 @@ const GameInstructions: React.FC = () => {
             <li>• Check your balance regularly</li>
           </ul>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
