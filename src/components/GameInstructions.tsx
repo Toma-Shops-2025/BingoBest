@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Info, Target, Star, Zap } from 'lucide-react';
+import { Info, Target, Star } from 'lucide-react';
 
 const GameInstructions: React.FC = () => {
   const winningPatterns = [
@@ -11,11 +11,6 @@ const GameInstructions: React.FC = () => {
     { name: 'Full House', description: 'Mark all 25 squares on your card', prize: '$200' }
   ];
 
-  const powerUps = [
-    { name: 'Auto Dab', description: 'Automatically mark called numbers', cost: '$5' },
-    { name: 'Extra Ball', description: 'Get an extra number call', cost: '$10' },
-    { name: 'Double Win', description: 'Double your next win amount', cost: '$15' }
-  ];
 
   return (
     <div 
@@ -91,24 +86,6 @@ const GameInstructions: React.FC = () => {
           </div>
         </div>
 
-        {/* Power-Ups */}
-        <div>
-          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2 text-white">
-            <Zap className="w-5 h-5" />
-            Power-Ups
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {powerUps.map((powerUp, index) => (
-              <div key={index} className="border border-white/20 rounded-lg p-3 bg-white/10 backdrop-blur-sm">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-medium text-white">{powerUp.name}</span>
-                  <Badge variant="warning">{powerUp.cost}</Badge>
-                </div>
-                <p className="text-sm text-white/90">{powerUp.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/* Pro Tips */}
         <div className="bg-purple-500/20 border border-purple-300/30 rounded-lg p-4 backdrop-blur-sm">

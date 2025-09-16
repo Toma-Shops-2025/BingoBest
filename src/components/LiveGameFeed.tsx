@@ -43,8 +43,8 @@ const LiveGameFeed: React.FC = () => {
       id: '2',
       name: 'Double or Nothing',
       description: 'Double your bet or lose it all!',
-      cost: 25,
-      maxWin: 50,
+      cost: 5,
+      maxWin: 10,
       icon: <Coins className="w-6 h-6" />
     },
     {
@@ -120,18 +120,18 @@ const LiveGameFeed: React.FC = () => {
 
   // Double or Nothing game
   const playDoubleOrNothing = () => {
-    if (balance < 25) return;
+    if (balance < 5) return;
     
     playButtonClick();
-    setBalance(prev => prev - 25);
+    setBalance(prev => prev - 5);
     
     // 50% chance to win (realistic house edge)
     const win = Math.random() < 0.5;
     setDoubleOrNothingResult(win);
     
     if (win) {
-      setBalance(prev => prev + 50);
-      setLastWin(50);
+      setBalance(prev => prev + 10);
+      setLastWin(10);
       playWin();
     } else {
       setLastWin(0);
@@ -303,14 +303,14 @@ const LiveGameFeed: React.FC = () => {
               }}
               disabled={
                 (selectedGame === '1' && (isRolling || balance < 10)) ||
-                (selectedGame === '2' && balance < 25) ||
+                (selectedGame === '2' && balance < 5) ||
                 (selectedGame === '3' && balance < 15)
               }
               size="lg"
               className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-bold text-lg py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {selectedGame === '1' && (isRolling ? '🎲 Rolling...' : '🎲 Roll Dice ($10)')}
-              {selectedGame === '2' && '💰 Double or Nothing ($25)'}
+              {selectedGame === '2' && '💰 Double or Nothing ($5)'}
               {selectedGame === '3' && '⚡ Lightning Strike ($15)'}
             </Button>
 
