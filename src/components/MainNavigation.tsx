@@ -15,19 +15,17 @@ import {
 interface MainNavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
-  unreadChallenges: number;
 }
 
 const MainNavigation: React.FC<MainNavigationProps> = ({
   activeTab,
-  onTabChange,
-  unreadChallenges
+  onTabChange
 }) => {
   const navItems = [
     { id: 'home', label: 'Game Rooms', icon: Home },
     { id: 'tournaments', label: 'Tournaments', icon: Trophy },
     { id: 'achievements', label: 'Achievements', icon: Target },
-    { id: 'challenges', label: 'Daily', icon: Calendar, badge: unreadChallenges },
+    { id: 'challenges', label: 'Daily', icon: Calendar },
     { id: 'friends', label: 'Friends', icon: Users },
     { id: 'events', label: 'Events', icon: Star },
     { id: 'vip', label: 'VIP', icon: Crown },
@@ -54,13 +52,6 @@ const MainNavigation: React.FC<MainNavigationProps> = ({
               >
                 <Icon className="w-4 h-4" />
                 {item.label}
-                {item.badge && item.badge > 0 && (
-                  <Badge 
-                    className="absolute -top-2 -right-2 h-5 w-5 p-0 text-xs bg-red-500 text-white"
-                  >
-                    {item.badge}
-                  </Badge>
-                )}
               </Button>
             );
           })}

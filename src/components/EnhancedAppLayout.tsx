@@ -1018,7 +1018,6 @@ const EnhancedAppLayout: React.FC = () => {
           <MainNavigation 
             activeTab={activeTab} 
             onTabChange={handleTabChange} 
-            unreadChallenges={2} 
           />
         </div>
 
