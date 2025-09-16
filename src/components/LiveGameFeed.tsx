@@ -24,6 +24,9 @@ const LiveGameFeed: React.FC = () => {
     win: number;
     time: string;
   }>>([]);
+  const [selectedGame, setSelectedGame] = useState<string>('1'); // Default to Lucky Dice Roll
+  const [doubleOrNothingResult, setDoubleOrNothingResult] = useState<boolean | null>(null);
+  const [lightningStrikeResult, setLightningStrikeResult] = useState<number | null>(null);
   
   const { playDiceRoll, playWin, playButtonClick } = useSoundEffects();
 
@@ -53,6 +56,14 @@ const LiveGameFeed: React.FC = () => {
       icon: <Zap className="w-6 h-6" />
     }
   ];
+
+  const selectGame = (gameId: string) => {
+    setSelectedGame(gameId);
+    setLastWin(null);
+    setDiceResult(0);
+    setDoubleOrNothingResult(null);
+    setLightningStrikeResult(null);
+  };
 
   const rollDice = () => {
     if (isRolling || balance < 10) return;
@@ -107,6 +118,61 @@ const LiveGameFeed: React.FC = () => {
     return <IconComponent className="w-12 h-12" />;
   };
 
+  // Double or Nothing game
+  const playDoubleOrNothing = () => {
+    if (balance < 25) return;
+    
+    playButtonClick();
+    setBalance(prev => prev - 25);
+    
+    // 50% chance to win (realistic house edge)
+    const win = Math.random() < 0.5;
+    setDoubleOrNothingResult(win);
+    
+    if (win) {
+      setBalance(prev => prev + 50);
+      setLastWin(50);
+      playWin();
+    } else {
+      setLastWin(0);
+    }
+  };
+
+  // Lightning Strike game
+  const playLightningStrike = () => {
+    if (balance < 15) return;
+    
+    playButtonClick();
+    setBalance(prev => prev - 15);
+    
+    // Random result with weighted odds
+    const random = Math.random();
+    let winAmount = 0;
+    let result = 0;
+    
+    if (random < 0.1) { // 10% chance
+      winAmount = 30;
+      result = 3;
+    } else if (random < 0.3) { // 20% chance
+      winAmount = 20;
+      result = 2;
+    } else if (random < 0.6) { // 30% chance
+      winAmount = 10;
+      result = 1;
+    }
+    // 40% chance of no win
+    
+    setLightningStrikeResult(result);
+    
+    if (winAmount > 0) {
+      setBalance(prev => prev + winAmount);
+      setLastWin(winAmount);
+      playWin();
+    } else {
+      setLastWin(0);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Mini Games Section */}
@@ -120,13 +186,29 @@ const LiveGameFeed: React.FC = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {miniGames.map((game) => (
-              <div key={game.id} className="group p-4 border border-white/20 rounded-lg hover:shadow-lg transition-all duration-300 bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-sm hover:from-white/10 hover:to-white/15">
+              <div 
+                key={game.id} 
+                onClick={() => selectGame(game.id)}
+                className={`group p-4 border rounded-lg hover:shadow-lg transition-all duration-300 backdrop-blur-sm cursor-pointer ${
+                  selectedGame === game.id 
+                    ? 'border-yellow-400/50 bg-gradient-to-br from-yellow-400/10 to-yellow-600/10 shadow-lg shadow-yellow-400/20' 
+                    : 'border-white/20 bg-gradient-to-br from-white/5 to-white/10 hover:from-white/10 hover:to-white/15'
+                }`}
+              >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="p-2 rounded-lg bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 group-hover:from-yellow-400/30 group-hover:to-yellow-600/30 transition-all duration-300">
+                  <div className={`p-2 rounded-lg transition-all duration-300 ${
+                    selectedGame === game.id 
+                      ? 'bg-gradient-to-br from-yellow-400/30 to-yellow-600/30' 
+                      : 'bg-gradient-to-br from-yellow-400/20 to-yellow-600/20 group-hover:from-yellow-400/30 group-hover:to-yellow-600/30'
+                  }`}>
                     {game.icon}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white group-hover:text-yellow-300 transition-colors duration-300">{game.name}</h3>
+                    <h3 className={`font-semibold transition-colors duration-300 ${
+                      selectedGame === game.id 
+                        ? 'text-yellow-300' 
+                        : 'text-white group-hover:text-yellow-300'
+                    }`}>{game.name}</h3>
                     <p className="text-sm text-white/70 group-hover:text-white/90 transition-colors duration-300">{game.description}</p>
                   </div>
                 </div>
@@ -134,17 +216,24 @@ const LiveGameFeed: React.FC = () => {
                   <span className="text-sm text-white/60 font-medium">Cost: ${game.cost}</span>
                   <Badge variant="outline" className="border-yellow-400/50 text-yellow-300 bg-yellow-400/10">Max: ${game.maxWin}</Badge>
                 </div>
+                {selectedGame === game.id && (
+                  <div className="mt-3 text-center">
+                    <span className="text-xs text-yellow-300 font-medium">✓ Selected</span>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
 
-      {/* Lucky Dice Roll Game */}
+      {/* Active Game Interface */}
       <Card className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-purple-500/30">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
-            🎲 Lucky Dice Roll
+            {selectedGame === '1' && '🎲 Lucky Dice Roll'}
+            {selectedGame === '2' && '💰 Double or Nothing'}
+            {selectedGame === '3' && '⚡ Lightning Strike'}
             <Badge variant="success" className="bg-green-500/20 text-green-300 border-green-400/50">Active</Badge>
           </CardTitle>
         </CardHeader>
@@ -166,23 +255,63 @@ const LiveGameFeed: React.FC = () => {
               )}
             </div>
 
-            {/* Dice Display */}
+            {/* Game Display */}
             <div className="flex justify-center">
-              <div className={`p-8 rounded-xl border-2 border-white/30 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm ${isRolling ? 'animate-pulse bg-yellow-500/20 border-yellow-400/50' : 'hover:bg-white/15 transition-all duration-300'}`}>
-                <div className="text-white">
-                  {diceResult > 0 ? getDiceIcon(diceResult) : <Dice1 className="w-16 h-16 text-white/60" />}
+              {selectedGame === '1' && (
+                <div className={`p-8 rounded-xl border-2 border-white/30 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm ${isRolling ? 'animate-pulse bg-yellow-500/20 border-yellow-400/50' : 'hover:bg-white/15 transition-all duration-300'}`}>
+                  <div className="text-white">
+                    {diceResult > 0 ? getDiceIcon(diceResult) : <Dice1 className="w-16 h-16 text-white/60" />}
+                  </div>
                 </div>
-              </div>
+              )}
+              
+              {selectedGame === '2' && (
+                <div className="p-8 rounded-xl border-2 border-white/30 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm hover:bg-white/15 transition-all duration-300">
+                  <div className="text-white text-center">
+                    {doubleOrNothingResult === null ? (
+                      <Coins className="w-16 h-16 text-white/60 mx-auto" />
+                    ) : doubleOrNothingResult ? (
+                      <div className="text-green-400 text-4xl font-bold">💰 WIN!</div>
+                    ) : (
+                      <div className="text-red-400 text-4xl font-bold">❌ LOSE</div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {selectedGame === '3' && (
+                <div className="p-8 rounded-xl border-2 border-white/30 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm hover:bg-white/15 transition-all duration-300">
+                  <div className="text-white text-center">
+                    {lightningStrikeResult === null ? (
+                      <Zap className="w-16 h-16 text-white/60 mx-auto" />
+                    ) : lightningStrikeResult === 0 ? (
+                      <div className="text-red-400 text-4xl font-bold">⚡ MISS</div>
+                    ) : (
+                      <div className="text-yellow-400 text-4xl font-bold">⚡ HIT x{lightningStrikeResult}!</div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Roll Button */}
+            {/* Game Button */}
             <Button 
-              onClick={rollDice}
-              disabled={isRolling || balance < 10}
+              onClick={() => {
+                if (selectedGame === '1') rollDice();
+                else if (selectedGame === '2') playDoubleOrNothing();
+                else if (selectedGame === '3') playLightningStrike();
+              }}
+              disabled={
+                (selectedGame === '1' && (isRolling || balance < 10)) ||
+                (selectedGame === '2' && balance < 25) ||
+                (selectedGame === '3' && balance < 15)
+              }
               size="lg"
               className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-bold text-lg py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isRolling ? '🎲 Rolling...' : '🎲 Roll Dice ($10)'}
+              {selectedGame === '1' && (isRolling ? '🎲 Rolling...' : '🎲 Roll Dice ($10)')}
+              {selectedGame === '2' && '💰 Double or Nothing ($25)'}
+              {selectedGame === '3' && '⚡ Lightning Strike ($15)'}
             </Button>
 
             {/* Game History */}
