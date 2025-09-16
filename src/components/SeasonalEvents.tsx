@@ -28,6 +28,17 @@ const SeasonalEvents: React.FC<SeasonalEventsProps> = ({
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   };
 
+  const getEventStatus = (event: SeasonalEvent) => {
+    const now = new Date();
+    if (now < event.startDate) {
+      return { status: 'upcoming', color: 'blue', text: 'Upcoming' };
+    } else if (now >= event.startDate && now <= event.endDate) {
+      return { status: 'active', color: 'green', text: 'Active' };
+    } else {
+      return { status: 'ended', color: 'gray', text: 'Ended' };
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
@@ -36,31 +47,53 @@ const SeasonalEvents: React.FC<SeasonalEventsProps> = ({
       </div>
 
       <div className="grid gap-4">
-        {events.map((event) => (
-          <Card key={event.id} className={`${event.active ? 'border-yellow-300 bg-yellow-50' : ''}`}>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    {event.name}
-                    {event.active && <Badge className="bg-yellow-500">Active</Badge>}
-                  </CardTitle>
-                  <p className="text-sm text-gray-600 mt-1">{event.description}</p>
-                </div>
-                <div className="text-right text-sm text-gray-500">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    {formatDate(event.startDate)} - {formatDate(event.endDate)}
+        {events.map((event) => {
+          const eventStatus = getEventStatus(event);
+          return (
+            <Card key={event.id} className={`${
+              eventStatus.status === 'active' 
+                ? 'border-green-300 bg-green-50' 
+                : eventStatus.status === 'upcoming'
+                ? 'border-blue-300 bg-blue-50'
+                : 'border-gray-300 bg-gray-50'
+            }`}>
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      {event.name}
+                      <Badge className={`${
+                        eventStatus.status === 'active' 
+                          ? 'bg-green-500' 
+                          : eventStatus.status === 'upcoming'
+                          ? 'bg-blue-500'
+                          : 'bg-gray-500'
+                      }`}>
+                        {eventStatus.text}
+                      </Badge>
+                    </CardTitle>
+                    <p className="text-sm text-gray-600 mt-1">{event.description}</p>
                   </div>
-                  {event.active && (
-                    <div className="flex items-center gap-1 mt-1">
-                      <Clock className="w-4 h-4" />
-                      {getDaysRemaining(event.endDate)} days left
+                  <div className="text-right text-sm text-gray-500">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      {formatDate(event.startDate)} - {formatDate(event.endDate)}
                     </div>
-                  )}
+                    {eventStatus.status === 'active' && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <Clock className="w-4 h-4" />
+                        {getDaysRemaining(event.endDate)} days left
+                      </div>
+                    )}
+                    {eventStatus.status === 'upcoming' && (
+                      <div className="flex items-center gap-1 mt-1">
+                        <Clock className="w-4 h-4" />
+                        Starts in {Math.ceil((event.startDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
+              </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 <h4 className="font-semibold flex items-center gap-2">
@@ -91,7 +124,7 @@ const SeasonalEvents: React.FC<SeasonalEventsProps> = ({
                         </Badge>
                         {reward.claimed ? (
                           <p className="text-xs text-green-600 mt-1">✓ Claimed</p>
-                        ) : event.active ? (
+                        ) : eventStatus.status === 'active' ? (
                           <Button
                             size="sm"
                             onClick={() => onClaimReward(event.id, reward.id)}
@@ -99,6 +132,8 @@ const SeasonalEvents: React.FC<SeasonalEventsProps> = ({
                           >
                             Claim
                           </Button>
+                        ) : eventStatus.status === 'upcoming' ? (
+                          <p className="text-xs text-blue-500 mt-1">Event not started</p>
                         ) : (
                           <p className="text-xs text-gray-500 mt-1">Event ended</p>
                         )}
@@ -109,7 +144,8 @@ const SeasonalEvents: React.FC<SeasonalEventsProps> = ({
               </div>
             </CardContent>
           </Card>
-        ))}
+          );
+        })}
       </div>
 
       {events.length === 0 && (

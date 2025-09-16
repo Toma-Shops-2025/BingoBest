@@ -626,75 +626,146 @@ const EnhancedAppLayout: React.FC = () => {
           }} 
         />;
       case 'events':
-        // Create exciting seasonal events
+        // Create exciting seasonal events with current dates
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        
         const seasonalEvents = [
           {
-            id: 'summer-splash-2024',
+            id: 'new-year-celebration-2025',
+            name: 'New Year Celebration',
+            description: 'Ring in the new year with special bingo games and celebration prizes!',
+            startDate: new Date(`${currentYear}-01-01`),
+            endDate: new Date(`${currentYear}-01-31`),
+            active: now >= new Date(`${currentYear}-01-01`) && now <= new Date(`${currentYear}-01-31`),
+            rewards: [
+              {
+                id: 'new-year-daily',
+                name: 'New Year Daily',
+                description: 'Play every day in January',
+                requirement: 'Play at least 1 game daily',
+                reward: 15,
+                claimed: false
+              },
+              {
+                id: 'new-year-resolution',
+                name: 'Resolution Keeper',
+                description: 'Win 10 games in January',
+                requirement: 'Win 10 games this month',
+                reward: 75,
+                claimed: false
+              },
+              {
+                id: 'new-year-champion',
+                name: 'New Year Champion',
+                description: 'Play 25 games in January',
+                requirement: 'Complete 25 games this month',
+                reward: 200,
+                claimed: false
+              }
+            ]
+          },
+          {
+            id: 'valentines-love-2025',
+            name: 'Valentine\'s Love Bingo',
+            description: 'Share the love with heart-themed bingo games and romantic prizes!',
+            startDate: new Date(`${currentYear}-02-01`),
+            endDate: new Date(`${currentYear}-02-28`),
+            active: now >= new Date(`${currentYear}-02-01`) && now <= new Date(`${currentYear}-02-28`),
+            rewards: [
+              {
+                id: 'valentines-heart',
+                name: 'Heart of Gold',
+                description: 'Play on Valentine\'s Day',
+                requirement: 'Play any game on Feb 14',
+                reward: 50,
+                claimed: false
+              },
+              {
+                id: 'valentines-couple',
+                name: 'Love Birds',
+                description: 'Win 5 games in February',
+                requirement: 'Win 5 games this month',
+                reward: 100,
+                claimed: false
+              }
+            ]
+          },
+          {
+            id: 'spring-renewal-2025',
+            name: 'Spring Renewal Bingo',
+            description: 'Welcome spring with fresh bingo games and blooming prizes!',
+            startDate: new Date(`${currentYear}-03-01`),
+            endDate: new Date(`${currentYear}-05-31`),
+            active: now >= new Date(`${currentYear}-03-01`) && now <= new Date(`${currentYear}-05-31`),
+            rewards: [
+              {
+                id: 'spring-daily',
+                name: 'Spring Daily',
+                description: 'Play every day in spring',
+                requirement: 'Play at least 1 game daily',
+                reward: 20,
+                claimed: false
+              },
+              {
+                id: 'spring-bloom',
+                name: 'Spring Bloom',
+                description: 'Win 15 games in spring',
+                requirement: 'Win 15 games this season',
+                reward: 150,
+                claimed: false
+              },
+              {
+                id: 'spring-master',
+                name: 'Spring Master',
+                description: 'Play 50 games in spring',
+                requirement: 'Complete 50 games this season',
+                reward: 300,
+                claimed: false
+              }
+            ]
+          },
+          {
+            id: 'summer-splash-2025',
             name: 'Summer Splash Bingo',
             description: 'Dive into summer with special water-themed bingo games and splash prizes!',
-            startDate: new Date('2024-06-01'),
-            endDate: new Date('2024-08-31'),
-            active: true,
+            startDate: new Date(`${currentYear}-06-01`),
+            endDate: new Date(`${currentYear}-08-31`),
+            active: now >= new Date(`${currentYear}-06-01`) && now <= new Date(`${currentYear}-08-31`),
             rewards: [
               {
                 id: 'summer-daily',
-                name: 'Daily Summer Bonus',
-                description: 'Play 3 games in a day',
-                requirement: 'Complete 3 games in 24 hours',
+                name: 'Summer Daily',
+                description: 'Play every day in summer',
+                requirement: 'Play at least 1 game daily',
                 reward: 25,
                 claimed: false
               },
               {
-                id: 'summer-weekly',
-                name: 'Weekly Wave Rider',
-                description: 'Win 5 games in a week',
-                requirement: 'Win 5 games within 7 days',
-                reward: 100,
+                id: 'summer-wave',
+                name: 'Wave Rider',
+                description: 'Win 20 games in summer',
+                requirement: 'Win 20 games this season',
+                reward: 200,
                 claimed: false
               },
               {
-                id: 'summer-monthly',
+                id: 'summer-champion',
                 name: 'Summer Champion',
-                description: 'Play 50 games this month',
-                requirement: 'Complete 50 games in June',
+                description: 'Play 75 games in summer',
+                requirement: 'Complete 75 games this season',
                 reward: 500,
                 claimed: false
               }
             ]
           },
           {
-            id: 'back-to-school-2024',
-            name: 'Back to School Bingo',
-            description: 'Get ready for the school year with educational bingo challenges!',
-            startDate: new Date('2024-08-15'),
-            endDate: new Date('2024-09-15'),
-            active: false,
-            rewards: [
-              {
-                id: 'school-study',
-                name: 'Study Session',
-                description: 'Play 10 games in a day',
-                requirement: 'Complete 10 games in 24 hours',
-                reward: 50,
-                claimed: false
-              },
-              {
-                id: 'school-homework',
-                name: 'Homework Helper',
-                description: 'Win 3 games in a row',
-                requirement: 'Win 3 consecutive games',
-                reward: 75,
-                claimed: false
-              }
-            ]
-          },
-          {
-            id: 'halloween-spooky-2024',
+            id: 'halloween-spooky-2025',
             name: 'Spooky Halloween Bingo',
             description: 'Trick or treat with our haunted bingo games and ghostly prizes!',
-            startDate: new Date('2024-10-01'),
-            endDate: new Date('2024-10-31'),
-            active: false,
+            startDate: new Date(`${currentYear}-10-01`),
+            endDate: new Date(`${currentYear}-10-31`),
+            active: now >= new Date(`${currentYear}-10-01`) && now <= new Date(`${currentYear}-10-31`),
             rewards: [
               {
                 id: 'halloween-trick',
@@ -715,12 +786,12 @@ const EnhancedAppLayout: React.FC = () => {
             ]
           },
           {
-            id: 'holiday-jackpot-2024',
+            id: 'holiday-jackpot-2025',
             name: 'Holiday Jackpot Extravaganza',
             description: 'Celebrate the holidays with our biggest prize pool ever!',
-            startDate: new Date('2024-12-01'),
-            endDate: new Date('2024-12-31'),
-            active: false,
+            startDate: new Date(`${currentYear}-12-01`),
+            endDate: new Date(`${currentYear}-12-31`),
+            active: now >= new Date(`${currentYear}-12-01`) && now <= new Date(`${currentYear}-12-31`),
             rewards: [
               {
                 id: 'holiday-daily',
