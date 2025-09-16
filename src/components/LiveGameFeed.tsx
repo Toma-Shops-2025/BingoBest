@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, Coins, Zap } from 'lucide-react';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
+import BalanceBreakdown from './BalanceBreakdown';
 
 interface MiniGame {
   id: string;
@@ -241,10 +242,13 @@ const LiveGameFeed: React.FC = () => {
           <div className="text-center space-y-6">
             {/* Balance Display */}
             <div className="flex justify-center gap-6 mb-6">
-              <div className="text-center p-4 rounded-lg bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-400/30">
-                <div className="text-3xl font-bold text-green-400">${balance}</div>
-                <div className="text-sm text-green-300/80 font-medium">Balance</div>
-              </div>
+              <BalanceBreakdown
+                totalBalance={balance}
+                withdrawableBalance={balance * 0.64} // Assume 64% is withdrawable
+                bonusBalance={balance * 0.36} // Assume 36% is bonus
+                compact={true}
+                className="bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-400/30 p-4 rounded-lg"
+              />
               {lastWin !== null && (
                 <div className="text-center p-4 rounded-lg bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-400/30">
                   <div className={`text-2xl font-bold ${lastWin > 0 ? 'text-yellow-400' : 'text-red-400'}`}>

@@ -7,6 +7,7 @@ import { GAME_CONFIGS, GameSessionManager } from '@/lib/prizeDistribution';
 import { Button } from '@/components/ui/button';
 import AuthModal from './AuthModal';
 import GameHeader from './GameHeader';
+import BalanceBreakdown from './BalanceBreakdown';
 import BingoCard from './BingoCard';
 import NumberDisplay from './NumberDisplay';
 import GameRooms from './GameRooms';
@@ -60,7 +61,9 @@ const EnhancedAppLayout: React.FC = () => {
   const [player, setPlayer] = useState<Player>({
     id: user?.id || 'guest',
     username: user?.email?.split('@')[0] || 'Player1',
-    balance: 25.00,
+    balance: 235.00, // Total balance
+    withdrawableBalance: 150.00, // Real money that can be withdrawn
+    bonusBalance: 85.00, // Non-withdrawable bonus credits
     level: 1,
     experience: 0,
     avatar: '',
@@ -998,6 +1001,15 @@ const EnhancedAppLayout: React.FC = () => {
               onAddFunds={handleAddFundsClick}
               onViewProfile={() => setShowUserProfile(true)}
           />
+          {/* Detailed Balance Breakdown */}
+          <div className="mt-4">
+            <BalanceBreakdown
+              totalBalance={player.balance}
+              withdrawableBalance={player.withdrawableBalance}
+              bonusBalance={player.bonusBalance}
+              showDetails={true}
+            />
+          </div>
         </div>
         )}
 
