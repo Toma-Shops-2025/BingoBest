@@ -627,8 +627,8 @@ const EnhancedAppLayout: React.FC = () => {
         />;
       case 'events':
         // Create exciting seasonal events with current dates
-        const now = new Date();
-        const currentYear = now.getFullYear();
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
         
         const seasonalEvents = [
           {
@@ -637,7 +637,7 @@ const EnhancedAppLayout: React.FC = () => {
             description: 'Ring in the new year with special bingo games and celebration prizes!',
             startDate: new Date(`${currentYear}-01-01`),
             endDate: new Date(`${currentYear}-01-31`),
-            active: now >= new Date(`${currentYear}-01-01`) && now <= new Date(`${currentYear}-01-31`),
+            active: currentDate >= new Date(`${currentYear}-01-01`) && currentDate <= new Date(`${currentYear}-01-31`),
             rewards: [
               {
                 id: 'new-year-daily',
@@ -671,7 +671,7 @@ const EnhancedAppLayout: React.FC = () => {
             description: 'Share the love with heart-themed bingo games and romantic prizes!',
             startDate: new Date(`${currentYear}-02-01`),
             endDate: new Date(`${currentYear}-02-28`),
-            active: now >= new Date(`${currentYear}-02-01`) && now <= new Date(`${currentYear}-02-28`),
+            active: currentDate >= new Date(`${currentYear}-02-01`) && currentDate <= new Date(`${currentYear}-02-28`),
             rewards: [
               {
                 id: 'valentines-heart',
@@ -697,7 +697,7 @@ const EnhancedAppLayout: React.FC = () => {
             description: 'Welcome spring with fresh bingo games and blooming prizes!',
             startDate: new Date(`${currentYear}-03-01`),
             endDate: new Date(`${currentYear}-05-31`),
-            active: now >= new Date(`${currentYear}-03-01`) && now <= new Date(`${currentYear}-05-31`),
+            active: currentDate >= new Date(`${currentYear}-03-01`) && currentDate <= new Date(`${currentYear}-05-31`),
             rewards: [
               {
                 id: 'spring-daily',
@@ -731,7 +731,7 @@ const EnhancedAppLayout: React.FC = () => {
             description: 'Dive into summer with special water-themed bingo games and splash prizes!',
             startDate: new Date(`${currentYear}-06-01`),
             endDate: new Date(`${currentYear}-08-31`),
-            active: now >= new Date(`${currentYear}-06-01`) && now <= new Date(`${currentYear}-08-31`),
+            active: currentDate >= new Date(`${currentYear}-06-01`) && currentDate <= new Date(`${currentYear}-08-31`),
             rewards: [
               {
                 id: 'summer-daily',
@@ -765,7 +765,7 @@ const EnhancedAppLayout: React.FC = () => {
             description: 'Trick or treat with our haunted bingo games and ghostly prizes!',
             startDate: new Date(`${currentYear}-10-01`),
             endDate: new Date(`${currentYear}-10-31`),
-            active: now >= new Date(`${currentYear}-10-01`) && now <= new Date(`${currentYear}-10-31`),
+            active: currentDate >= new Date(`${currentYear}-10-01`) && currentDate <= new Date(`${currentYear}-10-31`),
             rewards: [
               {
                 id: 'halloween-trick',
@@ -791,7 +791,7 @@ const EnhancedAppLayout: React.FC = () => {
             description: 'Celebrate the holidays with our biggest prize pool ever!',
             startDate: new Date(`${currentYear}-12-01`),
             endDate: new Date(`${currentYear}-12-31`),
-            active: now >= new Date(`${currentYear}-12-01`) && now <= new Date(`${currentYear}-12-31`),
+            active: currentDate >= new Date(`${currentYear}-12-01`) && currentDate <= new Date(`${currentYear}-12-31`),
             rewards: [
               {
                 id: 'holiday-daily',
