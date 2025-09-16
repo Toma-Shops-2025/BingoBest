@@ -83,7 +83,7 @@ const BalanceBreakdown: React.FC<BalanceBreakdownProps> = ({
                     ${withdrawableBalance.toFixed(2)}
                   </div>
                   <Badge variant="outline" className="text-green-300 border-green-400/50 text-xs">
-                    Real Money
+                    Gameplay/Withdraw
                   </Badge>
                 </div>
               </div>
