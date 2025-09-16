@@ -968,7 +968,19 @@ const EnhancedAppLayout: React.FC = () => {
               <GameStats player={player} />
             </div>
             <div>
-              <LiveGameFeed />
+              <LiveGameFeed 
+                playerBalance={player.balance}
+                playerWithdrawableBalance={player.withdrawableBalance}
+                playerBonusBalance={player.bonusBalance}
+                onBalanceUpdate={(newBalance, newWithdrawableBalance, newBonusBalance) => {
+                  setPlayer(prev => ({
+                    ...prev,
+                    balance: newBalance,
+                    withdrawableBalance: newWithdrawableBalance,
+                    bonusBalance: newBonusBalance
+                  }));
+                }}
+              />
             </div>
           </div>
         );

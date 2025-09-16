@@ -3,21 +3,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Target, Clock, DollarSign } from 'lucide-react';
 
-interface GameStatsProps {
+interface Player {
   gamesPlayed: number;
   gamesWon: number;
   totalWinnings: number;
   winRate: number;
-  averageGameTime: number;
 }
 
-const GameStats: React.FC<GameStatsProps> = ({
-  gamesPlayed,
-  gamesWon,
-  totalWinnings,
-  winRate,
-  averageGameTime
-}) => {
+interface GameStatsProps {
+  player: Player;
+}
+
+const GameStats: React.FC<GameStatsProps> = ({ player }) => {
+  const { gamesPlayed, gamesWon, totalWinnings, winRate } = player;
+  const averageGameTime = 5; // Default average game time in minutes
   return (
     <Card>
       <CardHeader>

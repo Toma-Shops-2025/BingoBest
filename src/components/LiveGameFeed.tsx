@@ -16,10 +16,21 @@ interface MiniGame {
   icon: React.ReactNode;
 }
 
-const LiveGameFeed: React.FC = () => {
+interface LiveGameFeedProps {
+  playerBalance: number;
+  playerWithdrawableBalance: number;
+  playerBonusBalance: number;
+  onBalanceUpdate: (newBalance: number, newWithdrawableBalance: number, newBonusBalance: number) => void;
+}
+
+const LiveGameFeed: React.FC<LiveGameFeedProps> = ({ 
+  playerBalance, 
+  playerWithdrawableBalance, 
+  playerBonusBalance, 
+  onBalanceUpdate 
+}) => {
   const [diceResult, setDiceResult] = useState<number>(0);
   const [isRolling, setIsRolling] = useState(false);
-  const [balance, setBalance] = useState(1000);
   const [lastWin, setLastWin] = useState<number | null>(null);
   const [gameHistory, setGameHistory] = useState<Array<{
     dice: number;
@@ -68,13 +79,19 @@ const LiveGameFeed: React.FC = () => {
   };
 
   const rollDice = () => {
-    if (isRolling || balance < 10) return;
+    if (isRolling || playerBalance < 10) return;
     
     // Play dice roll sound
     playDiceRoll();
     
     setIsRolling(true);
-    setBalance(prev => prev - 10);
+    
+    // Deduct from player's real balance
+    const newWithdrawableBalance = Math.max(0, playerWithdrawableBalance - 10);
+    const newBonusBalance = playerBonusBalance;
+    const newTotalBalance = newWithdrawableBalance + newBonusBalance;
+    
+    onBalanceUpdate(newTotalBalance, newWithdrawableBalance, newBonusBalance);
     
     // Start mini-game session
     const sessionId = gameState.startGameSession('mini-game', 10);
@@ -101,7 +118,12 @@ const LiveGameFeed: React.FC = () => {
         // 1 = no win (most common outcome)
         
         if (winAmount > 0) {
-          setBalance(prev => prev + winAmount);
+          // Add winnings to player's withdrawable balance (real money)
+          const newWithdrawableBalance = playerWithdrawableBalance - 10 + winAmount;
+          const newTotalBalance = newWithdrawableBalance + playerBonusBalance;
+          
+          onBalanceUpdate(newTotalBalance, newWithdrawableBalance, playerBonusBalance);
+          
           setLastWin(winAmount);
           setGameHistory(prev => [{
             dice: finalResult,
@@ -131,10 +153,16 @@ const LiveGameFeed: React.FC = () => {
 
   // Double or Nothing game
   const playDoubleOrNothing = () => {
-    if (balance < 5) return;
+    if (playerBalance < 5) return;
     
     playButtonClick();
-    setBalance(prev => prev - 5);
+    
+    // Deduct from player's real balance
+    const newWithdrawableBalance = Math.max(0, playerWithdrawableBalance - 5);
+    const newBonusBalance = playerBonusBalance;
+    const newTotalBalance = newWithdrawableBalance + newBonusBalance;
+    
+    onBalanceUpdate(newTotalBalance, newWithdrawableBalance, newBonusBalance);
     
     // Start mini-game session
     const sessionId = gameState.startGameSession('mini-game', 5);
@@ -144,7 +172,12 @@ const LiveGameFeed: React.FC = () => {
     setDoubleOrNothingResult(win);
     
     if (win) {
-      setBalance(prev => prev + 10);
+      // Add winnings to player's withdrawable balance (real money)
+      const newWithdrawableBalance = playerWithdrawableBalance - 5 + 10;
+      const newTotalBalance = newWithdrawableBalance + playerBonusBalance;
+      
+      onBalanceUpdate(newTotalBalance, newWithdrawableBalance, playerBonusBalance);
+      
       setLastWin(10);
       playWin();
       
@@ -160,10 +193,16 @@ const LiveGameFeed: React.FC = () => {
 
   // Lightning Strike game
   const playLightningStrike = () => {
-    if (balance < 15) return;
+    if (playerBalance < 15) return;
     
     playButtonClick();
-    setBalance(prev => prev - 15);
+    
+    // Deduct from player's real balance
+    const newWithdrawableBalance = Math.max(0, playerWithdrawableBalance - 15);
+    const newBonusBalance = playerBonusBalance;
+    const newTotalBalance = newWithdrawableBalance + newBonusBalance;
+    
+    onBalanceUpdate(newTotalBalance, newWithdrawableBalance, newBonusBalance);
     
     // Start mini-game session
     const sessionId = gameState.startGameSession('mini-game', 15);
@@ -188,7 +227,12 @@ const LiveGameFeed: React.FC = () => {
     setLightningStrikeResult(result);
     
     if (winAmount > 0) {
-      setBalance(prev => prev + winAmount);
+      // Add winnings to player's withdrawable balance (real money)
+      const newWithdrawableBalance = playerWithdrawableBalance - 15 + winAmount;
+      const newTotalBalance = newWithdrawableBalance + playerBonusBalance;
+      
+      onBalanceUpdate(newTotalBalance, newWithdrawableBalance, playerBonusBalance);
+      
       setLastWin(winAmount);
       playWin();
       
@@ -271,9 +315,9 @@ const LiveGameFeed: React.FC = () => {
             {/* Balance Display */}
             <div className="flex justify-center gap-6 mb-6">
               <BalanceBreakdown
-                totalBalance={balance}
-                withdrawableBalance={balance * 0.64} // Assume 64% is withdrawable
-                bonusBalance={balance * 0.36} // Assume 36% is bonus
+                totalBalance={playerBalance}
+                withdrawableBalance={playerWithdrawableBalance}
+                bonusBalance={playerBonusBalance}
                 compact={true}
                 className="bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-400/30 p-4 rounded-lg"
               />
@@ -334,9 +378,9 @@ const LiveGameFeed: React.FC = () => {
                 else if (selectedGame === '3') playLightningStrike();
               }}
               disabled={
-                (selectedGame === '1' && (isRolling || balance < 10)) ||
-                (selectedGame === '2' && balance < 5) ||
-                (selectedGame === '3' && balance < 15)
+                (selectedGame === '1' && (isRolling || playerBalance < 10)) ||
+                (selectedGame === '2' && playerBalance < 5) ||
+                (selectedGame === '3' && playerBalance < 15)
               }
               size="lg"
               className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-bold text-lg py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
