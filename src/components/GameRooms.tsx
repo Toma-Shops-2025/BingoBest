@@ -9,42 +9,65 @@ interface GameRoomsProps {
 
 const GameRooms: React.FC<GameRoomsProps> = ({ rooms, onJoinRoom, playerBalance }) => {
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Game Rooms</h2>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="space-y-6">
+      <h2 className="text-3xl font-bold text-white mb-8 casino-text-glow">Game Rooms</h2>
+      <div className="space-y-4">
         {rooms.map((room) => (
           <div
             key={room.id}
-            className="border-2 border-purple-200 rounded-lg p-4 hover:border-purple-400 transition-colors"
+            className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300 shadow-xl"
           >
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="font-bold text-lg text-gray-800">{room.name}</h3>
+            <div className="flex justify-between items-start mb-4">
+              <h3 className="text-2xl font-bold text-white">{room.name}</h3>
               <span className={`
-                px-2 py-1 rounded-full text-xs font-semibold
-                ${room.status === 'waiting' ? 'bg-green-100 text-green-800' : ''}
-                ${room.status === 'playing' ? 'bg-yellow-100 text-yellow-800' : ''}
-                ${room.status === 'finished' ? 'bg-gray-100 text-gray-800' : ''}
+                px-3 py-1 rounded-full text-sm font-semibold
+                ${room.status === 'waiting' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : ''}
+                ${room.status === 'playing' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : ''}
+                ${room.status === 'finished' ? 'bg-gray-500/20 text-gray-400 border border-gray-500/30' : ''}
               `}>
                 {room.status.toUpperCase()}
               </span>
             </div>
             
-            <div className="space-y-2 mb-4">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Entry Fee:</span>
-                <span className="font-semibold">${room.entryFee}</span>
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+                  <span className="text-green-400 text-sm">$</span>
+                </div>
+                <div>
+                  <p className="text-gray-300 text-sm">Entry Fee</p>
+                  <p className="text-white font-semibold">${room.entryFee}</p>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Prize Pool:</span>
-                <span className="font-semibold text-green-600">${room.prizePool}</span>
+              
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-yellow-500/20 rounded-full flex items-center justify-center">
+                  <span className="text-yellow-400 text-sm">🏆</span>
+                </div>
+                <div>
+                  <p className="text-gray-300 text-sm">Prize Pool</p>
+                  <p className="text-green-400 font-bold text-lg">${room.prizePool}</p>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Players:</span>
-                <span className="font-semibold">{room.playerCount}/{room.maxPlayers}</span>
+              
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-blue-500/20 rounded-full flex items-center justify-center">
+                  <span className="text-blue-400 text-sm">👥</span>
+                </div>
+                <div>
+                  <p className="text-gray-300 text-sm">Players</p>
+                  <p className="text-white font-semibold">{room.playerCount}/{room.maxPlayers}</p>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Time Left:</span>
-                <span className="font-semibold text-blue-600">{Math.floor(room.timeLeft / 60)}:{(room.timeLeft % 60).toString().padStart(2, '0')}</span>
+              
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 bg-purple-500/20 rounded-full flex items-center justify-center">
+                  <span className="text-purple-400 text-sm">⏰</span>
+                </div>
+                <div>
+                  <p className="text-gray-300 text-sm">Time Left</p>
+                  <p className="text-blue-400 font-bold">{Math.floor(room.timeLeft / 60)}:{(room.timeLeft % 60).toString().padStart(2, '0')}</p>
+                </div>
               </div>
             </div>
             
@@ -56,16 +79,16 @@ const GameRooms: React.FC<GameRoomsProps> = ({ rooms, onJoinRoom, playerBalance 
                 playerBalance < room.entryFee
               }
               className={`
-                w-full py-2 px-4 rounded-lg font-semibold transition-colors
+                w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105
                 ${room.status === 'waiting' && room.playerCount < room.maxPlayers && playerBalance >= room.entryFee
-                  ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg shadow-purple-500/25'
+                  : 'bg-gray-500/20 text-gray-400 cursor-not-allowed border border-gray-500/30'
                 }
               `}
             >
-              {room.status !== 'waiting' ? 'Game in Progress' : 
-               room.playerCount >= room.maxPlayers ? 'Room Full' :
-               playerBalance < room.entryFee ? 'Insufficient Funds' : 'Join Game'}
+              {room.status !== 'waiting' ? '🎮 Game in Progress' : 
+               room.playerCount >= room.maxPlayers ? '🚫 Room Full' :
+               playerBalance < room.entryFee ? '💰 Insufficient Funds' : '🎯 Join Game'}
             </button>
           </div>
         ))}
