@@ -1133,7 +1133,7 @@ const EnhancedAppLayout: React.FC = () => {
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-6 sm:py-8 mt-8 sm:mt-12">
         <div className="container mx-auto px-2 sm:px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-8">
             <div>
               <h3 className="text-lg font-bold mb-4">BingoBest</h3>
               <p className="text-gray-300 text-sm">
@@ -1187,6 +1187,30 @@ const EnhancedAppLayout: React.FC = () => {
                 <li><a href="/terms-of-service.html" target="_blank" className="text-gray-300 hover:text-white">Terms of Service</a></li>
                 <li><a href="/responsible-gaming.html" target="_blank" className="text-gray-300 hover:text-white">Responsible Gaming</a></li>
               </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">🎁 Get Free Credits!</h4>
+              <p className="text-gray-300 text-sm mb-3">
+                Subscribe for exclusive bonuses, game tips, and special offers!
+              </p>
+              <div className="space-y-2">
+                <input 
+                  type="email" 
+                  placeholder="Enter your email" 
+                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                />
+                <button 
+                  className="w-full bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-bold py-2 px-4 rounded-md transition-all duration-300 shadow-lg hover:shadow-xl"
+                  onClick={() => {
+                    alert('🎉 Thank you for subscribing!\n\nYou\'ll receive:\n• $5 Free Credits (non-withdrawable)\n• Weekly bonus codes\n• Game strategy tips\n• Exclusive tournament invites\n\nCheck your email for confirmation!');
+                  }}
+                >
+                  Subscribe & Get $5 Free!
+                </button>
+                <p className="text-xs text-gray-400">
+                  *Free credits are non-withdrawable, for gameplay only
+                </p>
+              </div>
             </div>
           </div>
           <div className="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
