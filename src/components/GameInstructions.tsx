@@ -120,6 +120,7 @@ const GameInstructions: React.FC = () => {
             <li>• Check your balance regularly</li>
           </ul>
         </div>
+        </div>
       </div>
     </div>
   );
