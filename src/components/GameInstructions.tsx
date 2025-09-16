@@ -27,13 +27,25 @@ const GameInstructions: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundImage: `url('/HTPBB-background.jpg')`,
+          backgroundImage: `url('/leaderboard-background.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
           zIndex: -2
         }}
+        onLoad={() => console.log('✅ HTPBB-background.jpg loaded in GameInstructions!')}
+        onError={() => console.log('❌ HTPBB-background.jpg failed to load in GameInstructions!')}
       />
+      
+      {/* Force image load for debugging */}
+      <div style={{ display: 'none' }}>
+        <img 
+          src="/leaderboard-background.jpg" 
+          onLoad={() => console.log('✅ leaderboard-background.jpg loaded successfully!')}
+          onError={(e) => console.log('❌ leaderboard-background.jpg failed to load:', e)}
+          alt="Leaderboard Background"
+        />
+      </div>
       
       {/* Dark Overlay */}
       <div 
