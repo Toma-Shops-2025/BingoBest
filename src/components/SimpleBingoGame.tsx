@@ -218,6 +218,16 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
         if (card.id === cardId) {
           const newMarked = [...card.marked];
           if (newMarked[row] && newMarked[row][col] !== undefined) {
+            // Only allow marking if the number has been called or is the FREE space
+            const cellNumber = card.numbers[col][row].number;
+            const isCalled = card.numbers[col][row].called;
+            const isFreeSpace = cellNumber === 0;
+            
+            if (!isCalled && !isFreeSpace) {
+              alert(`❌ Number ${cellNumber} hasn't been called yet!`);
+              return card;
+            }
+            
             newMarked[row][col] = !newMarked[row][col];
             
             // Check for win
@@ -560,6 +570,40 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
           </CardContent>
         </Card>
       ))}
+      
+      {/* BINGO Button */}
+      {gameStatus === 'playing' && (
+        <Card className="casino-card">
+          <CardContent className="text-center py-6">
+            <Button
+              onClick={() => {
+                // Check if player has a valid bingo
+                const card = bingoCards[0];
+                if (card) {
+                  const winType = checkWin(card.marked, card.numbers);
+                  if (winType) {
+                    let prize = 50;
+                    switch (winType) {
+                      case 'line': prize = 50; break;
+                      case 'diagonal': prize = 75; break;
+                      case '4-corners': prize = 25; break;
+                      case 'x-pattern': prize = 150; break;
+                      case 'full-house': prize = 200; break;
+                    }
+                    handleWin(winType, prize, card, card.marked);
+                  } else {
+                    alert('❌ No valid BINGO pattern found! Keep playing!');
+                  }
+                }
+              }}
+              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-bold text-2xl px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
+            >
+              🎉 BINGO! 🎉
+            </Button>
+            <p className="text-sm text-gray-300 mt-2">Click when you have a winning pattern!</p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

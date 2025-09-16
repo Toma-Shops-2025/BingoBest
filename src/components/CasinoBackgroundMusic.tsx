@@ -135,15 +135,14 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       if (audioContextRef.current && (audioContextRef.current as any).cleanup) {
         (audioContextRef.current as any).cleanup();
       }
-      if (audioContextRef.current) {
-        audioContextRef.current.close();
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        audioContextRef.current.suspend();
       }
     } catch (error) {
       console.warn('Error stopping audio:', error);
     }
     
     setIsPlaying(false);
-    audioContextRef.current = null;
   };
 
   const toggleMusic = () => {
