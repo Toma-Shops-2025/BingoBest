@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, Coins, Zap } from 'lucide-react';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import BalanceBreakdown from './BalanceBreakdown';
+import { gameState } from '@/lib/gameState';
 
 interface MiniGame {
   id: string;
@@ -75,6 +76,9 @@ const LiveGameFeed: React.FC = () => {
     setIsRolling(true);
     setBalance(prev => prev - 10);
     
+    // Start mini-game session
+    const sessionId = gameState.startGameSession('mini-game', 10);
+    
     // Animate dice roll
     let rollCount = 0;
     const rollInterval = setInterval(() => {
@@ -102,12 +106,18 @@ const LiveGameFeed: React.FC = () => {
           setGameHistory(prev => [{
             dice: finalResult,
             win: winAmount,
-            time: new Date().toLocaleTimeString()
+            time: new Date().toLocaleTimeString(),
+            gameName: 'Lucky Dice Roll'
           }, ...prev.slice(0, 4)]);
           // Play win sound
           playWin();
+          
+          // Complete game session with win
+          gameState.completeGameSession(sessionId, winAmount, true);
         } else {
           setLastWin(0);
+          // Complete game session with loss
+          gameState.completeGameSession(sessionId, 0, false);
         }
       }
     }, 100);
@@ -126,6 +136,9 @@ const LiveGameFeed: React.FC = () => {
     playButtonClick();
     setBalance(prev => prev - 5);
     
+    // Start mini-game session
+    const sessionId = gameState.startGameSession('mini-game', 5);
+    
     // 50% chance to win (realistic house edge)
     const win = Math.random() < 0.5;
     setDoubleOrNothingResult(win);
@@ -134,8 +147,14 @@ const LiveGameFeed: React.FC = () => {
       setBalance(prev => prev + 10);
       setLastWin(10);
       playWin();
+      
+      // Complete game session with win
+      gameState.completeGameSession(sessionId, 10, true);
     } else {
       setLastWin(0);
+      
+      // Complete game session with loss
+      gameState.completeGameSession(sessionId, 0, false);
     }
   };
 
@@ -145,6 +164,9 @@ const LiveGameFeed: React.FC = () => {
     
     playButtonClick();
     setBalance(prev => prev - 15);
+    
+    // Start mini-game session
+    const sessionId = gameState.startGameSession('mini-game', 15);
     
     // Random result with weighted odds
     const random = Math.random();
@@ -169,8 +191,14 @@ const LiveGameFeed: React.FC = () => {
       setBalance(prev => prev + winAmount);
       setLastWin(winAmount);
       playWin();
+      
+      // Complete game session with win
+      gameState.completeGameSession(sessionId, winAmount, true);
     } else {
       setLastWin(0);
+      
+      // Complete game session with loss
+      gameState.completeGameSession(sessionId, 0, false);
     }
   };
 

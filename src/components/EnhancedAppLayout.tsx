@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { GAME_CONFIGS, GameSessionManager } from '@/lib/prizeDistribution';
+import { gameState } from '@/lib/gameState';
 import { Button } from '@/components/ui/button';
 import AuthModal from './AuthModal';
 import GameHeader from './GameHeader';
@@ -57,31 +58,34 @@ const EnhancedAppLayout: React.FC = () => {
   const { user, userProfile, loading: authLoading, signOut } = useAuth();
   const isMobile = useIsMobile();
   
-  // Initialize player with default values
-  const [player, setPlayer] = useState<Player>({
-    id: user?.id || 'guest',
-    username: user?.email?.split('@')[0] || 'Player1',
-    balance: 235.00, // Total balance
-    withdrawableBalance: 150.00, // Real money that can be withdrawn
-    bonusBalance: 85.00, // Non-withdrawable bonus credits
-    level: 1,
-    experience: 0,
-    avatar: '',
-    achievements: [],
-    friends: [],
-    isOnline: true,
-    lastActive: new Date().toISOString(),
-    totalWinnings: 0,
-    gamesPlayed: 0,
-    gamesWon: 0,
-    winRate: 0,
-    favoriteRoom: 'Speed Bingo',
-    joinDate: new Date().toISOString(),
-    preferences: {
-      soundEnabled: true,
-      notificationsEnabled: true,
-      theme: 'light'
-    }
+  // Initialize player with real game state
+  const [player, setPlayer] = useState<Player>(() => {
+    const stats = gameState.getPlayerStats();
+    return {
+      id: user?.id || 'guest',
+      username: user?.email?.split('@')[0] || 'Player1',
+      balance: 235.00, // Total balance
+      withdrawableBalance: 150.00, // Real money that can be withdrawn
+      bonusBalance: 85.00, // Non-withdrawable bonus credits
+      level: 1,
+      experience: stats.vipPoints,
+      avatar: '',
+      achievements: stats.achievementsUnlocked,
+      friends: [],
+      isOnline: true,
+      lastActive: new Date().toISOString(),
+      totalWinnings: stats.totalWinnings,
+      gamesPlayed: stats.gamesPlayed,
+      gamesWon: stats.gamesWon,
+      winRate: stats.gamesPlayed > 0 ? (stats.gamesWon / stats.gamesPlayed) * 100 : 0,
+      favoriteRoom: 'Speed Bingo',
+      joinDate: new Date().toISOString(),
+      preferences: {
+        soundEnabled: true,
+        notificationsEnabled: true,
+        theme: 'light'
+      }
+    };
   });
 
   const [gameState, setGameState] = useState({
@@ -90,7 +94,8 @@ const EnhancedAppLayout: React.FC = () => {
     currentNumber: null as number | null,
     calledNumbers: [] as number[],
     bingoCards: [] as any[],
-    gameTimer: 300
+    gameTimer: 300,
+    currentSessionId: null as string | null
   });
   
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
@@ -272,17 +277,21 @@ const EnhancedAppLayout: React.FC = () => {
           room.entryFee
         );
 
+        // Start game session and track progress
+        const sessionId = gameState.startGameSession('bingo', room.entryFee);
+        
         // Deduct entry fee from balance
         setPlayer(prev => ({
           ...prev,
-          balance: (prev.balance || 0) - room.entryFee
+          balance: (prev.balance || 0) - room.entryFee,
+          withdrawableBalance: Math.max(0, (prev.withdrawableBalance || 0) - room.entryFee)
         }));
         
         setGameState(prev => ({
           ...prev,
           currentRoom: room,
           gameStatus: 'waiting',
-          gameSessionId: gameSession.id
+          currentSessionId: sessionId
         }));
         
         // Start the bingo game with error handling
@@ -502,9 +511,24 @@ const EnhancedAppLayout: React.FC = () => {
           onSpectateTournament={handleSpectateTournament}
         />;
       case 'achievements':
+        const achievements = gameState.getAchievements();
         return <AchievementSystem 
-          achievements={[]} 
-          onClaimReward={(id) => alert(`Claimed reward for achievement ${id}!`)} 
+          achievements={achievements} 
+          onClaimReward={(id) => {
+            const reward = gameState.claimAchievement(id);
+            if (reward > 0) {
+              // Update player balance
+              setPlayer(prev => ({
+                ...prev,
+                bonusBalance: prev.bonusBalance + reward,
+                balance: prev.balance + reward
+              }));
+              
+              alert(`🎉 Achievement Unlocked!\n\nYou earned $${reward} bonus credits!\n\nKeep playing to unlock more achievements!`);
+            } else {
+              alert('This achievement reward has already been claimed or achievement not completed yet.');
+            }
+          }} 
         />;
       case 'challenges':
         // Create dynamic daily challenges
@@ -513,15 +537,17 @@ const EnhancedAppLayout: React.FC = () => {
         tomorrow.setDate(tomorrow.getDate() + 1);
         tomorrow.setHours(0, 0, 0, 0); // Reset to start of day
 
+        // Get real challenge progress from game state
+        const challengeProgress = gameState.getChallengeProgress();
         const dailyChallenges = [
           {
             id: 'daily-play-3',
             name: 'Daily Player',
             description: 'Play 3 games today to earn bonus credits',
             requirement: 3,
-            reward: 5, // Reduced from 10
-            progress: Math.floor(Math.random() * 4), // Random progress 0-3
-            completed: false,
+            reward: 5,
+            progress: challengeProgress.find(c => c.id === 'daily-play-3')?.progress || 0,
+            completed: challengeProgress.find(c => c.id === 'daily-play-3')?.completed || false,
             expiresAt: tomorrow
           },
           {
@@ -529,9 +555,9 @@ const EnhancedAppLayout: React.FC = () => {
             name: 'Lucky Winner',
             description: 'Win at least 1 game today',
             requirement: 1,
-            reward: 10, // Reduced from 20
-            progress: Math.floor(Math.random() * 2), // Random progress 0-1
-            completed: false,
+            reward: 10,
+            progress: challengeProgress.find(c => c.id === 'daily-win-1')?.progress || 0,
+            completed: challengeProgress.find(c => c.id === 'daily-win-1')?.completed || false,
             expiresAt: tomorrow
           },
           {
@@ -539,9 +565,9 @@ const EnhancedAppLayout: React.FC = () => {
             name: 'Big Spender',
             description: 'Spend $5 on entry fees today',
             requirement: 5,
-            reward: 8, // Reduced from 15
-            progress: Math.floor(Math.random() * 11), // Random progress 0-10
-            completed: false,
+            reward: 8,
+            progress: challengeProgress.find(c => c.id === 'daily-spend-10')?.progress || 0,
+            completed: challengeProgress.find(c => c.id === 'daily-spend-10')?.completed || false,
             expiresAt: tomorrow
           },
           {
@@ -549,9 +575,9 @@ const EnhancedAppLayout: React.FC = () => {
             name: 'Streak Master',
             description: 'Play games for 3 consecutive days',
             requirement: 3,
-            reward: 20, // Reduced from 40
-            progress: Math.floor(Math.random() * 4), // Random progress 0-3
-            completed: false,
+            reward: 20,
+            progress: challengeProgress.find(c => c.id === 'daily-streak')?.progress || 0,
+            completed: challengeProgress.find(c => c.id === 'daily-streak')?.completed || false,
             expiresAt: tomorrow
           }
         ];
@@ -559,9 +585,18 @@ const EnhancedAppLayout: React.FC = () => {
         return <DailyChallenges 
           challenges={dailyChallenges} 
           onClaimReward={(id) => {
-            const challenge = dailyChallenges.find(c => c.id === id);
-            if (challenge) {
-              alert(`🎉 Challenge Completed!\n\n${challenge.name}\n\nYou earned $${challenge.reward}!\n\nKeep playing to complete more challenges!`);
+            const reward = gameState.claimChallengeReward(id);
+            if (reward > 0) {
+              // Update player balance
+              setPlayer(prev => ({
+                ...prev,
+                bonusBalance: prev.bonusBalance + reward,
+                balance: prev.balance + reward
+              }));
+              
+              alert(`🎉 Challenge Completed!\n\nYou earned $${reward} bonus credits!\n\nKeep playing to complete more challenges!`);
+            } else {
+              alert('This reward has already been claimed or challenge not completed yet.');
             }
           }} 
         />;
@@ -869,16 +904,11 @@ const EnhancedAppLayout: React.FC = () => {
           }
         ];
 
-        // Calculate VIP tier based on games played
-        const gamesPlayed = player.gamesPlayed || 0;
-        let currentTier = 0;
-        let nextTierRequirement = 10;
-        
-        if (gamesPlayed >= 50) currentTier = 5;
-        else if (gamesPlayed >= 30) { currentTier = 4; nextTierRequirement = 50; }
-        else if (gamesPlayed >= 20) { currentTier = 3; nextTierRequirement = 30; }
-        else if (gamesPlayed >= 10) { currentTier = 2; nextTierRequirement = 20; }
-        else if (gamesPlayed >= 5) { currentTier = 1; nextTierRequirement = 10; }
+        // Update VIP status and get current tier
+        gameState.updateVIPStatus();
+        const stats = gameState.getPlayerStats();
+        const currentTier = stats.vipTier;
+        const nextTierRequirement = currentTier < 5 ? [10, 20, 30, 50, 100][currentTier] : 100;
 
         return <VIPSystem 
           player={player} 
@@ -1068,7 +1098,24 @@ const EnhancedAppLayout: React.FC = () => {
               <SimpleBingoGame 
                 onWin={(winType, prize) => {
                   setShowWinModal(true);
-                  setPlayer(prev => ({ ...prev, balance: (prev.balance || 0) + prize }));
+                  
+                  // Complete game session and track progress
+                  gameState.completeGameSession(gameState.currentSessionId!, prize, true);
+                  
+                  // Update player balance and stats
+                  setPlayer(prev => {
+                    const newStats = gameState.getPlayerStats();
+                    return {
+                      ...prev,
+                      balance: (prev.balance || 0) + prize,
+                      withdrawableBalance: (prev.withdrawableBalance || 0) + prize,
+                      totalWinnings: newStats.totalWinnings,
+                      gamesPlayed: newStats.gamesPlayed,
+                      gamesWon: newStats.gamesWon,
+                      winRate: newStats.gamesPlayed > 0 ? (newStats.gamesWon / newStats.gamesPlayed) * 100 : 0
+                    };
+                  });
+                  
                   alert(`Congratulations! You won ${winType} and earned $${prize}!`);
                 }}
                 onGameEnd={() => {
