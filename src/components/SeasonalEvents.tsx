@@ -40,124 +40,224 @@ const SeasonalEvents: React.FC<SeasonalEventsProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Star className="text-yellow-500" />
-        <h2 className="text-2xl font-bold">Seasonal Events</h2>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center gap-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-full shadow-lg">
+          <Star className="w-6 h-6" />
+          <h2 className="text-2xl font-bold">Seasonal Events</h2>
+        </div>
       </div>
 
-      <div className="grid gap-4">
+      <div className="grid gap-6">
         {events.map((event) => {
           const eventStatus = getEventStatus(event);
           return (
-            <Card key={event.id} className={`${
-              eventStatus.status === 'active' 
-                ? 'border-green-300 bg-green-50' 
-                : eventStatus.status === 'upcoming'
-                ? 'border-blue-300 bg-blue-50'
-                : 'border-gray-300 bg-gray-50'
-            }`}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      {event.name}
-                      <Badge className={`${
-                        eventStatus.status === 'active' 
-                          ? 'bg-green-500' 
-                          : eventStatus.status === 'upcoming'
-                          ? 'bg-blue-500'
-                          : 'bg-gray-500'
-                      }`}>
-                        {eventStatus.text}
-                      </Badge>
-                    </CardTitle>
-                    <p className="text-sm text-gray-600 mt-1">{event.description}</p>
-                  </div>
-                  <div className="text-right text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      {formatDate(event.startDate)} - {formatDate(event.endDate)}
-                    </div>
-                    {eventStatus.status === 'active' && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <Clock className="w-4 h-4" />
-                        {getDaysRemaining(event.endDate)} days left
-                      </div>
-                    )}
-                    {eventStatus.status === 'upcoming' && (
-                      <div className="flex items-center gap-1 mt-1">
-                        <Clock className="w-4 h-4" />
-                        Starts in {Math.ceil((event.startDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <h4 className="font-semibold flex items-center gap-2">
-                  <Gift className="w-4 h-4 text-green-500" />
-                  Event Rewards
-                </h4>
-                {event.rewards.map((reward) => (
-                  <div
-                    key={reward.id}
-                    className={`p-3 rounded-lg border ${
-                      reward.claimed 
-                        ? 'bg-green-50 border-green-200' 
-                        : 'bg-white border-gray-200'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h5 className="font-medium">{reward.name}</h5>
-                        <p className="text-sm text-gray-600">{reward.description}</p>
-                        <p className="text-xs text-gray-500 mt-1">{reward.requirement}</p>
-                      </div>
-                      <div className="text-right">
-                        <div className="flex flex-col">
-                          <Badge 
-                            variant={reward.claimed ? "default" : "outline"}
-                            className={reward.claimed ? "bg-green-500" : ""}
-                          >
-                            ${reward.reward}
-                          </Badge>
-                          <p className="text-xs text-gray-500 mt-1">
-                            ⚠️ Non-withdrawable
+            <Card key={event.id} className="relative overflow-hidden border-0 shadow-2xl">
+              {/* Dynamic Background */}
+              <div 
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: eventStatus.status === 'active' 
+                    ? `linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.2)), url('/event-background.jpg')`
+                    : eventStatus.status === 'upcoming'
+                    ? `linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2)), url('/event-background.jpg')`
+                    : `linear-gradient(135deg, rgba(107, 114, 128, 0.2), rgba(75, 85, 99, 0.2)), url('/event-background.jpg')`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              />
+              <div className={`absolute inset-0 backdrop-blur-sm ${
+                eventStatus.status === 'active' 
+                  ? 'bg-gradient-to-br from-green-500/30 to-emerald-600/30'
+                  : eventStatus.status === 'upcoming'
+                  ? 'bg-gradient-to-br from-blue-500/30 to-indigo-600/30'
+                  : 'bg-gradient-to-br from-gray-500/30 to-slate-600/30'
+              }`} />
+              
+              <div className="relative z-10">
+                <CardHeader className="pb-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 min-w-0 pr-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className={`p-2 rounded-full ${
+                          eventStatus.status === 'active' 
+                            ? 'bg-gradient-to-r from-green-400 to-emerald-500'
+                            : eventStatus.status === 'upcoming'
+                            ? 'bg-gradient-to-r from-blue-400 to-indigo-500'
+                            : 'bg-gradient-to-r from-gray-400 to-slate-500'
+                        } shadow-lg`}>
+                          <Gift className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-xl font-bold text-white drop-shadow-lg truncate">
+                            {event.name}
+                          </CardTitle>
+                          <p className="text-sm text-white/90 font-medium drop-shadow-md mt-1">
+                            {event.description}
                           </p>
                         </div>
-                        {reward.claimed ? (
-                          <p className="text-xs text-green-600 mt-1">✓ Claimed</p>
-                        ) : eventStatus.status === 'active' ? (
-                          <Button
-                            size="sm"
-                            onClick={() => onClaimReward(event.id, reward.id)}
-                            className="mt-2"
-                          >
-                            Claim
-                          </Button>
-                        ) : eventStatus.status === 'upcoming' ? (
-                          <p className="text-xs text-blue-500 mt-1">Event not started</p>
-                        ) : (
-                          <p className="text-xs text-gray-500 mt-1">Event ended</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex-shrink-0 text-right">
+                      <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold shadow-lg ${
+                        eventStatus.status === 'active' 
+                          ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+                          : eventStatus.status === 'upcoming'
+                          ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white'
+                          : 'bg-gradient-to-r from-gray-500 to-slate-500 text-white'
+                      }`}>
+                        {eventStatus.status === 'active' && <Clock className="w-4 h-4" />}
+                        {eventStatus.status === 'upcoming' && <Calendar className="w-4 h-4" />}
+                        {eventStatus.status === 'ended' && <Calendar className="w-4 h-4" />}
+                        {eventStatus.text}
+                      </div>
+                      
+                      <div className="mt-2 text-sm text-white/80 font-medium">
+                        <div className="flex items-center gap-1 justify-end">
+                          <Calendar className="w-4 h-4" />
+                          <span>{formatDate(event.startDate)} - {formatDate(event.endDate)}</span>
+                        </div>
+                        {eventStatus.status === 'active' && (
+                          <div className="flex items-center gap-1 mt-1 justify-end">
+                            <Clock className="w-4 h-4" />
+                            <span>{getDaysRemaining(event.endDate)} days left</span>
+                          </div>
+                        )}
+                        {eventStatus.status === 'upcoming' && (
+                          <div className="flex items-center gap-1 mt-1 justify-end">
+                            <Clock className="w-4 h-4" />
+                            <span>Starts in {Math.ceil((event.startDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days</span>
+                          </div>
                         )}
                       </div>
                     </div>
                   </div>
-                ))}
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 shadow-lg">
+                        <Gift className="w-5 h-5 text-white" />
+                      </div>
+                      <h4 className="text-lg font-bold text-white drop-shadow-lg">Event Rewards</h4>
+                    </div>
+                    
+                    <div className="grid gap-3">
+                      {event.rewards.map((reward) => (
+                        <div
+                          key={reward.id}
+                          className={`relative overflow-hidden rounded-xl border-2 shadow-lg transition-all duration-300 hover:scale-105 ${
+                            reward.claimed 
+                              ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-400/50 shadow-green-500/20'
+                              : eventStatus.status === 'active'
+                              ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 border-blue-400/50 shadow-blue-500/20'
+                              : 'bg-gradient-to-r from-gray-500/20 to-slate-500/20 border-gray-400/50 shadow-gray-500/20'
+                          }`}
+                        >
+                          <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
+                          
+                          <div className="relative z-10 p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 min-w-0 pr-4">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <div className={`p-2 rounded-full ${
+                                    reward.claimed 
+                                      ? 'bg-gradient-to-r from-green-400 to-emerald-500'
+                                      : eventStatus.status === 'active'
+                                      ? 'bg-gradient-to-r from-blue-400 to-indigo-500'
+                                      : 'bg-gradient-to-r from-gray-400 to-slate-500'
+                                  } shadow-lg`}>
+                                    <Star className="w-4 h-4 text-white" />
+                                  </div>
+                                  <h5 className="text-lg font-bold text-white drop-shadow-lg">
+                                    {reward.name}
+                                  </h5>
+                                </div>
+                                <p className="text-sm text-white/90 font-medium drop-shadow-md mb-2">
+                                  {reward.description}
+                                </p>
+                                <p className="text-xs text-white/70 font-medium drop-shadow-sm">
+                                  {reward.requirement}
+                                </p>
+                              </div>
+                              
+                              <div className="flex-shrink-0 text-right">
+                                <div className="flex flex-col items-end gap-2">
+                                  <div className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg ${
+                                    reward.claimed 
+                                      ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
+                                      : 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
+                                  }`}>
+                                    ${reward.reward}
+                                  </div>
+                                  
+                                  <div className="flex items-center gap-1 text-xs text-white/80">
+                                    <span>⚠️</span>
+                                    <span>Non-withdrawable</span>
+                                  </div>
+                                  
+                                  {reward.claimed ? (
+                                    <div className="flex items-center gap-1 text-xs text-green-300 font-bold">
+                                      <span>✓</span>
+                                      <span>Claimed</span>
+                                    </div>
+                                  ) : eventStatus.status === 'active' ? (
+                                    <Button
+                                      size="sm"
+                                      onClick={() => onClaimReward(event.id, reward.id)}
+                                      className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold px-4 py-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+                                    >
+                                      Claim Reward
+                                    </Button>
+                                  ) : eventStatus.status === 'upcoming' ? (
+                                    <div className="flex items-center gap-1 text-xs text-blue-300 font-bold">
+                                      <Calendar className="w-3 h-3" />
+                                      <span>Event not started</span>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center gap-1 text-xs text-gray-300 font-bold">
+                                      <Clock className="w-3 h-3" />
+                                      <span>Event ended</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
               </div>
-            </CardContent>
-          </Card>
+            </Card>
           );
         })}
       </div>
 
       {events.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
-          <Star className="w-16 h-16 mx-auto mb-4 opacity-30" />
-          <h3 className="text-lg font-medium mb-2">No Active Events</h3>
-          <p>Check back soon for exciting seasonal events!</p>
+        <div className="relative overflow-hidden rounded-xl border-0 shadow-2xl">
+          <div 
+            className="absolute inset-0 bg-gradient-to-br from-purple-400/20 via-pink-500/20 to-red-500/20"
+            style={{
+              backgroundImage: `url('/event-background.jpg')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 to-pink-600/30 backdrop-blur-sm" />
+          
+          <div className="relative z-10 text-center py-16 px-8">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full shadow-lg mb-6">
+              <Star className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-2xl font-bold text-white drop-shadow-lg mb-4">No Active Events</h3>
+            <p className="text-lg text-white/90 font-medium drop-shadow-md">Check back soon for exciting seasonal events!</p>
+          </div>
         </div>
       )}
     </div>

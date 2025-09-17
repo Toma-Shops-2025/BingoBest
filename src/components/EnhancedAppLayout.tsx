@@ -854,7 +854,40 @@ const EnhancedAppLayout: React.FC = () => {
         return <SeasonalEvents 
           events={seasonalEvents} 
           onClaimReward={(eventId, rewardId) => {
-            alert(`🎉 Reward claimed!\n\nEvent: ${seasonalEvents.find(e => e.id === eventId)?.name}\nReward: ${seasonalEvents.find(e => e.id === eventId)?.rewards.find(r => r.id === rewardId)?.name}\n\nYou earned $${seasonalEvents.find(e => e.id === eventId)?.rewards.find(r => r.id === rewardId)?.reward}!`);
+            try {
+              const event = seasonalEvents.find(e => e.id === eventId);
+              const reward = event?.rewards.find(r => r.id === rewardId);
+              
+              if (!event || !reward) {
+                alert('❌ Error: Reward not found!');
+                return;
+              }
+              
+              // Mark reward as claimed
+              const updatedEvents = seasonalEvents.map(e => 
+                e.id === eventId 
+                  ? {
+                      ...e,
+                      rewards: e.rewards.map(r => 
+                        r.id === rewardId 
+                          ? { ...r, claimed: true }
+                          : r
+                      )
+                    }
+                  : e
+              );
+              
+              // Update the events state
+              setSeasonalEvents(updatedEvents);
+              
+              // Show success message
+              alert(`🎉 Reward claimed!\n\nEvent: ${event.name}\nReward: ${reward.name}\n\nYou earned $${reward.reward}!\n\nThis reward is non-withdrawable and will be added to your account balance.`);
+              
+              console.log('Reward claimed:', { eventId, rewardId, reward });
+            } catch (error) {
+              console.error('Error claiming reward:', error);
+              alert('❌ There was an error claiming your reward. Please try again.');
+            }
           }} 
         />;
       case 'vip':
