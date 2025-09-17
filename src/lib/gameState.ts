@@ -339,4 +339,15 @@ export class GameStateManager {
   }
 }
 
-export const gameState = GameStateManager.getInstance();
+// Lazy initialization to avoid circular dependency issues
+let _gameState: GameStateManager | null = null;
+
+export const getGameState = () => {
+  if (!_gameState) {
+    _gameState = GameStateManager.getInstance();
+  }
+  return _gameState;
+};
+
+// For backward compatibility
+export const gameState = getGameState();
