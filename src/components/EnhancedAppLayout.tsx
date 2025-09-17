@@ -1050,7 +1050,7 @@ const EnhancedAppLayout: React.FC = () => {
           vipBenefits={vipBenefits} 
           currentTier={currentTier} 
           nextTierRequirement={nextTierRequirement}
-          onUpgradeVIP={() => {
+          onUpgradeVIP={async () => {
             console.log('VIP Upgrade button clicked!');
             console.log('Current tier:', currentTier);
             console.log('Games played:', gamesPlayed);
