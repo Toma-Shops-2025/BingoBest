@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { GAME_CONFIGS, GameSessionManager } from '@/lib/prizeDistribution';
-import { gameState } from '@/lib/gameState';
+import { gameState, getGameState } from '@/lib/gameState';
 import { Button } from '@/components/ui/button';
 import AuthModal from './AuthModal';
 import GameHeader from './GameHeader';
@@ -916,7 +916,42 @@ const EnhancedAppLayout: React.FC = () => {
           currentTier={currentTier} 
           nextTierRequirement={nextTierRequirement}
           onUpgradeVIP={() => {
-            alert(`Keep playing to reach the next VIP tier!\n\nCurrent: ${currentTier === 0 ? 'Regular' : `Tier ${currentTier}`}\nNext: ${currentTier < 5 ? `Tier ${currentTier + 1}` : 'Max Level'}\n\nPlay ${nextTierRequirement - gamesPlayed} more games to upgrade!`);
+            console.log('VIP Upgrade button clicked!');
+            console.log('Current tier:', currentTier);
+            console.log('Games played:', gamesPlayed);
+            console.log('Next tier requirement:', nextTierRequirement);
+            
+            try {
+              // Update VIP status based on current games played
+              const gameState = getGameState();
+              gameState.updateVIPStatus();
+              
+              // Get updated stats
+              const updatedStats = gameState.getPlayerStats();
+              const newTier = updatedStats.vipTier;
+              
+              console.log('Updated tier:', newTier);
+              
+              if (newTier > currentTier) {
+                // VIP tier actually upgraded
+                const tierNames = ['Regular', 'Bronze VIP', 'Silver VIP', 'Gold VIP', 'Platinum VIP', 'Diamond VIP'];
+                alert(`🎉 Congratulations! You've been upgraded to ${tierNames[newTier]}!\n\nYour VIP benefits are now active!`);
+                
+                // Force a re-render to show updated VIP status
+                setStats(prevStats => ({
+                  ...prevStats,
+                  vipTier: newTier,
+                  vipPoints: updatedStats.vipPoints
+                }));
+              } else {
+                // Not enough games played yet
+                const gamesNeeded = nextTierRequirement - gamesPlayed;
+                alert(`Keep playing to reach the next VIP tier!\n\nCurrent: ${currentTier === 0 ? 'Regular' : `Tier ${currentTier}`}\nNext: ${currentTier < 5 ? `Tier ${currentTier + 1}` : 'Max Level'}\n\nPlay ${gamesNeeded} more games to upgrade!`);
+              }
+            } catch (error) {
+              console.error('VIP upgrade error:', error);
+              alert('There was an error processing your VIP upgrade. Please try again.');
+            }
           }}
         />;
       case 'spectate':
