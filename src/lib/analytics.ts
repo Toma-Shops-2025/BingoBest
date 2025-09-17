@@ -213,8 +213,22 @@ class Analytics {
   }
 }
 
-// Create singleton instance
-export const analytics = new Analytics();
+// Lazy initialization to avoid circular dependencies
+let _analytics: Analytics | null = null;
+
+export const getAnalytics = () => {
+  if (!_analytics) {
+    _analytics = new Analytics();
+  }
+  return _analytics;
+};
+
+// For backward compatibility
+export const analytics = new Proxy({} as Analytics, {
+  get(target, prop) {
+    return getAnalytics()[prop as keyof Analytics];
+  }
+});
 
 // Export individual tracking functions for convenience
 export const trackEvent = (event: string, properties?: Record<string, any>) => {

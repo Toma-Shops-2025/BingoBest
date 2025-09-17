@@ -395,5 +395,19 @@ export class FinancialSafetyManager {
   }
 }
 
-// Export singleton instance
-export const financialSafety = FinancialSafetyManager.getInstance();
+// Lazy initialization to avoid circular dependencies
+let _financialSafety: FinancialSafetyManager | null = null;
+
+export const getFinancialSafety = () => {
+  if (!_financialSafety) {
+    _financialSafety = FinancialSafetyManager.getInstance();
+  }
+  return _financialSafety;
+};
+
+// For backward compatibility
+export const financialSafety = new Proxy({} as FinancialSafetyManager, {
+  get(target, prop) {
+    return getFinancialSafety()[prop as keyof FinancialSafetyManager];
+  }
+});

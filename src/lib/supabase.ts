@@ -8,7 +8,22 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.error('Supabase configuration is missing. Please check your environment variables.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Lazy initialization to avoid circular dependencies
+let _supabase: any = null;
+
+export const getSupabase = () => {
+  if (!_supabase) {
+    _supabase = createClient(supabaseUrl, supabaseAnonKey);
+  }
+  return _supabase;
+};
+
+// For backward compatibility
+export const supabase = new Proxy({} as any, {
+  get(target, prop) {
+    return getSupabase()[prop];
+  }
+});
 
 // Database types
 export interface Database {
