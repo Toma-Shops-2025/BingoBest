@@ -1061,7 +1061,7 @@ const EnhancedAppLayout: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
             {/* Game Rooms - Takes up more space on desktop */}
             <div 
-              className="lg:col-span-7 xl:col-span-8 p-6 lg:p-8 rounded-lg"
+              className="lg:col-span-6 xl:col-span-7 p-6 lg:p-8 rounded-lg"
               style={{
                 backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/game-cards-background.jpg')`,
                 backgroundSize: 'cover',
@@ -1079,29 +1079,31 @@ const EnhancedAppLayout: React.FC = () => {
               />
             </div>
             
-            {/* Right Sidebar - Better organized for desktop */}
-            <div className="lg:col-span-5 xl:col-span-4 space-y-6">
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-4">
-                <div className="xl:col-span-2">
+            {/* Right Sidebar - More space for desktop */}
+            <div className="lg:col-span-6 xl:col-span-5 space-y-8">
+              <div className="space-y-8">
+                <div>
                   <Leaderboard players={leaderboardPlayers} />
                 </div>
-                <div className="xl:col-span-1">
-                  <GameStats player={player} />
-                </div>
-                <div className="xl:col-span-1">
-                  <LiveGameFeed 
-                    playerBalance={player.balance}
-                    playerWithdrawableBalance={player.withdrawableBalance}
-                    playerBonusBalance={player.bonusBalance}
-                    onBalanceUpdate={(newBalance, newWithdrawableBalance, newBonusBalance) => {
-                      setPlayer(prev => ({
-                        ...prev,
-                        balance: newBalance,
-                        withdrawableBalance: newWithdrawableBalance,
-                        bonusBalance: newBonusBalance
-                      }));
-                    }}
-                  />
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-8">
+                  <div>
+                    <GameStats player={player} />
+                  </div>
+                  <div>
+                    <LiveGameFeed 
+                      playerBalance={player.balance}
+                      playerWithdrawableBalance={player.withdrawableBalance}
+                      playerBonusBalance={player.bonusBalance}
+                      onBalanceUpdate={(newBalance, newWithdrawableBalance, newBonusBalance) => {
+                        setPlayer(prev => ({
+                          ...prev,
+                          balance: newBalance,
+                          withdrawableBalance: newWithdrawableBalance,
+                          bonusBalance: newBonusBalance
+                        }));
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

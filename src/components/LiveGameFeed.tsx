@@ -245,29 +245,29 @@ const LiveGameFeed: React.FC<LiveGameFeedProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 h-full">
       {/* Mini Games Section */}
-      <Card className="relative overflow-hidden" style={{
+      <Card className="relative overflow-hidden h-full" style={{
         backgroundImage: 'url("/minigame-background.png")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
       }}>
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-        <div className="relative z-10">
+        <div className="relative z-10 h-full flex flex-col">
           <CardHeader className="p-6 lg:p-8">
             <CardTitle className="flex items-center gap-2 text-xl lg:text-2xl">
               🎮 Mini Games
               <Badge variant="secondary">Fun & Rewards</Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6 lg:p-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
+          <CardContent className="p-6 lg:p-8 flex-1">
+          <div className="grid grid-cols-1 gap-4 lg:gap-6 mb-6">
             {miniGames.map((game) => (
               <div 
                 key={game.id} 
                 onClick={() => selectGame(game.id)}
-                className={`group p-4 border rounded-lg hover:shadow-lg transition-all duration-300 backdrop-blur-sm cursor-pointer ${
+                className={`group p-4 lg:p-6 border rounded-lg hover:shadow-lg transition-all duration-300 backdrop-blur-sm cursor-pointer ${
                   selectedGame === game.id 
                     ? 'border-yellow-400/50 bg-gradient-to-br from-yellow-400/10 to-yellow-600/10 shadow-lg shadow-yellow-400/20' 
                     : 'border-white/20 bg-gradient-to-br from-white/5 to-white/10 hover:from-white/10 hover:to-white/15'
@@ -340,7 +340,7 @@ const LiveGameFeed: React.FC<LiveGameFeedProps> = ({
             {/* Game Display */}
             <div className="flex justify-center">
           {selectedGame === '1' && (
-            <div className={`p-8 lg:p-12 rounded-xl border-2 border-white/30 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm ${isRolling ? 'animate-pulse bg-yellow-500/20 border-yellow-400/50' : 'hover:bg-white/15 transition-all duration-300'}`}>
+            <div className={`p-8 lg:p-12 xl:p-16 rounded-xl border-2 border-white/30 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm ${isRolling ? 'animate-pulse bg-yellow-500/20 border-yellow-400/50' : 'hover:bg-white/15 transition-all duration-300'}`}>
                   <div className="text-white">
                     {diceResult > 0 ? getDiceIcon(diceResult) : <img src="/dice-1.png" alt="Dice 1" className="w-16 h-16 opacity-60" />}
                   </div>

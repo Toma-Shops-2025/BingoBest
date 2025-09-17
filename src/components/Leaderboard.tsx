@@ -12,7 +12,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ players }) => {
 
   return (
     <div 
-      className="rounded-xl shadow-lg p-6 lg:p-8 relative overflow-hidden"
+      className="rounded-xl shadow-lg p-6 lg:p-8 xl:p-10 relative overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/leaderboard-background.jpg')`,
         backgroundSize: 'cover',
@@ -30,7 +30,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ players }) => {
           <div
             key={player.id}
             className={`
-              flex items-center justify-between p-3 lg:p-4 rounded-lg backdrop-blur-sm
+              flex items-center justify-between p-4 lg:p-5 xl:p-6 rounded-lg backdrop-blur-sm
               ${index === 0 ? 'bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-400/30' : ''}
               ${index === 1 ? 'bg-gradient-to-r from-gray-500/20 to-gray-600/20 border border-gray-400/30' : ''}
               ${index === 2 ? 'bg-gradient-to-r from-orange-500/20 to-orange-600/20 border border-orange-400/30' : ''}
