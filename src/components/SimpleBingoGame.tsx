@@ -39,41 +39,17 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
     if (!audioEnabled) return;
     
     try {
-      // Create audio context for number calling sound
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
-      // Resume audio context if suspended (required for user interaction)
-      if (audioContext.state === 'suspended') {
-        audioContext.resume();
-      }
-      
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      // Create a pleasant tone for number calling
-      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
-      
-      gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-      
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.5);
-      
-      // Clean up after sound finishes
-      setTimeout(() => {
-        try {
-          oscillator.disconnect();
-          gainNode.disconnect();
-        } catch (e) {
-          // Already disconnected
-        }
-      }, 600);
+      // Try to play specific number voice audio file
+      const audio = new Audio(`/audio/numbers/bingo-${number}.mp3`);
+      audio.volume = 0.7;
+      audio.play().catch(() => {
+        // Fallback to generic beep if specific audio not found
+        const beepAudio = new Audio('/audio/beep.mp3');
+        beepAudio.volume = 0.5;
+        beepAudio.play().catch(console.warn);
+      });
     } catch (error) {
-      console.warn('Audio not available:', error);
+      console.warn('Could not play number audio:', error);
     }
   };
 
@@ -523,14 +499,6 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
                   </Button>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={callNumber}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    🎯 Call Number
-                  </Button>
                   <Button
                     variant="destructive"
                     size="sm"
