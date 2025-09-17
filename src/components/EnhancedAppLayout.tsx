@@ -88,7 +88,7 @@ const EnhancedAppLayout: React.FC = () => {
     };
   });
 
-  const [gameState, setGameState] = useState({
+  const [gameSession, setGameSession] = useState({
     currentRoom: null as GameRoom | null,
     gameStatus: 'waiting' as 'waiting' | 'playing' | 'finished',
     currentNumber: null as number | null,
@@ -287,7 +287,7 @@ const EnhancedAppLayout: React.FC = () => {
           withdrawableBalance: Math.max(0, (prev.withdrawableBalance || 0) - room.entryFee)
         }));
         
-        setGameState(prev => ({
+        setGameSession(prev => ({
           ...prev,
           currentRoom: room,
           gameStatus: 'waiting',
