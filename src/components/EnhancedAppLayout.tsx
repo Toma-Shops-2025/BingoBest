@@ -442,10 +442,10 @@ const EnhancedAppLayout: React.FC = () => {
             id: 'daily-quick-fire',
             name: 'Daily Quick Fire',
             description: 'Fast-paced bingo tournament with quick rounds',
-            entryFee: 2.00,
+            entryFee: 1.00,
             maxParticipants: 50,
             currentParticipants: 23,
-            prizePool: 80.00,
+            prizePool: 8.00,
             startTime: new Date(now.getTime() + 2 * 60 * 60 * 1000), // 2 hours from now
             endTime: new Date(now.getTime() + 4 * 60 * 60 * 1000), // 4 hours from now
             status: 'upcoming' as const,
@@ -457,10 +457,10 @@ const EnhancedAppLayout: React.FC = () => {
             id: 'weekend-championship',
             name: 'Weekend Championship',
             description: 'The ultimate bingo championship with massive prizes',
-            entryFee: 10.00,
+            entryFee: 3.00,
             maxParticipants: 100,
             currentParticipants: 67,
-            prizePool: 800.00,
+            prizePool: 25.00,
             startTime: new Date(now.getTime() + 24 * 60 * 60 * 1000), // 1 day from now
             endTime: new Date(now.getTime() + 48 * 60 * 60 * 1000), // 2 days from now
             status: 'upcoming' as const,
@@ -472,10 +472,10 @@ const EnhancedAppLayout: React.FC = () => {
             id: 'speed-masters',
             name: 'Speed Masters',
             description: 'Currently running - join the action!',
-            entryFee: 5.00,
+            entryFee: 2.00,
             maxParticipants: 30,
             currentParticipants: 28,
-            prizePool: 120.00,
+            prizePool: 12.00,
             startTime: new Date(now.getTime() - 30 * 60 * 1000), // 30 minutes ago
             endTime: new Date(now.getTime() + 30 * 60 * 1000), // 30 minutes from now
             status: 'active' as const,
@@ -487,10 +487,10 @@ const EnhancedAppLayout: React.FC = () => {
             id: 'mega-jackpot',
             name: 'Mega Jackpot Tournament',
             description: 'The biggest tournament of the month!',
-            entryFee: 20.00,
+            entryFee: 5.00,
             maxParticipants: 200,
             currentParticipants: 156,
-            prizePool: 3200.00,
+            prizePool: 50.00,
             startTime: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
             endTime: new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000), // 1 week + 1 day
             status: 'upcoming' as const,
@@ -502,10 +502,10 @@ const EnhancedAppLayout: React.FC = () => {
             id: 'yesterday-winner',
             name: 'Yesterday\'s Winner',
             description: 'Completed tournament - see who won!',
-            entryFee: 8.00,
+            entryFee: 2.00,
             maxParticipants: 40,
             currentParticipants: 40,
-            prizePool: 280.00,
+            prizePool: 15.00,
             startTime: new Date(now.getTime() - 48 * 60 * 60 * 1000), // 2 days ago
             endTime: new Date(now.getTime() - 24 * 60 * 60 * 1000), // 1 day ago
             status: 'completed' as const,
