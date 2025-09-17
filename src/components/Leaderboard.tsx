@@ -9,16 +9,12 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ players }) => {
   const trophyIcon = "https://d64gsuwffb70l.cloudfront.net/68c18cfaf53345a2b0f3b279_1757515340373_524a8c39.webp";
   
   const sortedPlayers = [...players].sort((a, b) => b.wins - a.wins);
-  
-  // Debug logging to check data
-  console.log('Leaderboard players:', players);
-  console.log('Sorted players:', sortedPlayers);
 
   return (
     <div 
       className="rounded-xl shadow-lg p-6 relative overflow-hidden"
       style={{
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/leaderboard-background.jpg')`,
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/leaderboard-background.jpg')`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat'
@@ -51,18 +47,18 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ players }) => {
               `}>
                 {index + 1}
               </div>
-              <div className="flex-1">
-                <div className="font-bold text-lg text-white drop-shadow-lg">
+              <div className="flex-1 bg-black/20 p-2 rounded">
+                <div className="font-bold text-lg text-white" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>
                   {player.username || 'Unknown Player'}
                 </div>
-                <div className="text-sm text-gray-200 font-medium drop-shadow-md">
+                <div className="text-sm text-white font-medium" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>
                   {player.gamesPlayed || 0} games played
                 </div>
               </div>
             </div>
-            <div className="text-right">
-              <div className="font-bold text-xl text-white drop-shadow-lg">{player.wins}</div>
-              <div className="text-sm text-gray-200 font-medium drop-shadow-md">wins</div>
+            <div className="text-right bg-black/20 p-2 rounded">
+              <div className="font-bold text-xl text-white" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.8)' }}>{player.wins}</div>
+              <div className="text-sm text-white font-medium" style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}>wins</div>
             </div>
           </div>
         ))}
