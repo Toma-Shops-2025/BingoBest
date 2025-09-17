@@ -17,18 +17,15 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    minify: false,
+    target: 'es2015',
+    sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          supabase: ['@supabase/supabase-js']
-        }
+        format: 'es',
+        manualChunks: undefined
       }
-    },
-    minify: 'esbuild',
-    target: 'es2020',
-    sourcemap: false,
-    chunkSizeWarningLimit: 1000
+    }
   },
   define: {
     // Define fallback values for environment variables

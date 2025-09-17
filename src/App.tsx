@@ -14,12 +14,20 @@ import AppFallback from "./components/AppFallback";
 import AdminDashboard from "./components/AdminDashboard";
 import AudioPlayer from "./components/AudioPlayer";
 
-const queryClient = new QueryClient();
+// Lazy initialization to avoid circular dependencies
+let _queryClient: QueryClient | null = null;
+
+const getQueryClient = () => {
+  if (!_queryClient) {
+    _queryClient = new QueryClient();
+  }
+  return _queryClient;
+};
 
 const App = () => (
   <ErrorBoundary>
     <ThemeProvider defaultTheme="dark">
-      <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={getQueryClient()}>
         <AuthProvider>
           <AppProvider>
             <TooltipProvider>
