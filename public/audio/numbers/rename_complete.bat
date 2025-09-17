@@ -1,0 +1,94 @@
+@echo off
+echo Renaming all bingo audio files to correct format...
+
+rem B column (1-15) - rename all B files
+ren "public_audio_adam-voice_B-2.mp3" "bingo-2.mp3"
+ren "public_audio_adam-voice_B-3.mp3" "bingo-3.mp3"
+ren "public_audio_adam-voice_B-4.mp3" "bingo-4.mp3"
+ren "public_audio_adam-voice_B-5.mp3" "bingo-5.mp3"
+ren "public_audio_adam-voice_B-6.mp3" "bingo-6.mp3"
+ren "public_audio_adam-voice_B-7.mp3" "bingo-7.mp3"
+ren "public_audio_adam-voice_B-8.mp3" "bingo-8.mp3"
+ren "public_audio_adam-voice_B-9.mp3" "bingo-9.mp3"
+ren "public_audio_adam-voice_B-10.mp3" "bingo-10.mp3"
+ren "public_audio_adam-voice_B-11.mp3" "bingo-11.mp3"
+ren "public_audio_adam-voice_B-12.mp3" "bingo-12.mp3"
+ren "public_audio_adam-voice_B-13.mp3" "bingo-13.mp3"
+ren "public_audio_adam-voice_B-14.mp3" "bingo-14.mp3"
+ren "public_audio_adam-voice_B-15.mp3" "bingo-15.mp3"
+
+rem I column (16-30) - rename all I files
+ren "public_audio_adam-voice_I-16.mp3" "bingo-16.mp3"
+ren "public_audio_adam-voice_I-17.mp3" "bingo-17.mp3"
+ren "public_audio_adam-voice_I-18.mp3" "bingo-18.mp3"
+ren "public_audio_adam-voice_I-19.mp3" "bingo-19.mp3"
+ren "public_audio_adam-voice_I-20.mp3" "bingo-20.mp3"
+ren "public_audio_adam-voice_I-21.mp3" "bingo-21.mp3"
+ren "public_audio_adam-voice_I-22.mp3" "bingo-22.mp3"
+ren "public_audio_adam-voice_I-23.mp3" "bingo-23.mp3"
+ren "public_audio_adam-voice_I-24.mp3" "bingo-24.mp3"
+ren "public_audio_adam-voice_I-25.mp3" "bingo-25.mp3"
+ren "public_audio_adam-voice_I-26.mp3" "bingo-26.mp3"
+ren "public_audio_adam-voice_I-27.mp3" "bingo-27.mp3"
+ren "public_audio_adam-voice_I-28.mp3" "bingo-28.mp3"
+ren "public_audio_adam-voice_I-29.mp3" "bingo-29.mp3"
+ren "public_audio_adam-voice_I-30.mp3" "bingo-30.mp3"
+
+rem N column (31-45) - rename all N files
+ren "public_audio_adam-voice_N-31.mp3" "bingo-31.mp3"
+ren "public_audio_adam-voice_N-32.mp3" "bingo-32.mp3"
+ren "public_audio_adam-voice_N-33.mp3" "bingo-33.mp3"
+ren "public_audio_adam-voice_N-34.mp3" "bingo-34.mp3"
+ren "public_audio_adam-voice_N-35.mp3" "bingo-35.mp3"
+ren "public_audio_adam-voice_N-36.mp3" "bingo-36.mp3"
+ren "public_audio_adam-voice_N-37.mp3" "bingo-37.mp3"
+ren "public_audio_adam-voice_N-38.mp3" "bingo-38.mp3"
+ren "public_audio_adam-voice_N-39.mp3" "bingo-39.mp3"
+ren "public_audio_adam-voice_N-40.mp3" "bingo-40.mp3"
+ren "public_audio_adam-voice_N-41.mp3" "bingo-41.mp3"
+ren "public_audio_adam-voice_N-42.mp3" "bingo-42.mp3"
+ren "public_audio_adam-voice_N-43.mp3" "bingo-43.mp3"
+ren "public_audio_adam-voice_N-44.mp3" "bingo-44.mp3"
+ren "public_audio_adam-voice_N-45.mp3" "bingo-45.mp3"
+
+rem G column (46-60) - rename all G files
+ren "public_audio_adam-voice_G-46.mp3" "bingo-46.mp3"
+ren "public_audio_adam-voice_G-47.mp3" "bingo-47.mp3"
+ren "public_audio_adam-voice_G-48.mp3" "bingo-48.mp3"
+ren "public_audio_adam-voice_G-49.mp3" "bingo-49.mp3"
+ren "public_audio_adam-voice_G-50.mp3" "bingo-50.mp3"
+ren "public_audio_adam-voice_G-51.mp3" "bingo-51.mp3"
+ren "public_audio_adam-voice_G-52.mp3" "bingo-52.mp3"
+ren "public_audio_adam-voice_G-53.mp3" "bingo-53.mp3"
+ren "public_audio_adam-voice_G-54.mp3" "bingo-54.mp3"
+ren "public_audio_adam-voice_G-55.mp3" "bingo-55.mp3"
+ren "public_audio_adam-voice_G-56.mp3" "bingo-56.mp3"
+ren "public_audio_adam-voice_G-57.mp3" "bingo-57.mp3"
+ren "public_audio_adam-voice_G-58.mp3" "bingo-58.mp3"
+ren "public_audio_adam-voice_G-59.mp3" "bingo-59.mp3"
+ren "public_audio_adam-voice_G-60.mp3" "bingo-60.mp3"
+
+rem O column (61-75) - rename all O files
+ren "public_audio_adam-voice_O-61.mp3" "bingo-61.mp3"
+ren "public_audio_adam-voice_O-62.mp3" "bingo-62.mp3"
+ren "public_audio_adam-voice_O-63.mp3" "bingo-63.mp3"
+ren "public_audio_adam-voice_O-64.mp3" "bingo-64.mp3"
+ren "public_audio_adam-voice_O-65.mp3" "bingo-65.mp3"
+ren "public_audio_adam-voice_O-66.mp3" "bingo-66.mp3"
+ren "public_audio_adam-voice_O-67.mp3" "bingo-67.mp3"
+ren "public_audio_adam-voice_O-68.mp3" "bingo-68.mp3"
+ren "public_audio_adam-voice_O-69.mp3" "bingo-69.mp3"
+ren "public_audio_adam-voice_O-70.mp3" "bingo-70.mp3"
+ren "public_audio_adam-voice_O-71.mp3" "bingo-71.mp3"
+ren "public_audio_adam-voice_O-72.mp3" "bingo-72.mp3"
+ren "public_audio_adam-voice_O-73.mp3" "bingo-73.mp3"
+ren "public_audio_adam-voice_O-74.mp3" "bingo-74.mp3"
+ren "public_audio_adam-voice_O-75.mp3" "bingo-75.mp3"
+
+echo.
+echo Renaming complete!
+echo.
+echo Verifying renamed files:
+dir bingo-*.mp3 | find /c "bingo-"
+echo.
+echo Total bingo files found:
