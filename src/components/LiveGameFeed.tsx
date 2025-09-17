@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, Coins, Zap } from 'lucide-react';
+import { Coins, Zap } from 'lucide-react';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import BalanceBreakdown from './BalanceBreakdown';
 import { gameState } from '@/lib/gameState';
@@ -50,7 +50,7 @@ const LiveGameFeed: React.FC<LiveGameFeedProps> = ({
       description: 'Roll the dice and win instant prizes!',
       cost: 10,
       maxWin: 25,
-      icon: <Dice1 className="w-6 h-6" />
+      icon: <img src="/dice-1.png" alt="Dice 1" className="w-6 h-6" />
       },
       {
         id: '2',
@@ -146,9 +146,7 @@ const LiveGameFeed: React.FC<LiveGameFeedProps> = ({
   };
 
   const getDiceIcon = (number: number) => {
-    const diceIcons = [Dice1, Dice2, Dice3, Dice4, Dice5, Dice6];
-    const IconComponent = diceIcons[number - 1];
-    return <IconComponent className="w-12 h-12" />;
+    return <img src={`/dice-${number}.png`} alt={`Dice ${number}`} className="w-12 h-12" />;
   };
 
   // Double or Nothing game
@@ -249,14 +247,21 @@ const LiveGameFeed: React.FC<LiveGameFeedProps> = ({
   return (
     <div className="space-y-6">
       {/* Mini Games Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            🎮 Mini Games
-            <Badge variant="secondary">Fun & Rewards</Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <Card className="relative overflow-hidden" style={{
+        backgroundImage: 'url("/minigame-background.png")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+        <div className="relative z-10">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              🎮 Mini Games
+              <Badge variant="secondary">Fun & Rewards</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {miniGames.map((game) => (
               <div 
@@ -297,7 +302,8 @@ const LiveGameFeed: React.FC<LiveGameFeedProps> = ({
               </div>
             ))}
           </div>
-        </CardContent>
+          </CardContent>
+        </div>
       </Card>
 
       {/* Active Game Interface */}
@@ -336,7 +342,7 @@ const LiveGameFeed: React.FC<LiveGameFeedProps> = ({
               {selectedGame === '1' && (
                 <div className={`p-8 rounded-xl border-2 border-white/30 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm ${isRolling ? 'animate-pulse bg-yellow-500/20 border-yellow-400/50' : 'hover:bg-white/15 transition-all duration-300'}`}>
                   <div className="text-white">
-                    {diceResult > 0 ? getDiceIcon(diceResult) : <Dice1 className="w-16 h-16 text-white/60" />}
+                    {diceResult > 0 ? getDiceIcon(diceResult) : <img src="/dice-1.png" alt="Dice 1" className="w-16 h-16 opacity-60" />}
                   </div>
                 </div>
               )}

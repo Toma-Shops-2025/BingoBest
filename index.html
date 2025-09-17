@@ -129,10 +129,13 @@
     </script>
     
     <!-- AdCash Auto Tag -->
+    <script type="text/javascript" src="https://www.adcash.com/script/lib.js"></script>
     <script type="text/javascript">
-      aclib.runAutoTag({
-        zoneId: 'oneekt8zti',
-      });
+      if (typeof aclib !== 'undefined') {
+        aclib.runAutoTag({
+          zoneId: 'oneekt8zti',
+        });
+      }
     </script>
   </body>
 </html>
