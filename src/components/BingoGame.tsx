@@ -31,23 +31,34 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
   const [gameTimer, setGameTimer] = useState(300); // 5 minutes
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [autoCallInterval, setAutoCallInterval] = useState<NodeJS.Timeout | null>(null);
 
   const letters = ['B', 'I', 'N', 'G', 'O'];
   const numbersPerLetter = 15;
 
-  // Generate a random bingo card
+  // Generate a random bingo card with correct number ranges
   const generateBingoCard = (): BingoCard => {
     try {
       const numbers: BingoNumber[][] = [];
       
+      // Standard bingo number ranges: B(1-15), I(16-30), N(31-45), G(46-60), O(61-75)
+      const numberRanges = [
+        { start: 1, end: 15 },   // B
+        { start: 16, end: 30 }, // I
+        { start: 31, end: 45 }, // N
+        { start: 46, end: 60 }, // G
+        { start: 61, end: 75 }  // O
+      ];
+      
       for (let col = 0; col < 5; col++) {
         const columnNumbers: BingoNumber[] = [];
         const usedNumbers = new Set<number>();
+        const range = numberRanges[col];
         
         for (let row = 0; row < 5; row++) {
           let number: number;
           do {
-            number = Math.floor(Math.random() * numbersPerLetter) + (col * numbersPerLetter) + 1;
+            number = Math.floor(Math.random() * (range.end - range.start + 1)) + range.start;
           } while (usedNumbers.has(number));
           
           usedNumbers.add(number);
@@ -79,6 +90,23 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
     }
   };
 
+  // Play audio for called number
+  const playNumberAudio = (number: number) => {
+    try {
+      // Try to play specific number audio file
+      const audio = new Audio(`/audio/numbers/bingo-${number}.mp3`);
+      audio.volume = 0.7;
+      audio.play().catch(() => {
+        // Fallback to generic beep if specific audio not found
+        const beepAudio = new Audio('/audio/beep.mp3');
+        beepAudio.volume = 0.5;
+        beepAudio.play().catch(console.warn);
+      });
+    } catch (error) {
+      console.warn('Could not play number audio:', error);
+    }
+  };
+
   // Call a random number
   const callNumber = () => {
     if (gameStatus !== 'playing') return;
@@ -100,6 +128,9 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
     setCalledNumbers(prev => [...prev, randomNumber]);
     setCurrentNumber(randomNumber);
     
+    // Play audio for the called number
+    playNumberAudio(randomNumber);
+    
     // Update bingo cards
     setBingoCards(prev => prev.map(card => {
       const newNumbers = card.numbers.map(column => 
@@ -111,6 +142,27 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
       
       return { ...card, numbers: newNumbers };
     }));
+  };
+
+  // Start automatic number calling
+  const startAutoCalling = () => {
+    if (autoCallInterval) {
+      clearInterval(autoCallInterval);
+    }
+    
+    const interval = setInterval(() => {
+      callNumber();
+    }, 2000); // Call every 2 seconds
+    
+    setAutoCallInterval(interval);
+  };
+
+  // Stop automatic number calling
+  const stopAutoCalling = () => {
+    if (autoCallInterval) {
+      clearInterval(autoCallInterval);
+      setAutoCallInterval(null);
+    }
   };
 
   // Mark a number on a card
@@ -211,6 +263,9 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
       setCurrentNumber(null);
       setBingoCards([generateBingoCard()]);
       setGameTimer(300);
+      
+      // Start automatic number calling every 2 seconds
+      startAutoCalling();
     } catch (error) {
       console.error('Error starting game:', error);
       setError('Failed to start game. Please try again.');
@@ -224,9 +279,17 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
       return () => clearTimeout(timer);
     } else if (gameStatus === 'playing' && gameTimer === 0) {
       setGameStatus('finished');
+      stopAutoCalling(); // Stop automatic calling when game ends
       onGameEnd();
     }
   }, [gameStatus, gameTimer]);
+
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      stopAutoCalling(); // Cleanup on component unmount
+    };
+  }, []);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -307,9 +370,9 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
                   <div className="text-4xl font-bold text-purple-600 mb-2">
                     {letters[Math.floor((currentNumber - 1) / 15)]}{currentNumber}
                   </div>
-                  <Button onClick={callNumber}>
-                    Call Next Number
-                  </Button>
+                  <div className="text-sm text-gray-600">
+                    Numbers are called automatically every 2 seconds
+                  </div>
                 </div>
               )}
             </div>

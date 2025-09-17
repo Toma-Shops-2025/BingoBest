@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { GAME_CONFIGS, GameSessionManager } from '@/lib/prizeDistribution';
 import { gameState, getGameState } from '@/lib/gameState';
+import { userDataPersistence, UserProfile } from '@/lib/userDataPersistence';
 import { Button } from '@/components/ui/button';
 import AuthModal from './AuthModal';
 import GameHeader from './GameHeader';
@@ -58,6 +59,61 @@ const EnhancedAppLayout: React.FC = () => {
   const { sidebarOpen, toggleSidebar } = useAppContext();
   const { user, userProfile, loading: authLoading, signOut } = useAuth();
   const isMobile = useIsMobile();
+  
+  const [persistentUserProfile, setPersistentUserProfile] = useState<UserProfile | null>(null);
+  
+  // Load persistent user data when user changes
+  useEffect(() => {
+    if (user) {
+      const loadPersistentData = async () => {
+        const profile = await userDataPersistence.loadUserProfile();
+        if (profile) {
+          setPersistentUserProfile(profile);
+          // Update player state with persistent data
+          setPlayer(prev => ({
+            ...prev,
+            id: profile.id,
+            username: profile.username,
+            balance: profile.balance,
+            withdrawableBalance: profile.withdrawableBalance,
+            bonusBalance: profile.bonusBalance,
+            level: profile.level,
+            experience: profile.experience,
+            totalWinnings: profile.total_winnings,
+            gamesPlayed: profile.games_played,
+            gamesWon: profile.games_won,
+            winRate: profile.win_rate
+          }));
+        }
+      };
+      loadPersistentData();
+    } else {
+      setPersistentUserProfile(null);
+    }
+  }, [user]);
+
+  // Listen for user data updates from other devices
+  useEffect(() => {
+    const handleUserDataUpdate = (event: CustomEvent) => {
+      const updatedProfile = event.detail;
+      setPersistentUserProfile(updatedProfile);
+      setPlayer(prev => ({
+        ...prev,
+        balance: updatedProfile.balance,
+        withdrawableBalance: updatedProfile.withdrawableBalance,
+        bonusBalance: updatedProfile.bonusBalance,
+        totalWinnings: updatedProfile.total_winnings,
+        gamesPlayed: updatedProfile.games_played,
+        gamesWon: updatedProfile.games_won,
+        winRate: updatedProfile.win_rate
+      }));
+    };
+
+    window.addEventListener('userDataUpdated', handleUserDataUpdate as EventListener);
+    return () => {
+      window.removeEventListener('userDataUpdated', handleUserDataUpdate as EventListener);
+    };
+  }, []);
   
   // Initialize player with real game state
   const [player, setPlayer] = useState<Player>(() => {
@@ -1022,6 +1078,11 @@ const EnhancedAppLayout: React.FC = () => {
                   vipTier: newTier,
                   vipPoints: updatedStats.vipPoints
                 }));
+
+                // Save VIP status to persistent storage
+                if (user) {
+                  await userDataPersistence.updateVIPStatus(newTier, updatedStats.vipPoints);
+                }
               } else {
                 // Not enough games played yet
                 const gamesNeeded = nextTierRequirement - gamesPlayed;
@@ -1083,14 +1144,19 @@ const EnhancedAppLayout: React.FC = () => {
               playerBalance={player.balance}
               playerWithdrawableBalance={player.withdrawableBalance}
               playerBonusBalance={player.bonusBalance}
-              onBalanceUpdate={(newBalance, newWithdrawableBalance, newBonusBalance) => {
-                setPlayer(prev => ({
-                  ...prev,
-                  balance: newBalance,
-                  withdrawableBalance: newWithdrawableBalance,
-                  bonusBalance: newBonusBalance
-                }));
-              }}
+                onBalanceUpdate={async (newBalance, newWithdrawableBalance, newBonusBalance) => {
+                  setPlayer(prev => ({
+                    ...prev,
+                    balance: newBalance,
+                    withdrawableBalance: newWithdrawableBalance,
+                    bonusBalance: newBonusBalance
+                  }));
+                  
+                  // Save to persistent storage
+                  if (user) {
+                    await userDataPersistence.updateBalance(newBalance, newWithdrawableBalance, newBonusBalance);
+                  }
+                }}
             />
           </div>
         );

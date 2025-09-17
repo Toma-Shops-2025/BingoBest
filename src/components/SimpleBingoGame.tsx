@@ -146,15 +146,25 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
     try {
       const numbers: BingoNumber[][] = [];
       
+      // Standard bingo number ranges: B(1-15), I(16-30), N(31-45), G(46-60), O(61-75)
+      const numberRanges = [
+        { start: 1, end: 15 },   // B
+        { start: 16, end: 30 }, // I
+        { start: 31, end: 45 }, // N
+        { start: 46, end: 60 }, // G
+        { start: 61, end: 75 }  // O
+      ];
+      
       for (let col = 0; col < 5; col++) {
         const columnNumbers: BingoNumber[] = [];
         const usedNumbers = new Set<number>();
+        const range = numberRanges[col];
         
         for (let row = 0; row < 5; row++) {
           let number: number;
           let attempts = 0;
           do {
-            number = Math.floor(Math.random() * 15) + (col * 15) + 1;
+            number = Math.floor(Math.random() * (range.end - range.start + 1)) + range.start;
             attempts++;
             if (attempts > 100) break; // Prevent infinite loop
           } while (usedNumbers.has(number) && attempts < 100);

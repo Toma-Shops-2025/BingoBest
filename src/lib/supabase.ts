@@ -35,6 +35,8 @@ export interface Database {
           username: string;
           email: string;
           balance: number;
+          withdrawable_balance: number;
+          bonus_balance: number;
           level: number;
           experience: number;
           avatar_url?: string;
@@ -46,12 +48,16 @@ export interface Database {
           games_played: number;
           games_won: number;
           win_rate: number;
+          vip_tier: number;
+          vip_points: number;
         };
         Insert: {
           id?: string;
           username: string;
           email: string;
           balance?: number;
+          withdrawable_balance?: number;
+          bonus_balance?: number;
           level?: number;
           experience?: number;
           avatar_url?: string;
@@ -63,12 +69,16 @@ export interface Database {
           games_played?: number;
           games_won?: number;
           win_rate?: number;
+          vip_tier?: number;
+          vip_points?: number;
         };
         Update: {
           id?: string;
           username?: string;
           email?: string;
           balance?: number;
+          withdrawable_balance?: number;
+          bonus_balance?: number;
           level?: number;
           experience?: number;
           avatar_url?: string;
@@ -80,6 +90,8 @@ export interface Database {
           games_played?: number;
           games_won?: number;
           win_rate?: number;
+          vip_tier?: number;
+          vip_points?: number;
         };
       };
       game_rooms: {
@@ -316,6 +328,38 @@ export interface Database {
           user_id?: string;
           message?: string;
           created_at?: string;
+        };
+      };
+      user_sessions: {
+        Row: {
+          id: string;
+          user_id: string;
+          device_id: string;
+          device_type: 'mobile' | 'desktop' | 'tablet';
+          last_activity: string;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          device_id: string;
+          device_type: 'mobile' | 'desktop' | 'tablet';
+          last_activity?: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          device_id?: string;
+          device_type?: 'mobile' | 'desktop' | 'tablet';
+          last_activity?: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
         };
       };
     };
