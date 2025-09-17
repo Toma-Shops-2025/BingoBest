@@ -11,6 +11,8 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTrack, setCurrentTrack] = useState(0);
   const [isAttemptingToStart, setIsAttemptingToStart] = useState(false);
+  const [shuffleOrder, setShuffleOrder] = useState<number[]>([]);
+  const [shuffleIndex, setShuffleIndex] = useState(0);
 
   // Available casino ambient tracks
   const tracks = [
@@ -32,6 +34,24 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
     '/audio/music/casino-ambient-16.mp3'
   ];
 
+  // Create shuffled playlist
+  const createShuffleOrder = () => {
+    const order = Array.from({ length: tracks.length }, (_, i) => i);
+    // Fisher-Yates shuffle algorithm
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    return order;
+  };
+
+  // Initialize shuffle order on component mount
+  useEffect(() => {
+    if (shuffleOrder.length === 0) {
+      setShuffleOrder(createShuffleOrder());
+    }
+  }, []);
+
   const startMusic = () => {
     if (!enabled || isPlaying) return;
     
@@ -39,14 +59,17 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
     
     try {
       if (!audioRef.current) {
-        audioRef.current = new Audio(tracks[currentTrack]);
-        audioRef.current.loop = true;
+        // Get current track from shuffle order
+        const trackIndex = shuffleOrder.length > 0 ? shuffleOrder[shuffleIndex] : currentTrack;
+        audioRef.current = new Audio(tracks[trackIndex]);
+        audioRef.current.loop = false; // Don't loop individual tracks
         audioRef.current.volume = volume;
         audioRef.current.preload = 'auto';
         
-        // Handle track end - move to next track
+        // Handle track end - move to next track in shuffle order
         audioRef.current.addEventListener('ended', () => {
-          setCurrentTrack((prev) => (prev + 1) % tracks.length);
+          console.log('🎵 Track ended, moving to next track in shuffle');
+          playNextTrack();
         });
         
         // Handle errors
@@ -54,7 +77,7 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
           console.warn('Audio error:', e);
           setIsAttemptingToStart(false);
           // Try next track
-          setCurrentTrack((prev) => (prev + 1) % tracks.length);
+          playNextTrack();
         });
       }
       
@@ -71,13 +94,52 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
           setIsAttemptingToStart(false);
           // Try next track after a short delay
           setTimeout(() => {
-            setCurrentTrack((prev) => (prev + 1) % tracks.length);
+            playNextTrack();
           }, 1000);
         });
       }
     } catch (error) {
       console.warn('Error starting music:', error);
       setIsAttemptingToStart(false);
+    }
+  };
+
+  // Play next track in shuffle order
+  const playNextTrack = () => {
+    if (!audioRef.current || !isPlaying) return;
+    
+    try {
+      // Move to next track in shuffle order
+      const nextShuffleIndex = (shuffleIndex + 1) % shuffleOrder.length;
+      setShuffleIndex(nextShuffleIndex);
+      
+      // If we've played all tracks, create a new shuffle order
+      if (nextShuffleIndex === 0) {
+        console.log('🎵 Played all tracks, creating new shuffle order');
+        setShuffleOrder(createShuffleOrder());
+      }
+      
+      // Get the next track from the shuffle order
+      const nextTrackIndex = shuffleOrder[nextShuffleIndex];
+      setCurrentTrack(nextTrackIndex);
+      
+      // Update the audio source
+      audioRef.current.src = tracks[nextTrackIndex];
+      audioRef.current.currentTime = 0;
+      
+      // Play the next track
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.warn('Failed to play next track:', error);
+          // Try the track after that
+          setTimeout(() => playNextTrack(), 1000);
+        });
+      }
+      
+      console.log(`🎵 Playing track ${nextTrackIndex + 1}/${tracks.length}: ${tracks[nextTrackIndex]}`);
+    } catch (error) {
+      console.warn('Error playing next track:', error);
     }
   };
 
@@ -149,12 +211,14 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
   // Change track when currentTrack changes
   useEffect(() => {
     if (audioRef.current && isPlaying) {
-      audioRef.current.src = tracks[currentTrack];
+      const trackIndex = shuffleOrder.length > 0 ? shuffleOrder[shuffleIndex] : currentTrack;
+      audioRef.current.src = tracks[trackIndex];
+      audioRef.current.currentTime = 0;
       audioRef.current.play().catch((error) => {
         console.warn('Failed to play new track:', error);
       });
     }
-  }, [currentTrack]);
+  }, [currentTrack, shuffleIndex, shuffleOrder, isPlaying]);
 
   // Try to start music on any user interaction
   useEffect(() => {
@@ -219,12 +283,22 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
               background: `linear-gradient(to right, #10b981 0%, #10b981 ${volume * 100}%, #374151 ${volume * 100}%, #374151 100%)`
             }}
           />
-          <button
-            onClick={() => setCurrentTrack((prev) => (prev + 1) % tracks.length)}
-            className="text-xs text-white/70 hover:text-white bg-black/50 px-2 py-1 rounded"
-          >
-            Next Track
-          </button>
+                <button
+                  onClick={() => {
+                    if (isPlaying) {
+                      playNextTrack();
+                    } else {
+                      // If not playing, just advance the shuffle index
+                      const nextShuffleIndex = (shuffleIndex + 1) % shuffleOrder.length;
+                      setShuffleIndex(nextShuffleIndex);
+                      const nextTrackIndex = shuffleOrder[nextShuffleIndex];
+                      setCurrentTrack(nextTrackIndex);
+                    }
+                  }}
+                  className="text-xs text-white/70 hover:text-white bg-black/50 px-2 py-1 rounded"
+                >
+                  Next Track
+                </button>
         </div>
       )}
     </div>
