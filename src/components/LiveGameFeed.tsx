@@ -255,14 +255,14 @@ const LiveGameFeed: React.FC<LiveGameFeedProps> = ({
       }}>
         <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
         <div className="relative z-10">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+          <CardHeader className="p-6 lg:p-8">
+            <CardTitle className="flex items-center gap-2 text-xl lg:text-2xl">
               🎮 Mini Games
               <Badge variant="secondary">Fun & Rewards</Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <CardContent className="p-6 lg:p-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
             {miniGames.map((game) => (
               <div 
                 key={game.id} 
@@ -339,8 +339,8 @@ const LiveGameFeed: React.FC<LiveGameFeedProps> = ({
 
             {/* Game Display */}
             <div className="flex justify-center">
-              {selectedGame === '1' && (
-                <div className={`p-8 rounded-xl border-2 border-white/30 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm ${isRolling ? 'animate-pulse bg-yellow-500/20 border-yellow-400/50' : 'hover:bg-white/15 transition-all duration-300'}`}>
+          {selectedGame === '1' && (
+            <div className={`p-8 lg:p-12 rounded-xl border-2 border-white/30 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm ${isRolling ? 'animate-pulse bg-yellow-500/20 border-yellow-400/50' : 'hover:bg-white/15 transition-all duration-300'}`}>
                   <div className="text-white">
                     {diceResult > 0 ? getDiceIcon(diceResult) : <img src="/dice-1.png" alt="Dice 1" className="w-16 h-16 opacity-60" />}
                   </div>

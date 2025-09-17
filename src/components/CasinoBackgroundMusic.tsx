@@ -10,6 +10,7 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
   const [volume, setVolume] = useState(0.3);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTrack, setCurrentTrack] = useState(0);
+  const [isAttemptingToStart, setIsAttemptingToStart] = useState(false);
 
   // Available casino ambient tracks
   const tracks = [
@@ -34,11 +35,14 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
   const startMusic = () => {
     if (!enabled || isPlaying) return;
     
+    setIsAttemptingToStart(true);
+    
     try {
       if (!audioRef.current) {
         audioRef.current = new Audio(tracks[currentTrack]);
         audioRef.current.loop = true;
         audioRef.current.volume = volume;
+        audioRef.current.preload = 'auto';
         
         // Handle track end - move to next track
         audioRef.current.addEventListener('ended', () => {
@@ -48,20 +52,32 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
         // Handle errors
         audioRef.current.addEventListener('error', (e) => {
           console.warn('Audio error:', e);
+          setIsAttemptingToStart(false);
           // Try next track
           setCurrentTrack((prev) => (prev + 1) % tracks.length);
         });
       }
       
-      audioRef.current.play().then(() => {
-        setIsPlaying(true);
-      }).catch((error) => {
-        console.warn('Failed to play audio:', error);
-        // Try next track
-        setCurrentTrack((prev) => (prev + 1) % tracks.length);
-      });
+      // Try to play immediately
+      const playPromise = audioRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log('🎵 Background music started successfully');
+          setIsPlaying(true);
+          setIsAttemptingToStart(false);
+        }).catch((error) => {
+          console.warn('Failed to play audio (autoplay blocked):', error);
+          setIsAttemptingToStart(false);
+          // Try next track after a short delay
+          setTimeout(() => {
+            setCurrentTrack((prev) => (prev + 1) % tracks.length);
+          }, 1000);
+        });
+      }
     } catch (error) {
       console.warn('Error starting music:', error);
+      setIsAttemptingToStart(false);
     }
   };
 
@@ -88,12 +104,38 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
   // Auto-start music when component mounts (if enabled)
   useEffect(() => {
     if (enabled && !isPlaying) {
-      // Small delay to ensure DOM is ready and user interaction is allowed
-      const timer = setTimeout(() => {
-        startMusic();
-      }, 1000);
+      console.log('🎵 Attempting to start background music automatically');
       
-      return () => clearTimeout(timer);
+      // Try to start immediately
+      startMusic();
+      
+      // If that fails, try again after a short delay
+      const timer = setTimeout(() => {
+        if (!isPlaying) {
+          console.log('🎵 Retrying background music start');
+          startMusic();
+        }
+      }, 500);
+      
+      // Also try after user interaction (click anywhere)
+      const handleUserInteraction = () => {
+        if (!isPlaying && enabled) {
+          console.log('🎵 Starting music after user interaction');
+          startMusic();
+        }
+      };
+      
+      // Add event listeners for user interaction
+      document.addEventListener('click', handleUserInteraction, { once: true });
+      document.addEventListener('keydown', handleUserInteraction, { once: true });
+      document.addEventListener('touchstart', handleUserInteraction, { once: true });
+      
+      return () => {
+        clearTimeout(timer);
+        document.removeEventListener('click', handleUserInteraction);
+        document.removeEventListener('keydown', handleUserInteraction);
+        document.removeEventListener('touchstart', handleUserInteraction);
+      };
     }
   }, [enabled]);
 
@@ -114,6 +156,30 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
     }
   }, [currentTrack]);
 
+  // Try to start music on any user interaction
+  useEffect(() => {
+    if (enabled && !isPlaying) {
+      const handleAnyInteraction = () => {
+        if (!isPlaying && enabled) {
+          console.log('🎵 Starting music after any user interaction');
+          startMusic();
+        }
+      };
+
+      // Listen for any user interaction
+      const events = ['click', 'keydown', 'touchstart', 'mousemove', 'scroll'];
+      events.forEach(event => {
+        document.addEventListener(event, handleAnyInteraction, { once: true, passive: true });
+      });
+
+      return () => {
+        events.forEach(event => {
+          document.removeEventListener(event, handleAnyInteraction);
+        });
+      };
+    }
+  }, [enabled, isPlaying]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -133,8 +199,10 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
         variant={isPlaying ? "default" : "outline"}
         size="sm"
         className="bg-black/80 text-white hover:bg-black/90 border-white/20"
+        title={isPlaying ? "Background music is playing" : isAttemptingToStart ? "Starting music..." : "Click to start background music"}
+        disabled={isAttemptingToStart}
       >
-        {isPlaying ? "🎵 Music On" : "🎵 Music Off"}
+        {isPlaying ? "🎵 Music On" : isAttemptingToStart ? "🎵 Starting..." : "🎵 Music Off"}
       </Button>
       
       {isPlaying && (

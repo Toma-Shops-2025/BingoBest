@@ -11,11 +11,11 @@ const GameRooms: React.FC<GameRoomsProps> = ({ rooms, onJoinRoom, playerBalance 
   return (
     <div className="space-y-6">
       <h2 className="text-3xl font-bold text-white mb-8 casino-text-glow">Game Rooms</h2>
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-1 gap-6">
         {rooms.map((room) => (
           <div
             key={room.id}
-            className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300 shadow-xl"
+            className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 lg:p-8 hover:bg-white/15 transition-all duration-300 shadow-xl"
           >
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-2xl font-bold text-white">{room.name}</h3>
@@ -29,7 +29,7 @@ const GameRooms: React.FC<GameRoomsProps> = ({ rooms, onJoinRoom, playerBalance 
               </span>
             </div>
             
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
                   <span className="text-green-400 text-sm">$</span>
