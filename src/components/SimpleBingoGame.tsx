@@ -77,6 +77,28 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
     }
   };
 
+  // Enhanced number calling with visual and audio feedback
+  const announceNumber = (number: number) => {
+    const letter = getLetter(number);
+    const announcement = `${letter} - ${number}`;
+    
+    // Visual feedback
+    console.log(`🎯 BINGO NUMBER CALLED: ${announcement}`);
+    
+    // Audio feedback
+    playNumberCallSound(number);
+    
+    // Show notification
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      if (Notification.permission === 'granted') {
+        new Notification(`Bingo Number Called!`, {
+          body: announcement,
+          icon: '/icon-192x192.png'
+        });
+      }
+    }
+  };
+
   const playBingoSound = () => {
     if (!audioEnabled) return;
     
@@ -189,8 +211,8 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
       setCalledNumbers(prev => [...prev, randomNumber]);
       setCurrentNumber(randomNumber);
       
-      // Play number call sound
-      playNumberCallSound(randomNumber);
+      // Enhanced number announcement with visual and audio feedback
+      announceNumber(randomNumber);
       
       // Update bingo cards
       setBingoCards(prev => prev.map(card => {
@@ -358,18 +380,25 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
       setBingoCards([generateBingoCard()]);
       setGameTimer(300);
       
-      // Start automatic number calling every 3 seconds
+      // Start automatic number calling every 2 seconds (faster)
       const interval = window.setInterval(() => {
         callNumber();
-      }, 3000);
+      }, 2000);
       setAutoCallInterval(interval);
       
       // Start the first number call immediately
       setTimeout(() => {
         callNumber();
-      }, 1000);
+      }, 500);
       
-      console.log('Game started - numbers will be called every 3 seconds');
+      // Call second number after 1 second
+      setTimeout(() => {
+        callNumber();
+      }, 1500);
+      
+      console.log('🎯 BINGO GAME STARTED - Numbers will be called every 2 seconds');
+      console.log('🔊 Audio announcements enabled');
+      console.log('📱 Notifications enabled');
     } catch (error) {
       console.error('Error starting game:', error);
       setError('Failed to start game. Please try again.');
@@ -474,7 +503,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
               {/* Audio Controls */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">Audio:</span>
+                  <span className="text-sm font-medium text-white">Audio:</span>
                   <Button
                     variant={audioEnabled ? "default" : "outline"}
                     size="sm"
@@ -483,39 +512,59 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
                     {audioEnabled ? "🔊 On" : "🔇 Off"}
                   </Button>
                 </div>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={stopGame}
-                >
-                  Stop Game
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={callNumber}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    🎯 Call Number
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={stopGame}
+                  >
+                    Stop Game
+                  </Button>
+                </div>
               </div>
 
               {/* Called Numbers */}
               <div>
-                <h4 className="font-semibold mb-2">Called Numbers ({calledNumbers.length})</h4>
-                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+                <h4 className="font-semibold mb-2 text-white">Called Numbers ({calledNumbers.length})</h4>
+                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto bg-black/20 p-3 rounded-lg">
                   {calledNumbers.map((num, index) => (
                     <Badge 
                       key={index} 
                       variant={num === currentNumber ? "default" : "outline"}
-                      className={num === currentNumber ? "animate-pulse bg-green-500" : ""}
+                      className={`text-sm font-bold ${
+                        num === currentNumber 
+                          ? "animate-pulse bg-green-500 text-white border-green-400" 
+                          : "bg-blue-500 text-white border-blue-400"
+                      }`}
                     >
                       {getLetter(num)}{num}
                     </Badge>
                   ))}
                 </div>
+                {calledNumbers.length === 0 && (
+                  <p className="text-yellow-400 text-sm mt-2">🎯 Numbers will be called automatically every 2 seconds!</p>
+                )}
               </div>
               
               {/* Current Number */}
               {currentNumber && (
-                <div className="text-center">
+                <div className="text-center bg-gradient-to-br from-yellow-500/20 to-orange-500/20 p-6 rounded-xl border-2 border-yellow-400/50">
                   <div className="text-8xl font-bold text-yellow-400 mb-4 animate-pulse casino-text-glow bg-gradient-to-br from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
                     {getLetter(currentNumber)}{currentNumber}
                   </div>
-                  <p className="text-sm text-white">🎯 Current Number Called</p>
-                  <p className="text-xs text-gray-300">Numbers called automatically every 3 seconds</p>
+                  <p className="text-lg text-white font-bold">🎯 CURRENT NUMBER CALLED</p>
+                  <p className="text-sm text-yellow-200">Numbers called automatically every 2 seconds</p>
+                  <div className="mt-2 text-xs text-yellow-300">
+                    🔊 Audio announcement played
+                  </div>
                 </div>
               )}
             </div>
