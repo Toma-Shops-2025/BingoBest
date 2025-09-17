@@ -37,9 +37,20 @@ const GameHeader: React.FC<GameHeaderProps> = ({
         console.log('Sign out completed');
       } else {
         console.log('onSignOut function not provided');
+        // Force reset state if no callback provided
+        setTimeout(() => {
+          setIsSigningOut(false);
+        }, 2000);
       }
-    } finally {
+    } catch (error) {
+      console.error('Error during sign out:', error);
+      // Reset state even if there's an error
       setIsSigningOut(false);
+    } finally {
+      // Ensure state is reset after a timeout
+      setTimeout(() => {
+        setIsSigningOut(false);
+      }, 3000);
     }
   };
   return (

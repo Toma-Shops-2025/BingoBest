@@ -187,6 +187,8 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
 
   const handleSaveSettings = async () => {
     try {
+      console.log('Save Settings button clicked');
+      
       const userSettings = {
         displayName: formData.displayName,
         bio: formData.bio,
@@ -196,7 +198,11 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
         userId: userId
       };
       
+      console.log('Saving settings:', userSettings);
+      
+      // Save to localStorage first
       localStorage.setItem(`userSettings_${userId}`, JSON.stringify(userSettings));
+      console.log('Settings saved to localStorage');
       
       // Try to save to database if possible
       try {
@@ -211,15 +217,19 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
 
         if (error) {
           console.log('Database update failed, but settings saved locally:', error);
+        } else {
+          console.log('Settings saved to database successfully');
         }
       } catch (dbError) {
         console.log('Database not available, settings saved locally');
       }
 
-      alert('Settings saved successfully!');
+      // Show success message
+      alert('✅ Settings saved successfully!\n\nYour preferences have been updated and will be remembered.');
+      console.log('Settings save completed successfully');
     } catch (error) {
       console.error('Error saving settings:', error);
-      alert('Settings saved locally. Some features may not persist across devices.');
+      alert('⚠️ Settings saved locally. Some features may not persist across devices.\n\nError: ' + error.message);
     }
   };
 
@@ -426,41 +436,47 @@ const UserProfile: React.FC<UserProfileProps> = ({ userId, onClose }) => {
                 <CardContent className="space-y-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label>Push Notifications</Label>
-                      <p className="text-sm text-gray-600">Receive notifications for game events</p>
+                      <Label className="text-white font-semibold">Push Notifications</Label>
+                      <p className="text-sm text-gray-300">Receive notifications for game events</p>
                     </div>
                     <input
                       type="checkbox"
                       checked={formData.notifications}
                       onChange={(e) => setFormData({...formData, notifications: e.target.checked})}
-                      className="w-4 h-4"
+                      className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                     />
                   </div>
                   
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label>Sound Effects</Label>
-                      <p className="text-sm text-gray-600">Play sounds during games</p>
+                      <Label className="text-white font-semibold">Sound Effects</Label>
+                      <p className="text-sm text-gray-300">Play sounds during games</p>
                     </div>
                     <input
                       type="checkbox"
                       checked={formData.soundEnabled}
                       onChange={(e) => setFormData({...formData, soundEnabled: e.target.checked})}
-                      className="w-4 h-4"
+                      className="w-5 h-5 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
                     />
                   </div>
                   
                   <div>
-                    <Label>Theme</Label>
+                    <Label className="text-white font-semibold">Theme</Label>
                     <select
                       value={formData.theme}
                       onChange={(e) => setFormData({...formData, theme: e.target.value})}
-                      className="w-full p-2 border rounded-md mt-1"
+                      className="w-full p-3 border-2 border-gray-300 rounded-md mt-2 bg-white text-black font-medium focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      style={{ 
+                        color: '#000000',
+                        backgroundColor: '#ffffff',
+                        borderColor: '#d1d5db'
+                      }}
                     >
-                      <option value="light">Light</option>
-                      <option value="dark">Dark</option>
-                      <option value="auto">Auto</option>
+                      <option value="light" style={{ color: '#000000' }}>Light</option>
+                      <option value="dark" style={{ color: '#000000' }}>Dark</option>
+                      <option value="auto" style={{ color: '#000000' }}>Auto</option>
                     </select>
+                    <p className="text-sm text-gray-400 mt-1">Choose your preferred theme</p>
                   </div>
 
                   <div className="flex gap-2">
