@@ -102,12 +102,12 @@ const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose }) => {
           <div>
             <h3 className="text-lg font-semibold text-yellow-400 mb-3">Winning Patterns</h3>
             <ul className="space-y-2 text-sm text-white">
-              <li>• <strong>Horizontal line</strong>: 5 in a row - <span className="text-green-400 font-semibold">$50</span></li>
-              <li>• <strong>Vertical line</strong>: 5 in a column - <span className="text-green-400 font-semibold">$50</span></li>
-              <li>• <strong>Diagonal line</strong>: 5 from corner to corner - <span className="text-green-400 font-semibold">$75</span></li>
-              <li>• <strong>4 Corners</strong>: All four corner squares - <span className="text-green-400 font-semibold">$25</span></li>
-              <li>• <strong>X Pattern</strong>: Both diagonal lines - <span className="text-green-400 font-semibold">$150</span></li>
-              <li>• <strong>Full house</strong>: All 25 squares marked - <span className="text-green-400 font-semibold">$200</span></li>
+              <li>• <strong>Horizontal line</strong>: 5 in a row</li>
+              <li>• <strong>Vertical line</strong>: 5 in a column</li>
+              <li>• <strong>Diagonal line</strong>: 5 from corner to corner</li>
+              <li>• <strong>4 Corners</strong>: All four corner squares</li>
+              <li>• <strong>X Pattern</strong>: Both diagonal lines</li>
+              <li>• <strong>Full house</strong>: All 25 squares marked</li>
             </ul>
           </div>
 

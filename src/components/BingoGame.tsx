@@ -140,7 +140,51 @@ const BingoGame: React.FC<BingoGameProps> = ({ onWin, onGameEnd }) => {
         }))
       );
       
-      return { ...card, numbers: newNumbers };
+      // Auto-daub on desktop only (screen width > 768px)
+      const isDesktop = window.innerWidth > 768;
+      let newMarked = card.marked;
+      
+      if (isDesktop) {
+        // Auto-daub the called number on desktop
+        newMarked = card.marked.map((row, rowIndex) => 
+          row.map((cell, colIndex) => {
+            const cellNumber = card.numbers[colIndex][rowIndex].number;
+            if (cellNumber === randomNumber) {
+              return true; // Auto-mark this number
+            }
+            return cell; // Keep existing state
+          })
+        );
+        
+        // Check for win after auto-daubing
+        const winType = checkWin(newMarked, newNumbers);
+        if (winType) {
+          let prize = 50; // Default prize
+          switch (winType) {
+            case 'line':
+              prize = 50;
+              break;
+            case 'diagonal':
+              prize = 75;
+              break;
+            case '4-corners':
+              prize = 25;
+              break;
+            case 'x-pattern':
+              prize = 150;
+              break;
+            case 'full-house':
+              prize = 200;
+              break;
+          }
+          
+          // Handle win
+          onWin(winType, prize);
+          return { ...card, numbers: newNumbers, marked: newMarked, completed: true };
+        }
+      }
+      
+      return { ...card, numbers: newNumbers, marked: newMarked };
     }));
   };
 
