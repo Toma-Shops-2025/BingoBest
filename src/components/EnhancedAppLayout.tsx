@@ -104,6 +104,38 @@ const EnhancedAppLayout: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [activeTab, setActiveTab] = useState('home');
+  
+  // Friends state management
+  const [mockFriends, setMockFriends] = useState<Friend[]>([
+    {
+      id: 'friend1',
+      username: 'BingoMaster99',
+      avatar: '',
+      status: 'online',
+      lastSeen: new Date()
+    },
+    {
+      id: 'friend2', 
+      username: 'LuckyPlayer42',
+      avatar: '',
+      status: 'playing',
+      lastSeen: new Date()
+    },
+    {
+      id: 'friend3',
+      username: 'CardShark',
+      avatar: '',
+      status: 'offline',
+      lastSeen: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+    },
+    {
+      id: 'friend4',
+      username: 'NumberHunter',
+      avatar: '',
+      status: 'online',
+      lastSeen: new Date()
+    }
+  ]);
 
   // Helper functions for game room configuration
   const getGameDescription = (gameId: string): string => {
@@ -601,58 +633,49 @@ const EnhancedAppLayout: React.FC = () => {
           }} 
         />;
       case 'friends':
-        // Mock friends data for demonstration
-        const mockFriends: Friend[] = [
-          {
-            id: 'friend1',
-            username: 'BingoMaster99',
-            avatar: '',
-            status: 'online',
-            lastSeen: new Date()
-          },
-          {
-            id: 'friend2', 
-            username: 'LuckyPlayer42',
-            avatar: '',
-            status: 'playing',
-            lastSeen: new Date()
-          },
-          {
-            id: 'friend3',
-            username: 'CardShark',
-            avatar: '',
-            status: 'offline',
-            lastSeen: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
-          },
-          {
-            id: 'friend4',
-            username: 'NumberHunter',
-            avatar: '',
-            status: 'online',
-            lastSeen: new Date()
-          }
-        ];
 
         return <FriendsSystem 
           friends={mockFriends} 
           onAddFriend={(username) => {
-            // Check if friend already exists
-            const existingFriend = mockFriends.find(f => f.username.toLowerCase() === username.toLowerCase());
-            if (existingFriend) {
-              alert(`You're already friends with ${username}!`);
-              return;
+            try {
+              // Validate username
+              if (!username || username.trim().length < 2) {
+                alert('❌ Please enter a valid username (at least 2 characters)');
+                return;
+              }
+              
+              // Check if trying to add yourself
+              if (username.toLowerCase() === 'you' || username.toLowerCase() === 'yourself') {
+                alert('❌ You cannot add yourself as a friend!');
+                return;
+              }
+              
+              // Check if friend already exists
+              const existingFriend = mockFriends.find(f => f.username.toLowerCase() === username.toLowerCase());
+              if (existingFriend) {
+                alert(`❌ You're already friends with ${username}!`);
+                return;
+              }
+              
+              // Simulate friend request
+              const newFriend: Friend = {
+                id: `friend_${Date.now()}`,
+                username: username.trim(),
+                avatar: '',
+                status: 'offline',
+                lastSeen: new Date()
+              };
+              
+              // Add to friends list (simulating acceptance)
+              setMockFriends(prev => [...prev, newFriend]);
+              
+              alert(`🎉 Friend request sent to ${username}!\n\nThey have been added to your friends list!\n\nYou can now chat and play games together.`);
+              
+              console.log('Friend added:', newFriend);
+            } catch (error) {
+              console.error('Error adding friend:', error);
+              alert('❌ There was an error adding your friend. Please try again.');
             }
-            
-            // Add new friend
-            const newFriend: Friend = {
-              id: `friend_${Date.now()}`,
-              username: username,
-              avatar: '',
-              status: 'offline',
-              lastSeen: new Date()
-            };
-            
-            alert(`Friend request sent to ${username}!\n\nThey will appear in your friends list once they accept.`);
           }} 
           onInviteToGame={(id) => {
             const friend = mockFriends.find(f => f.id === id);
