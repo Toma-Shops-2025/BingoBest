@@ -35,7 +35,7 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({
 
       {/* Current Date Display */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-full shadow-lg">
+        <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
           <Calendar className="w-5 h-5" />
           <span className="font-bold text-lg">
             {new Date().toLocaleDateString('en-US', { 
@@ -77,13 +77,14 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({
                 {challenges.map((challenge) => (
                   <div
                     key={challenge.id}
-                    className={`relative overflow-hidden rounded-xl border-2 shadow-lg transition-all duration-300 hover:scale-105 ${
+                    className={`relative overflow-hidden rounded-xl border-2 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
                       challenge.completed 
-                        ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-400/50 shadow-green-500/20'
-                        : 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 border-blue-400/50 shadow-blue-500/20'
+                        ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-400/50 shadow-green-500/20 hover:shadow-green-500/30'
+                        : 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 border-blue-400/50 shadow-blue-500/20 hover:shadow-blue-500/30'
                     }`}
                   >
                     <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
                     
                     <div className="relative z-10 p-6">
                       <div className="flex items-start justify-between mb-4">
@@ -121,34 +122,42 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({
                       </div>
 
                       {/* Progress Section */}
-                      <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 mb-4">
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="text-white font-medium">Progress</span>
-                          <span className="text-white font-bold">{challenge.progress}/{challenge.requirement}</span>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 mb-4 hover:bg-white/15 transition-all duration-300">
+                        <div className="flex justify-between text-sm mb-3">
+                          <span className="text-white font-bold drop-shadow-md">Progress</span>
+                          <span className="text-white font-bold drop-shadow-md">{challenge.progress}/{challenge.requirement}</span>
                         </div>
-                        <div className="w-full bg-white/20 rounded-full h-3">
+                        <div className="w-full bg-white/20 rounded-full h-4 shadow-inner">
                           <div 
-                            className={`h-3 rounded-full transition-all duration-500 ${
+                            className={`h-4 rounded-full transition-all duration-700 shadow-lg ${
                               challenge.completed 
-                                ? 'bg-gradient-to-r from-green-400 to-emerald-500'
-                                : 'bg-gradient-to-r from-blue-400 to-indigo-500'
+                                ? 'bg-gradient-to-r from-green-400 via-emerald-400 to-green-500 shadow-green-500/50'
+                                : 'bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-500 shadow-blue-500/50'
                             }`}
                             style={{ width: `${(challenge.progress / challenge.requirement) * 100}%` }}
                           />
+                        </div>
+                        <div className="text-center mt-2">
+                          <span className="text-xs text-white/80 font-medium drop-shadow-sm">
+                            {Math.round((challenge.progress / challenge.requirement) * 100)}% Complete
+                          </span>
                         </div>
                       </div>
 
                       {/* Reward Section */}
                       <div className="flex items-center justify-between">
                         <div className="flex flex-col">
-                          <div className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg ${
+                          <div className={`px-4 py-2 rounded-full text-sm font-bold shadow-lg hover:shadow-xl transition-all duration-300 ${
                             challenge.completed 
-                              ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white'
-                              : 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
+                              ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600'
+                              : 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white hover:from-yellow-600 hover:to-orange-600'
                           }`}>
-                            Reward: ${challenge.reward}
+                            <div className="flex items-center gap-2">
+                              <Gift className="w-4 h-4" />
+                              Reward: ${challenge.reward}
+                            </div>
                           </div>
-                          <p className="text-xs text-white/70 font-medium mt-2">
+                          <p className="text-xs text-white/70 font-medium mt-2 drop-shadow-sm">
                             ⚠️ Rewards are non-withdrawable - for gameplay only
                           </p>
                         </div>
@@ -156,7 +165,7 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({
                         {challenge.completed && (
                           <Button
                             onClick={() => onClaimReward(challenge.id)}
-                            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                            className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                           >
                             <Gift className="w-5 h-5 mr-2" />
                             Claim Reward
@@ -168,6 +177,22 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({
                 ))}
               </div>
             )}
+
+            {/* Bonuses/Rewards Disclaimer */}
+            <div className="mt-8 p-6 rounded-xl bg-white/10 border border-white/20 backdrop-blur-sm text-center shadow-inner">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+              </div>
+              <p className="text-white/90 text-sm font-medium drop-shadow-md leading-relaxed">
+                <span className="font-bold text-yellow-300">Important:</span> All bonuses and rewards are subject to our terms and conditions. 
+                Wagering requirements may apply. Please play responsibly and within your means.
+              </p>
+              <p className="text-white/70 text-xs mt-2 drop-shadow-sm">
+                Rewards are non-withdrawable and intended for gameplay purposes only.
+              </p>
+            </div>
           </CardContent>
         </div>
       </Card>
