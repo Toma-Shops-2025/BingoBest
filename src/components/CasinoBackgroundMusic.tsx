@@ -8,141 +8,73 @@ interface CasinoBackgroundMusicProps {
 const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled = true }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.3);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const oscillatorRef = useRef<OscillatorNode | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [currentTrack, setCurrentTrack] = useState(0);
 
-  // Create casino-style ambient music using Web Audio API
-  const createCasinoAmbience = () => {
-    try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      audioContextRef.current = audioContext;
-
-      // Create multiple oscillators for rich casino sound
-      const oscillators: OscillatorNode[] = [];
-      const gainNodes: GainNode[] = [];
-
-      // Base ambient tone (low frequency)
-      const baseOsc = audioContext.createOscillator();
-      const baseGain = audioContext.createGain();
-      baseOsc.type = 'sine';
-      baseOsc.frequency.setValueAtTime(60, audioContext.currentTime); // Low C
-      baseGain.gain.setValueAtTime(volume * 0.1, audioContext.currentTime);
-      baseOsc.connect(baseGain);
-      baseGain.connect(audioContext.destination);
-      oscillators.push(baseOsc);
-      gainNodes.push(baseGain);
-
-      // Mid-range ambient tone
-      const midOsc = audioContext.createOscillator();
-      const midGain = audioContext.createGain();
-      midOsc.type = 'triangle';
-      midOsc.frequency.setValueAtTime(220, audioContext.currentTime); // A3
-      midGain.gain.setValueAtTime(volume * 0.05, audioContext.currentTime);
-      midOsc.connect(midGain);
-      midGain.connect(audioContext.destination);
-      oscillators.push(midOsc);
-      gainNodes.push(midGain);
-
-      // High-frequency sparkle
-      const sparkleOsc = audioContext.createOscillator();
-      const sparkleGain = audioContext.createGain();
-      sparkleOsc.type = 'sawtooth';
-      sparkleOsc.frequency.setValueAtTime(880, audioContext.currentTime); // A5
-      sparkleGain.gain.setValueAtTime(volume * 0.03, audioContext.currentTime);
-      sparkleOsc.connect(sparkleGain);
-      sparkleGain.connect(audioContext.destination);
-      oscillators.push(sparkleOsc);
-      gainNodes.push(sparkleGain);
-
-      // Add subtle modulation for casino atmosphere
-      const lfo = audioContext.createOscillator();
-      const lfoGain = audioContext.createGain();
-      lfo.frequency.setValueAtTime(0.1, audioContext.currentTime); // Very slow modulation
-      lfoGain.gain.setValueAtTime(5, audioContext.currentTime);
-      
-      lfo.connect(lfoGain);
-      lfoGain.connect(baseOsc.frequency);
-      lfoGain.connect(midOsc.frequency);
-
-      // Start all oscillators
-      oscillators.forEach(osc => osc.start());
-      lfo.start();
-      
-      // Store cleanup function for proper disposal
-      (audioContext as any).cleanup = () => {
-        oscillators.forEach(osc => {
-          try {
-            osc.stop();
-            osc.disconnect();
-          } catch (e) {
-            // Already stopped
-          }
-        });
-        gainNodes.forEach(gain => {
-          try {
-            gain.disconnect();
-          } catch (e) {
-            // Already disconnected
-          }
-        });
-        try {
-          lfo.stop();
-          lfo.disconnect();
-          lfoGain.disconnect();
-        } catch (e) {
-          // Already stopped
-        }
-      };
-
-      oscillatorRef.current = oscillators[0]; // Store reference for cleanup
-      gainNodeRef.current = gainNodes[0];
-
-      return () => {
-        oscillators.forEach(osc => {
-          try {
-            osc.stop();
-          } catch (e) {
-            // Oscillator might already be stopped
-          }
-        });
-        try {
-          lfo.stop();
-        } catch (e) {
-          // LFO might already be stopped
-        }
-      };
-    } catch (error) {
-      console.warn('Audio not available:', error);
-      return () => {};
-    }
-  };
+  // Available casino ambient tracks
+  const tracks = [
+    '/audio/music/casino-ambient-01.mp3',
+    '/audio/music/casino-ambient-02.mp3',
+    '/audio/music/casino-ambient-03.mp3',
+    '/audio/music/casino-ambient-04.mp3',
+    '/audio/music/casino-ambient-05.mp3',
+    '/audio/music/casino-ambient-06.mp3',
+    '/audio/music/casino-ambient-07.mp3',
+    '/audio/music/casino-ambient-08.mp3',
+    '/audio/music/casino-ambient-09.mp3',
+    '/audio/music/casino-ambient-10.mp3',
+    '/audio/music/casino-ambient-11.mp3',
+    '/audio/music/casino-ambient-12.mp3',
+    '/audio/music/casino-ambient-13.mp3',
+    '/audio/music/casino-ambient-14.mp3',
+    '/audio/music/casino-ambient-15.mp3',
+    '/audio/music/casino-ambient-16.mp3'
+  ];
 
   const startMusic = () => {
     if (!enabled || isPlaying) return;
     
-    const cleanup = createCasinoAmbience();
-    setIsPlaying(true);
-    
-    // Store cleanup function
-    (audioContextRef.current as any).cleanup = cleanup;
+    try {
+      if (!audioRef.current) {
+        audioRef.current = new Audio(tracks[currentTrack]);
+        audioRef.current.loop = true;
+        audioRef.current.volume = volume;
+        
+        // Handle track end - move to next track
+        audioRef.current.addEventListener('ended', () => {
+          setCurrentTrack((prev) => (prev + 1) % tracks.length);
+        });
+        
+        // Handle errors
+        audioRef.current.addEventListener('error', (e) => {
+          console.warn('Audio error:', e);
+          // Try next track
+          setCurrentTrack((prev) => (prev + 1) % tracks.length);
+        });
+      }
+      
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch((error) => {
+        console.warn('Failed to play audio:', error);
+        // Try next track
+        setCurrentTrack((prev) => (prev + 1) % tracks.length);
+      });
+    } catch (error) {
+      console.warn('Error starting music:', error);
+    }
   };
 
   const stopMusic = () => {
-    if (!isPlaying) return;
+    if (!isPlaying || !audioRef.current) return;
     
     try {
-      if (audioContextRef.current && (audioContextRef.current as any).cleanup) {
-        (audioContextRef.current as any).cleanup();
-      }
-      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-        audioContextRef.current.suspend();
-      }
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
     } catch (error) {
-      console.warn('Error stopping audio:', error);
+      console.warn('Error stopping music:', error);
     }
-    
-    setIsPlaying(false);
   };
 
   const toggleMusic = () => {
@@ -153,28 +85,37 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
     }
   };
 
-  // Auto-start music when component mounts (if enabled)
+  // Update volume when it changes
   useEffect(() => {
-    if (enabled) {
-      // Don't auto-start music to avoid AudioContext issues
-      // Music will start when user clicks the button
-      return () => {
-        stopMusic();
-      };
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
     }
-  }, [enabled]);
+  }, [volume]);
+
+  // Change track when currentTrack changes
+  useEffect(() => {
+    if (audioRef.current && isPlaying) {
+      audioRef.current.src = tracks[currentTrack];
+      audioRef.current.play().catch((error) => {
+        console.warn('Failed to play new track:', error);
+      });
+    }
+  }, [currentTrack]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      stopMusic();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
     };
   }, []);
 
   if (!enabled) return null;
 
   return (
-    <div className="fixed bottom-4 right-1 sm:right-4 z-50">
+    <div className="fixed bottom-4 right-1 sm:right-4 z-50 flex flex-col gap-2">
       <Button
         onClick={toggleMusic}
         variant={isPlaying ? "default" : "outline"}
@@ -183,6 +124,29 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       >
         {isPlaying ? "🎵 Music On" : "🎵 Music Off"}
       </Button>
+      
+      {isPlaying && (
+        <div className="flex flex-col gap-1">
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.1"
+            value={volume}
+            onChange={(e) => setVolume(parseFloat(e.target.value))}
+            className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
+            style={{
+              background: `linear-gradient(to right, #10b981 0%, #10b981 ${volume * 100}%, #374151 ${volume * 100}%, #374151 100%)`
+            }}
+          />
+          <button
+            onClick={() => setCurrentTrack((prev) => (prev + 1) % tracks.length)}
+            className="text-xs text-white/70 hover:text-white bg-black/50 px-2 py-1 rounded"
+          >
+            Next Track
+          </button>
+        </div>
+      )}
     </div>
   );
 };

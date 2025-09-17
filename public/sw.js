@@ -1,11 +1,17 @@
-const CACHE_NAME = 'bingobest-v1.0.0';
+const CACHE_NAME = 'bingobest-v2.0.0';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
+  '/index.html',
   '/manifest.json',
   '/icon-192x192.png',
-  '/icon-512x512.png'
+  '/icon-512x512.png',
+  '/dice-1.png',
+  '/dice-2.png',
+  '/dice-3.png',
+  '/dice-4.png',
+  '/dice-5.png',
+  '/dice-6.png',
+  '/minigame-background.png'
 ];
 
 // Install event - cache resources
