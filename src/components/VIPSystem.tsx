@@ -43,101 +43,179 @@ const VIPSystem: React.FC<VIPSystemProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Crown className="text-yellow-500" />
+      {/* VIP Status Header */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center gap-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-full shadow-lg">
+          <Crown className="w-6 h-6" />
         <h2 className="text-2xl font-bold">VIP Status</h2>
+        </div>
       </div>
 
       {/* Current VIP Status */}
-      <Card className="border-yellow-200 bg-gradient-to-r from-yellow-50 to-orange-50">
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Crown className={tierColors[currentTier as keyof typeof tierColors]} />
-              <span>{tierNames[currentTier as keyof typeof tierNames]}</span>
-            </div>
-            <Badge className="bg-yellow-500">Tier {currentTier}</Badge>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {currentTier < 5 && (
-            <div>
-              <div className="flex justify-between text-sm mb-2">
-                <span>Progress to {tierNames[(currentTier + 1) as keyof typeof tierNames]}</span>
-                <span>{player.gamesPlayed || 0}/{nextTierRequirement} games</span>
+      <Card className="relative overflow-hidden border-0 shadow-2xl">
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-yellow-400/20 via-orange-500/20 to-red-500/20"
+          style={{
+            backgroundImage: `url('/vip-background.jpg')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/30 to-orange-600/30 backdrop-blur-sm" />
+        
+        <div className="relative z-10">
+          <CardHeader className="text-center pb-4">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className={`p-3 rounded-full bg-gradient-to-r ${currentTier === 0 ? 'from-gray-400 to-gray-600' : currentTier === 1 ? 'from-yellow-400 to-yellow-600' : currentTier === 2 ? 'from-blue-400 to-blue-600' : currentTier === 3 ? 'from-purple-400 to-purple-600' : currentTier === 4 ? 'from-orange-400 to-orange-600' : 'from-red-400 to-red-600'} shadow-lg`}>
+                <Crown className="w-8 h-8 text-white" />
               </div>
-              <Progress value={progressToNext} className="h-3" />
+              <div>
+                <h3 className="text-3xl font-bold text-white drop-shadow-lg">
+                  {tierNames[currentTier as keyof typeof tierNames]}
+                </h3>
+                <div className="bg-white/20 text-white border-white/30 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold">
+                  {`Tier ${currentTier}`}
+                </div>
+              </div>
+            </div>
+        </CardHeader>
+          
+          <CardContent className="space-y-6">
+          {currentTier < 5 && (
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <div className="flex justify-between text-sm mb-3">
+                  <span className="text-white font-medium">Progress to {tierNames[(currentTier + 1) as keyof typeof tierNames]}</span>
+                  <span className="text-white font-bold">{player.gamesPlayed || 0}/{nextTierRequirement} games</span>
+                </div>
+                <Progress 
+                  value={progressToNext} 
+                  className="h-4 bg-white/20" 
+                  style={{
+                    background: 'linear-gradient(90deg, #10b981 0%, #f59e0b 100%)'
+                  }}
+                />
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4 text-center">
-            <div>
-              <p className="text-2xl font-bold text-blue-600">{player.wins || 0}</p>
-              <p className="text-sm text-gray-600">Total Wins</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-green-600">${(player.balance || 0).toFixed(2)}</p>
-              <p className="text-sm text-gray-600">Balance</p>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <p className="text-3xl font-bold text-white drop-shadow-lg">{player.wins || 0}</p>
+                <p className="text-sm text-white/80 font-medium">Total Wins</p>
+              </div>
+              <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <p className="text-3xl font-bold text-green-300 drop-shadow-lg">${(player.balance || 0).toFixed(2)}</p>
+                <p className="text-sm text-white/80 font-medium">Balance</p>
             </div>
           </div>
 
           {currentTier < 5 && (
-            <Button onClick={onUpgradeVIP} className="w-full bg-yellow-500 hover:bg-yellow-600">
-              <Zap className="w-4 h-4 mr-2" />
+              <Button 
+                onClick={onUpgradeVIP} 
+                className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <Zap className="w-5 h-5 mr-2" />
               Upgrade VIP Status
             </Button>
           )}
         </CardContent>
+        </div>
       </Card>
 
       {/* VIP Benefits */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Gift className="text-green-500" />
-            VIP Benefits
-          </CardTitle>
+      <Card className="relative overflow-hidden border-0 shadow-2xl">
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-green-400/20 via-emerald-500/20 to-teal-500/20"
+          style={{
+            backgroundImage: `url('/benefits-background.jpg')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-green-500/30 to-emerald-600/30 backdrop-blur-sm" />
+        
+        <div className="relative z-10">
+          <CardHeader className="text-center pb-6">
+            <div className="inline-flex items-center gap-3 bg-gradient-to-r from-green-400 to-emerald-500 text-white px-6 py-3 rounded-full shadow-lg mb-4">
+              <Gift className="w-6 h-6" />
+              <CardTitle className="text-2xl font-bold">VIP Benefits</CardTitle>
+            </div>
         </CardHeader>
+          
         <CardContent>
-          <div className="grid gap-3">
-            {vipBenefits.map((benefit) => (
+            <div className="grid gap-4">
+              {vipBenefits.map((benefit, index) => (
               <div
                 key={benefit.id}
-                className={`p-3 rounded-lg border ${
+                  className={`relative overflow-hidden rounded-xl border-2 shadow-lg transition-all duration-300 hover:scale-105 ${
                   benefit.active && currentTier >= benefit.tier
-                    ? 'bg-green-50 border-green-200'
-                    : 'bg-gray-50 border-gray-200'
-                }`}
-              >
+                      ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 border-green-400/50 shadow-green-500/20'
+                      : currentTier < benefit.tier
+                      ? 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 border-blue-400/50 shadow-blue-500/20'
+                      : 'bg-gradient-to-r from-gray-500/20 to-slate-500/20 border-gray-400/50 shadow-gray-500/20'
+                  }`}
+                >
+                  <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
+                  
+                  <div className="relative z-10 p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h4 className="font-medium flex items-center gap-2">
+                      <div className="flex-1 min-w-0 pr-4">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className={`p-2 rounded-full ${
+                            benefit.active && currentTier >= benefit.tier
+                              ? 'bg-gradient-to-r from-green-400 to-emerald-500'
+                              : currentTier < benefit.tier
+                              ? 'bg-gradient-to-r from-blue-400 to-indigo-500'
+                              : 'bg-gradient-to-r from-gray-400 to-slate-500'
+                          } shadow-lg`}>
+                            <Gift className="w-4 h-4 text-white" />
+                          </div>
+                          <h4 className="text-lg font-bold text-white drop-shadow-lg">
                       {benefit.name}
-                      <Badge variant="outline" size="sm">
-                        Tier {benefit.tier}+
-                      </Badge>
-                    </h4>
-                    <p className="text-sm text-gray-600">{benefit.description}</p>
+                          </h4>
+                          <div 
+                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                              benefit.active && currentTier >= benefit.tier
+                                ? 'bg-green-500/30 text-green-200 border-green-400/50'
+                                : currentTier < benefit.tier
+                                ? 'bg-blue-500/30 text-blue-200 border-blue-400/50'
+                                : 'bg-gray-500/30 text-gray-200 border-gray-400/50'
+                            }`}
+                          >
+                            {`Tier ${benefit.tier}+`}
+                          </div>
+                        </div>
+                        <p className="text-sm text-white/90 font-medium drop-shadow-md">
+                          {benefit.description}
+                        </p>
                   </div>
-                  <div>
+                      
+                      <div className="flex-shrink-0">
                     {benefit.active && currentTier >= benefit.tier ? (
-                      <Badge className="bg-green-500">
-                        <Star className="w-3 h-3 mr-1" />
-                        Active
-                      </Badge>
+                          <div className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full shadow-lg">
+                            <Star className="w-4 h-4" />
+                            <span className="font-bold">Active</span>
+                          </div>
                     ) : currentTier < benefit.tier ? (
-                      <Badge variant="outline">
-                        Tier {benefit.tier} Required
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary">Inactive</Badge>
-                    )}
-                  </div>
+                          <div className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-full shadow-lg">
+                            <Crown className="w-4 h-4" />
+                            <span className="font-bold">Tier {benefit.tier} Required</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-slate-500 text-white px-4 py-2 rounded-full shadow-lg">
+                            <Zap className="w-4 h-4" />
+                            <span className="font-bold">Inactive</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                 </div>
               </div>
             ))}
           </div>
         </CardContent>
+        </div>
       </Card>
     </div>
   );
