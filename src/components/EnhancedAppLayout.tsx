@@ -1058,10 +1058,9 @@ const EnhancedAppLayout: React.FC = () => {
         );
       default:
         return (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-            {/* Game Rooms - Takes up more space on desktop */}
+          <div className="space-y-6">
             <div 
-              className="lg:col-span-6 xl:col-span-7 p-6 lg:p-8 rounded-lg"
+              className="p-6 rounded-lg"
               style={{
                 backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/game-cards-background.jpg')`,
                 backgroundSize: 'cover',
@@ -1078,35 +1077,21 @@ const EnhancedAppLayout: React.FC = () => {
                 playerBalance={player.balance}
               />
             </div>
-            
-            {/* Right Sidebar - More space for desktop */}
-            <div className="lg:col-span-6 xl:col-span-5 space-y-8">
-              <div className="space-y-8">
-                <div>
-                  <Leaderboard players={leaderboardPlayers} />
-                </div>
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-8">
-                  <div>
-                    <GameStats player={player} />
-                  </div>
-                  <div>
-                    <LiveGameFeed 
-                      playerBalance={player.balance}
-                      playerWithdrawableBalance={player.withdrawableBalance}
-                      playerBonusBalance={player.bonusBalance}
-                      onBalanceUpdate={(newBalance, newWithdrawableBalance, newBonusBalance) => {
-                        setPlayer(prev => ({
-                          ...prev,
-                          balance: newBalance,
-                          withdrawableBalance: newWithdrawableBalance,
-                          bonusBalance: newBonusBalance
-                        }));
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Leaderboard players={leaderboardPlayers} />
+            <GameStats player={player} />
+            <LiveGameFeed 
+              playerBalance={player.balance}
+              playerWithdrawableBalance={player.withdrawableBalance}
+              playerBonusBalance={player.bonusBalance}
+              onBalanceUpdate={(newBalance, newWithdrawableBalance, newBonusBalance) => {
+                setPlayer(prev => ({
+                  ...prev,
+                  balance: newBalance,
+                  withdrawableBalance: newWithdrawableBalance,
+                  bonusBalance: newBonusBalance
+                }));
+              }}
+            />
           </div>
         );
     }
@@ -1140,7 +1125,7 @@ const EnhancedAppLayout: React.FC = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-2 sm:px-4 lg:px-8 xl:px-12 py-4 sm:py-8 relative z-10 max-w-7xl">
+      <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 relative z-10">
         {/* Welcome Bonus Banner */}
         <div className="mb-6 p-4 bg-gradient-to-r from-green-500/20 to-blue-500/20 border border-green-400/30 rounded-lg text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
