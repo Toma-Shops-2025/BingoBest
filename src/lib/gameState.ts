@@ -349,5 +349,9 @@ export const getGameState = () => {
   return _gameState;
 };
 
-// For backward compatibility
-export const gameState = getGameState();
+// For backward compatibility - use getter to avoid immediate initialization
+export const gameState = new Proxy({} as GameStateManager, {
+  get(target, prop) {
+    return getGameState()[prop as keyof GameStateManager];
+  }
+});

@@ -21,14 +21,14 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          supabase: ['@supabase/supabase-js'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-toast']
+          supabase: ['@supabase/supabase-js']
         }
       }
     },
     minify: 'esbuild',
-    target: 'esnext',
-    sourcemap: false
+    target: 'es2020',
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000
   },
   define: {
     // Define fallback values for environment variables
