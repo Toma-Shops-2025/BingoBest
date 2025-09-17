@@ -25,6 +25,8 @@ self.addEventListener('install', (event) => {
       })
       .catch((error) => {
         console.log('Service Worker: Cache failed', error);
+        // Don't fail the installation if some resources can't be cached
+        return Promise.resolve();
       })
   );
   self.skipWaiting();
@@ -55,6 +57,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Skip requests for non-existent resources that might cause connection errors
+  const url = new URL(event.request.url);
+  if (url.pathname.includes('/static/') || url.pathname.includes('/bundle.')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -72,16 +80,22 @@ self.addEventListener('fetch', (event) => {
               caches.open(CACHE_NAME)
                 .then((cache) => {
                   cache.put(event.request, responseToCache);
+                })
+                .catch((error) => {
+                  console.log('Service Worker: Cache put failed', error);
                 });
             }
 
             return fetchResponse;
           })
-          .catch(() => {
+          .catch((error) => {
+            console.log('Service Worker: Fetch failed', error);
             // Return offline page for navigation requests
             if (event.request.mode === 'navigate') {
               return caches.match('/');
             }
+            // For other requests, just return the error
+            throw error;
           });
       })
   );
