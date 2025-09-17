@@ -20,6 +20,7 @@ import GameStats from './GameStats';
 import ChatSystem from './ChatSystem';
 import MainNavigation from './MainNavigation';
 import TournamentSystem from './TournamentSystem';
+import TournamentPlayArea from './TournamentPlayArea';
 import AchievementSystem from './AchievementSystem';
 import DailyChallenges from './DailyChallenges';
 import FriendsSystem from './FriendsSystem';
@@ -104,6 +105,10 @@ const EnhancedAppLayout: React.FC = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState(0);
   const [activeTab, setActiveTab] = useState('home');
+  
+  // Tournament routing state
+  const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
+  const [showTournamentPlay, setShowTournamentPlay] = useState(false);
   
   // Friends state management
   const [mockFriends, setMockFriends] = useState<Friend[]>([
@@ -537,6 +542,24 @@ const EnhancedAppLayout: React.FC = () => {
                 alert(`❌ Tournament Full!\n\n${tournament.name} is already full.\n\nTry joining another tournament!`);
                 return;
               }
+              
+              // Route to tournament play area
+              setSelectedTournament(tournament);
+              setShowTournamentPlay(true);
+              
+              // Update player balance (deduct entry fee)
+              setPlayer(prev => ({
+                ...prev,
+                balance: prev.balance - tournament.entryFee
+              }));
+              
+              // Update tournament participants
+              const updatedTournaments = tournaments.map(t => 
+                t.id === id 
+                  ? { ...t, currentParticipants: t.currentParticipants + 1 }
+                  : t
+              );
+              
               alert(`🎉 Tournament Joined!\n\n${tournament.name}\n\nEntry Fee: $${tournament.entryFee}\nPrize Pool: $${tournament.prizePool}\n\nGood luck!`);
             }
           }}
@@ -1243,6 +1266,20 @@ const EnhancedAppLayout: React.FC = () => {
               />
             </ErrorBoundary>
           </div>
+        ) : showTournamentPlay && selectedTournament ? (
+          <TournamentPlayArea
+            tournament={selectedTournament}
+            player={player}
+            onBack={() => {
+              setShowTournamentPlay(false);
+              setSelectedTournament(null);
+            }}
+            onStartGame={() => {
+              // Start the actual bingo game for the tournament
+              setShowBingoGame(true);
+              setShowTournamentPlay(false);
+            }}
+          />
         ) : (
           <div>
             {activeTab !== 'home' && (
