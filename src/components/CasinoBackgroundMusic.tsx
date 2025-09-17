@@ -85,6 +85,18 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
     }
   };
 
+  // Auto-start music when component mounts (if enabled)
+  useEffect(() => {
+    if (enabled && !isPlaying) {
+      // Small delay to ensure DOM is ready and user interaction is allowed
+      const timer = setTimeout(() => {
+        startMusic();
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [enabled]);
+
   // Update volume when it changes
   useEffect(() => {
     if (audioRef.current) {
