@@ -9,6 +9,10 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ players }) => {
   const trophyIcon = "https://d64gsuwffb70l.cloudfront.net/68c18cfaf53345a2b0f3b279_1757515340373_524a8c39.webp";
   
   const sortedPlayers = [...players].sort((a, b) => b.wins - a.wins);
+  
+  // Debug logging to check data
+  console.log('Leaderboard players:', players);
+  console.log('Sorted players:', sortedPlayers);
 
   return (
     <div 
@@ -47,16 +51,18 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ players }) => {
               `}>
                 {index + 1}
               </div>
-              <div>
-                <div className="font-bold text-lg text-white">{player.username}</div>
-                <div className="text-sm text-gray-300 font-medium">
-                  {player.gamesPlayed} games played
+              <div className="flex-1">
+                <div className="font-bold text-lg text-white drop-shadow-lg">
+                  {player.username || 'Unknown Player'}
+                </div>
+                <div className="text-sm text-gray-200 font-medium drop-shadow-md">
+                  {player.gamesPlayed || 0} games played
                 </div>
               </div>
             </div>
             <div className="text-right">
-              <div className="font-bold text-xl text-white">{player.wins}</div>
-              <div className="text-sm text-gray-300 font-medium">wins</div>
+              <div className="font-bold text-xl text-white drop-shadow-lg">{player.wins}</div>
+              <div className="text-sm text-gray-200 font-medium drop-shadow-md">wins</div>
             </div>
           </div>
         ))}
