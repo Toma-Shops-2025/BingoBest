@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bingobest-v2.0.0';
+const CACHE_NAME = 'bingobest-v3.0.0';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -45,6 +45,13 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
+    }).then(() => {
+      // Force all clients to reload to get the new version
+      return self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => {
+          client.postMessage({ type: 'FORCE_RELOAD' });
+        });
+      });
     })
   );
   self.clients.claim();

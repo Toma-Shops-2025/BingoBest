@@ -7,6 +7,12 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // Disable caching in development
+    headers: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    }
   },
   plugins: [
     react()
@@ -23,7 +29,11 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         format: 'es',
-        manualChunks: undefined
+        manualChunks: undefined,
+        // Add cache busting to filenames
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     }
   },
