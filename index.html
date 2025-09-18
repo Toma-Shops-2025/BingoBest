@@ -94,6 +94,8 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
     
+    <!-- AdCash Library (Step 1: Include Adcash library) -->
+    <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
 
   </head>
 
@@ -116,8 +118,7 @@
       }
     </script>
     
-    <!-- AdCash Auto Tag -->
-    <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
+    <!-- AdCash Auto Tag (Step 2: Put the tag script on the page) -->
     <script type="text/javascript">
         aclib.runAutoTag({
             zoneId: 'oneekt8zti',
