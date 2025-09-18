@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -32,6 +32,9 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
   const [error, setError] = useState<string | null>(null);
   const [autoCallInterval, setAutoCallInterval] = useState<number | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
+  
+  // Use ref to track game status for immediate access
+  const gameStatusRef = useRef<'waiting' | 'playing' | 'finished'>('waiting');
 
   const letters = ['B', 'I', 'N', 'G', 'O'];
 
@@ -186,8 +189,8 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
 
   // Call a random number
   const callNumber = () => {
-    if (gameStatus !== 'playing') {
-      console.log('🎯 Cannot call number - game not playing. Status:', gameStatus);
+    if (gameStatusRef.current !== 'playing') {
+      console.log('🎯 Cannot call number - game not playing. Status:', gameStatusRef.current);
       return;
     }
     
@@ -280,7 +283,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
 
   // Mark a number on a card
   const markNumber = async (cardId: string, row: number, col: number) => {
-    if (gameStatus !== 'playing') return;
+    if (gameStatusRef.current !== 'playing') return;
     
     try {
       setBingoCards(prev => prev.map(card => {
@@ -423,8 +426,9 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
       console.log('🎯 Starting bingo game...');
       setError(null);
       
-      // Set game status to playing FIRST
+      // Set game status to playing FIRST (both state and ref)
       setGameStatus('playing');
+      gameStatusRef.current = 'playing';
       console.log('🎯 Game status set to playing');
       
       setCalledNumbers([]);
@@ -474,6 +478,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
       setAutoCallInterval(null);
     }
     setGameStatus('finished');
+    gameStatusRef.current = 'finished';
     onGameEnd();
   };
 
