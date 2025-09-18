@@ -60,7 +60,10 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       if (!audioRef.current) {
         // Get current track from shuffle order
         const trackIndex = shuffleOrder.length > 0 ? shuffleOrder[shuffleIndex] : currentTrack;
-        audioRef.current = new Audio(tracks[trackIndex]);
+        const audioUrl = tracks[trackIndex];
+        console.log('🎵 Loading audio:', audioUrl);
+        
+        audioRef.current = new Audio(audioUrl);
         audioRef.current.loop = false; // Don't loop individual tracks
         audioRef.current.volume = volume;
         audioRef.current.preload = 'auto';
@@ -74,8 +77,14 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
         // Handle errors
         audioRef.current.addEventListener('error', (e) => {
           console.warn('Audio error:', e);
+          console.warn('Failed to load audio file:', audioUrl);
           setIsAttemptingToStart(false);
           // Don't automatically try next track to avoid loops
+        });
+        
+        // Handle successful load
+        audioRef.current.addEventListener('canplaythrough', () => {
+          console.log('🎵 Audio file loaded successfully:', audioUrl);
         });
       }
       

@@ -422,7 +422,11 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
     try {
       console.log('🎯 Starting bingo game...');
       setError(null);
+      
+      // Set game status to playing FIRST
       setGameStatus('playing');
+      console.log('🎯 Game status set to playing');
+      
       setCalledNumbers([]);
       setCurrentNumber(null);
       setBingoCards([generateBingoCard()]);
@@ -671,6 +675,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
                               hover:scale-105 hover:shadow-xl
                             `}
                             onClick={() => markNumber(card.id, rowIndex, colIndex)}
+                            title={`${cell.letter}-${cell.number} (${cell.called ? 'Called' : 'Not Called'})`}
                           >
                             {cell.number === 0 ? 'FREE' : cell.number}
                           </div>
