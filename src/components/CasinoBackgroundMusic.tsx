@@ -148,12 +148,33 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       const nextTrackIndex = currentShuffleOrder[nextShuffleIndex];
       setCurrentTrack(nextTrackIndex);
       
-      // Stop current playback before changing source
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+      // Create a new audio element to avoid conflicts
+      const newAudio = new Audio(tracks[nextTrackIndex]);
+      newAudio.loop = false;
+      newAudio.volume = volume;
+      newAudio.preload = 'auto';
       
-      // Update the audio source
-      audioRef.current.src = tracks[nextTrackIndex];
+      // Clean up old audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      
+      // Set new audio reference
+      audioRef.current = newAudio;
+      
+      // Add event listeners
+      audioRef.current.addEventListener('ended', () => {
+        console.log('🎵 Track ended, moving to next track in shuffle');
+        playNextTrack();
+      });
+      
+      audioRef.current.addEventListener('error', (e) => {
+        console.warn('Audio error:', e);
+        console.warn('Failed to load audio file:', tracks[nextTrackIndex]);
+        // Try to continue with next track
+        setTimeout(() => playNextTrack(), 1000);
+      });
       
       // Play the next track
       const playPromise = audioRef.current.play();
@@ -162,22 +183,14 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
           console.log(`🎵 Playing track ${nextTrackIndex + 1}/${tracks.length}: ${tracks[nextTrackIndex]}`);
         }).catch((error) => {
           console.warn('Failed to play next track:', error);
-          // Don't recursively call playNextTrack to avoid infinite loops
-          // Just try the next track in the sequence
-          setTimeout(() => {
-            const nextIndex = (nextShuffleIndex + 1) % currentShuffleOrder.length;
-            const fallbackTrackIndex = currentShuffleOrder[nextIndex];
-            if (audioRef.current) {
-              audioRef.current.src = tracks[fallbackTrackIndex];
-              audioRef.current.play().catch(() => {
-                console.warn('Failed to play fallback track');
-              });
-            }
-          }, 1000);
+          // Try to continue with next track
+          setTimeout(() => playNextTrack(), 1000);
         });
       }
     } catch (error) {
       console.warn('Error playing next track:', error);
+      // Try to continue with next track
+      setTimeout(() => playNextTrack(), 1000);
     }
   };
 

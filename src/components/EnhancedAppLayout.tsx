@@ -31,6 +31,7 @@ import SpectatorMode from './SpectatorMode';
 import LiveGameFeed from './LiveGameFeed';
 import BingoGame from './BingoGame';
 import SimpleBingoGame from './SimpleBingoGame';
+import GameResultsScreen from './GameResultsScreen';
 import BingoGameFallback from './BingoGameFallback';
 import PWAInstallPrompt from './PWAInstallPrompt';
 import BackToTopButton from './BackToTopButton';
@@ -253,6 +254,8 @@ const EnhancedAppLayout: React.FC = () => {
     { id: '5', username: 'GameChamp', avatar: '', balance: 84, wins: 18, gamesPlayed: 55 }
   ]);
   const [showBingoGame, setShowBingoGame] = useState(false);
+  const [showGameResults, setShowGameResults] = useState(false);
+  const [gameResults, setGameResults] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [roomTimers, setRoomTimers] = useState<Record<string, number>>({});
@@ -1318,12 +1321,47 @@ const EnhancedAppLayout: React.FC = () => {
                   alert(`Congratulations! You won ${winType} and earned $${prize}!`);
                 }}
                 onGameEnd={() => {
+                  // Generate mock game results
+                  const mockResults = {
+                    playerScore: Math.floor(Math.random() * 1000) + 500,
+                    totalNumbersCalled: Math.floor(Math.random() * 30) + 20,
+                    patternsCompleted: ['Line', 'Diagonal', '4 Corners'].slice(0, Math.floor(Math.random() * 3) + 1),
+                    bonusPoints: Math.floor(Math.random() * 200) + 100,
+                    penalties: Math.floor(Math.random() * 50),
+                    finalScore: 0,
+                    rank: Math.floor(Math.random() * 5) + 1,
+                    totalPlayers: Math.floor(Math.random() * 20) + 10,
+                    prizes: {
+                      first: 1000,
+                      second: 500,
+                      third: 250
+                    },
+                    celebration: true
+                  };
+                  
+                  // Calculate final score
+                  mockResults.finalScore = mockResults.playerScore + mockResults.bonusPoints - mockResults.penalties;
+                  
+                  setGameResults(mockResults);
                   setShowBingoGame(false);
-                  setGameState(prev => ({ ...prev, gameStatus: 'finished' }));
+                  setShowGameResults(true);
+                  setGameSession(prev => ({ ...prev, gameStatus: 'finished' }));
                 }}
               />
             </ErrorBoundary>
           </div>
+        ) : showGameResults && gameResults ? (
+          <GameResultsScreen
+            results={gameResults}
+            onPlayAgain={() => {
+              setShowGameResults(false);
+              setShowBingoGame(true);
+            }}
+            onBackToGameRoom={() => {
+              setShowGameResults(false);
+              setActiveTab('home');
+            }}
+          />
         ) : showTournamentPlay && selectedTournament ? (
           <TournamentPlayArea
             tournament={selectedTournament}

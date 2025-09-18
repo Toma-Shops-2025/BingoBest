@@ -120,10 +120,15 @@
     
     <!-- AdCash In-Page Push (Step 2: Put the tag script on the page) -->
     <script type="text/javascript">
-        aclib.runinPagePush({
-            zoneId: '10419322',
-            maxAds: 2,
-        });
+        // Wait for aclib to load before using it
+        if (typeof aclib !== 'undefined' && aclib.runinPagePush) {
+            aclib.runinPagePush({
+                zoneId: '10419322',
+                maxAds: 2,
+            });
+        } else {
+            console.warn('AdCash aclib not loaded or runinPagePush not available');
+        }
     </script>
   </body>
 </html>

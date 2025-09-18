@@ -195,86 +195,90 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
     }
     
     try {
-      const availableNumbers = [];
-      for (let i = 1; i <= 75; i++) {
-        if (!calledNumbers.includes(i)) {
-          availableNumbers.push(i);
-        }
-      }
-      
-      if (availableNumbers.length === 0) {
-        console.log('🎯 All numbers called - game finished');
-        setGameStatus('finished');
-        onGameEnd();
-        return;
-      }
-      
-      const randomNumber = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
-      console.log(`🎯 CALLING NUMBER: ${randomNumber} (${getLetter(randomNumber)}-${randomNumber})`);
-      
-      setCalledNumbers(prev => [...prev, randomNumber]);
-      setCurrentNumber(randomNumber);
-      
-      // Enhanced number announcement with visual and audio feedback
-      announceNumber(randomNumber);
-      
-      // Update bingo cards
-      setBingoCards(prev => prev.map(card => {
-        const newNumbers = card.numbers.map(column => 
-          column.map(cell => ({
-            ...cell,
-            called: cell.number === randomNumber ? true : cell.called
-          }))
-        );
-        
-        // Auto-daub on desktop only (screen width > 768px)
-        const isDesktop = window.innerWidth > 768;
-        let newMarked = card.marked;
-        
-        if (isDesktop) {
-          // Auto-daub the called number on desktop
-          newMarked = card.marked.map((row, rowIndex) => 
-            row.map((cell, colIndex) => {
-              const cellNumber = card.numbers[colIndex][rowIndex].number;
-              if (cellNumber === randomNumber) {
-                console.log(`🎯 Auto-daubing ${randomNumber} on desktop`);
-                return true; // Auto-mark this number
-              }
-              return cell; // Keep existing state
-            })
-          );
-          
-          // Check for win after auto-daubing
-          const winType = checkWin(newMarked, newNumbers);
-          if (winType) {
-            let prize = 50; // Default prize
-            switch (winType) {
-              case 'line':
-                prize = 50;
-                break;
-              case 'diagonal':
-                prize = 75;
-                break;
-              case '4-corners':
-                prize = 25;
-                break;
-              case 'x-pattern':
-                prize = 150;
-                break;
-              case 'full-house':
-                prize = 200;
-                break;
-            }
-            
-            console.log(`🎯 WIN DETECTED: ${winType} - Prize: $${prize}`);
-            // Handle win asynchronously
-            handleWin(winType, prize, card, newMarked);
-            return { ...card, numbers: newNumbers, marked: newMarked, completed: true };
+      // Use a callback to get the most current calledNumbers state
+      setCalledNumbers(prevCalledNumbers => {
+        const availableNumbers = [];
+        for (let i = 1; i <= 75; i++) {
+          if (!prevCalledNumbers.includes(i)) {
+            availableNumbers.push(i);
           }
         }
         
-        return { ...card, numbers: newNumbers, marked: newMarked };
-      }));
+        if (availableNumbers.length === 0) {
+          console.log('🎯 All numbers called - game finished');
+          setGameStatus('finished');
+          onGameEnd();
+          return prevCalledNumbers;
+        }
+        
+        const randomNumber = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+        console.log(`🎯 CALLING NUMBER: ${randomNumber} (${getLetter(randomNumber)}-${randomNumber})`);
+        
+        setCurrentNumber(randomNumber);
+        
+        // Enhanced number announcement with visual and audio feedback
+        announceNumber(randomNumber);
+        
+        // Update bingo cards with the called number
+        setBingoCards(prev => prev.map(card => {
+          const newNumbers = card.numbers.map(column => 
+            column.map(cell => ({
+              ...cell,
+              called: cell.number === randomNumber ? true : cell.called
+            }))
+          );
+          
+          // Auto-daub on desktop only (screen width > 768px)
+          const isDesktop = window.innerWidth > 768;
+          let newMarked = card.marked;
+          
+          if (isDesktop) {
+            // Auto-daub the called number on desktop
+            newMarked = card.marked.map((row, rowIndex) => 
+              row.map((cell, colIndex) => {
+                const cellNumber = card.numbers[colIndex][rowIndex].number;
+                if (cellNumber === randomNumber) {
+                  console.log(`🎯 Auto-daubing ${randomNumber} on desktop`);
+                  return true; // Auto-mark this number
+                }
+                return cell; // Keep existing state
+              })
+            );
+            
+            // Check for win after auto-daubing
+            const winType = checkWin(newMarked, newNumbers);
+            if (winType) {
+              let prize = 50; // Default prize
+              switch (winType) {
+                case 'line':
+                  prize = 50;
+                  break;
+                case 'diagonal':
+                  prize = 75;
+                  break;
+                case '4-corners':
+                  prize = 25;
+                  break;
+                case 'x-pattern':
+                  prize = 150;
+                  break;
+                case 'full-house':
+                  prize = 200;
+                  break;
+              }
+              
+              console.log(`🎯 WIN DETECTED: ${winType} - Prize: $${prize}`);
+              // Handle win asynchronously
+              handleWin(winType, prize, card, newMarked);
+              return { ...card, numbers: newNumbers, marked: newMarked, completed: true };
+            }
+          }
+          
+          return { ...card, numbers: newNumbers, marked: newMarked };
+        }));
+        
+        return [...prevCalledNumbers, randomNumber];
+      });
     } catch (error) {
       console.error('Error calling number:', error);
       setError('Failed to call number');
@@ -449,17 +453,11 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
       }, 2000);
       setAutoCallInterval(interval);
       
-      // Start the first number call immediately
+      // Start the first number call after 1 second
       setTimeout(() => {
-        console.log('🎯 First number call (immediate)');
+        console.log('🎯 First number call (1 second delay)');
         callNumber();
-      }, 500);
-      
-      // Call second number after 1 second
-      setTimeout(() => {
-        console.log('🎯 Second number call (1 second delay)');
-        callNumber();
-      }, 1500);
+      }, 1000);
       
       console.log('🎯 BINGO GAME STARTED - Numbers will be called every 2 seconds');
       console.log('🔊 Audio announcements enabled');
@@ -668,23 +666,26 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
               ))}
               
                       {/* Numbers */}
-                      {card.numbers.map((column, colIndex) => 
-                        column.map((cell, rowIndex) => (
-                          <div
-                            key={`${colIndex}-${rowIndex}`}
-                            className={`
-                              bingo-number aspect-square border-2 rounded-xl flex items-center justify-center text-sm font-bold cursor-pointer transition-all duration-300 shadow-lg
-                              ${cell.called ? 'called' : 'bg-gradient-to-br from-blue-500 to-blue-700 border-blue-400 text-white shadow-blue-500/50'}
-                              ${card.marked[rowIndex] && card.marked[rowIndex][colIndex] ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 border-yellow-300 text-black shadow-yellow-400/50' : ''}
-                              ${cell.number === 0 ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-300 text-white font-bold shadow-green-400/50' : ''}
-                              hover:scale-105 hover:shadow-xl
-                            `}
-                            onClick={() => markNumber(card.id, rowIndex, colIndex)}
-                            title={`${cell.letter}-${cell.number} (${cell.called ? 'Called' : 'Not Called'})`}
-                          >
-                            {cell.number === 0 ? 'FREE' : cell.number}
-                          </div>
-                        ))
+                      {Array.from({ length: 5 }, (_, rowIndex) => 
+                        Array.from({ length: 5 }, (_, colIndex) => {
+                          const cell = card.numbers[colIndex][rowIndex];
+                          return (
+                            <div
+                              key={`${rowIndex}-${colIndex}`}
+                              className={`
+                                bingo-number aspect-square border-2 rounded-xl flex items-center justify-center text-sm font-bold cursor-pointer transition-all duration-300 shadow-lg
+                                ${cell.called ? 'called' : 'bg-gradient-to-br from-blue-500 to-blue-700 border-blue-400 text-white shadow-blue-500/50'}
+                                ${card.marked[rowIndex] && card.marked[rowIndex][colIndex] ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 border-yellow-300 text-black shadow-yellow-400/50' : ''}
+                                ${cell.number === 0 ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-300 text-white font-bold shadow-green-400/50' : ''}
+                                hover:scale-105 hover:shadow-xl
+                              `}
+                              onClick={() => markNumber(card.id, rowIndex, colIndex)}
+                              title={`${cell.letter}-${cell.number} (${cell.called ? 'Called' : 'Not Called'})`}
+                            >
+                              {cell.number === 0 ? 'FREE' : cell.number}
+                            </div>
+                          );
+                        })
                       )}
             </div>
           </CardContent>
@@ -700,7 +701,13 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
                 // Check if player has a valid bingo
                 const card = bingoCards[0];
                 if (card) {
+                  console.log('🎯 BINGO Button clicked - checking for win...');
+                  console.log('🎯 Card marked array:', card.marked);
+                  console.log('🎯 Card numbers:', card.numbers);
+                  
                   const winType = checkWin(card.marked, card.numbers);
+                  console.log('🎯 Win check result:', winType);
+                  
                   if (winType) {
                     let prize = 50;
                     switch (winType) {
@@ -710,8 +717,10 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
                       case 'x-pattern': prize = 150; break;
                       case 'full-house': prize = 200; break;
                     }
+                    console.log(`🎯 Valid BINGO found: ${winType} - Prize: $${prize}`);
                     handleWin(winType, prize, card, card.marked);
                   } else {
+                    console.log('🎯 No valid BINGO pattern found');
                     alert('❌ No valid BINGO pattern found! Keep playing!');
                   }
                 }
