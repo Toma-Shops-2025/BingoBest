@@ -95,18 +95,6 @@
     <link rel="manifest" href="/manifest.json" />
     
 
-    <!-- Google AdSense -->
-    <script>
-      // Only load Google AdSense if we have a valid client ID
-      const adsenseId = '%VITE_ADSENSE_CLIENT_ID%';
-      if (adsenseId && adsenseId !== 'ca-pub-XXXXXXXXXX' && adsenseId !== '%VITE_ADSENSE_CLIENT_ID%') {
-        const script = document.createElement('script');
-        script.async = true;
-        script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`;
-        script.crossOrigin = 'anonymous';
-        document.head.appendChild(script);
-      }
-    </script>
   </head>
 
   <body>
@@ -129,13 +117,11 @@
     </script>
     
     <!-- AdCash Auto Tag -->
-    <script type="text/javascript" src="https://www.adcash.com/script/lib.js"></script>
+    <script id="aclib" type="text/javascript" src="//acscdn.com/script/aclib.js"></script>
     <script type="text/javascript">
-      if (typeof aclib !== 'undefined') {
         aclib.runAutoTag({
-          zoneId: 'oneekt8zti',
+            zoneId: 'oneekt8zti',
         });
-      }
     </script>
   </body>
 </html>

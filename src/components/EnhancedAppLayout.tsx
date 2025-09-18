@@ -1272,16 +1272,6 @@ const EnhancedAppLayout: React.FC = () => {
           </div>
         </div>
         
-        {/* AdSense Banner Ad */}
-        <div className="mb-4 sm:mb-6">
-          <div className="bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg p-4 sm:p-8 text-center">
-            <p className="text-gray-500 mb-2 text-sm sm:text-base">Advertisement Space</p>
-            <p className="text-xs sm:text-sm text-gray-400">Google AdSense Banner Ad (728x90)</p>
-            <div className="mt-2 text-xs text-gray-300 hidden sm:block">
-              Replace with: &lt;ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto"&gt;&lt;/ins&gt;
-            </div>
-          </div>
-        </div>
 
         
         {/* Tab Content */}
