@@ -52,41 +52,50 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
   }, []);
 
   const startMusic = () => {
-    if (!enabled || isPlaying) return;
+    if (!enabled || isPlaying || isAttemptingToStart) {
+      console.log('🎵 Music start blocked - enabled:', enabled, 'isPlaying:', isPlaying, 'isAttemptingToStart:', isAttemptingToStart);
+      return;
+    }
     
     setIsAttemptingToStart(true);
+    console.log('🎵 Starting music - single instance');
     
     try {
-      if (!audioRef.current) {
-        // Get current track from shuffle order
-        const trackIndex = shuffleOrder.length > 0 ? shuffleOrder[shuffleIndex] : currentTrack;
-        const audioUrl = tracks[trackIndex];
-        console.log('🎵 Loading audio:', audioUrl);
-        
-        audioRef.current = new Audio(audioUrl);
-        audioRef.current.loop = false; // Don't loop individual tracks
-        audioRef.current.volume = volume;
-        audioRef.current.preload = 'auto';
-        
-        // Handle track end - move to next track in shuffle order
-        audioRef.current.addEventListener('ended', () => {
-          console.log('🎵 Track ended, moving to next track in shuffle');
-          playNextTrack();
-        });
-        
-        // Handle errors
-        audioRef.current.addEventListener('error', (e) => {
-          console.warn('Audio error:', e);
-          console.warn('Failed to load audio file:', audioUrl);
-          setIsAttemptingToStart(false);
-          // Don't automatically try next track to avoid loops
-        });
-        
-        // Handle successful load
-        audioRef.current.addEventListener('canplaythrough', () => {
-          console.log('🎵 Audio file loaded successfully:', audioUrl);
-        });
+      // Clean up any existing audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
       }
+      
+      // Get current track from shuffle order
+      const trackIndex = shuffleOrder.length > 0 ? shuffleOrder[shuffleIndex] : currentTrack;
+      const audioUrl = tracks[trackIndex];
+      console.log('🎵 Loading audio:', audioUrl);
+      
+      audioRef.current = new Audio(audioUrl);
+      audioRef.current.loop = false; // Don't loop individual tracks
+      audioRef.current.volume = volume;
+      audioRef.current.preload = 'auto';
+      
+      // Handle track end - move to next track in shuffle order
+      audioRef.current.addEventListener('ended', () => {
+        console.log('🎵 Track ended, moving to next track in shuffle');
+        playNextTrack();
+      });
+      
+      // Handle errors
+      audioRef.current.addEventListener('error', (e) => {
+        console.warn('Audio error:', e);
+        console.warn('Failed to load audio file:', audioUrl);
+        setIsAttemptingToStart(false);
+        setIsPlaying(false);
+        // Don't automatically try next track to avoid loops
+      });
+      
+      // Handle successful load
+      audioRef.current.addEventListener('canplaythrough', () => {
+        console.log('🎵 Audio file loaded successfully:', audioUrl);
+      });
       
       // Try to play immediately
       const playPromise = audioRef.current.play();
@@ -99,20 +108,27 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
         }).catch((error) => {
           console.warn('Failed to play audio (autoplay blocked):', error);
           setIsAttemptingToStart(false);
+          setIsPlaying(false);
           // Don't automatically try next track to avoid loops
         });
       }
     } catch (error) {
       console.warn('Error starting music:', error);
       setIsAttemptingToStart(false);
+      setIsPlaying(false);
     }
   };
 
   // Play next track in shuffle order
   const playNextTrack = () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || isAttemptingToStart) {
+      console.log('🎵 Cannot play next track - no audio ref or already attempting to start');
+      return;
+    }
     
     try {
+      console.log('🎵 Playing next track in shuffle order');
+      
       // Move to next track in shuffle order
       let nextShuffleIndex = (shuffleIndex + 1) % shuffleOrder.length;
       let currentShuffleOrder = shuffleOrder;
@@ -168,7 +184,7 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
 
   // Auto-start music when component mounts (if enabled)
   useEffect(() => {
-    if (enabled && !isPlaying) {
+    if (enabled && !isPlaying && !isAttemptingToStart) {
       console.log('🎵 Attempting to start background music automatically');
       
       // Try to start immediately
@@ -176,7 +192,7 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       
       // If that fails, try again after a short delay
       const timer = setTimeout(() => {
-        if (!isPlaying) {
+        if (!isPlaying && !isAttemptingToStart) {
           console.log('🎵 Retrying background music start');
           startMusic();
         }
@@ -184,7 +200,7 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       
       // Also try after user interaction (click anywhere)
       const handleUserInteraction = () => {
-        if (!isPlaying && enabled) {
+        if (!isPlaying && !isAttemptingToStart && enabled) {
           console.log('🎵 Starting music after user interaction');
           startMusic();
         }
@@ -202,7 +218,7 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
         document.removeEventListener('touchstart', handleUserInteraction);
       };
     }
-  }, [enabled]);
+  }, [enabled, isPlaying, isAttemptingToStart]);
 
   // Update volume when it changes
   useEffect(() => {
@@ -225,9 +241,9 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
 
   // Try to start music on any user interaction
   useEffect(() => {
-    if (enabled && !isPlaying) {
+    if (enabled && !isPlaying && !isAttemptingToStart) {
       const handleAnyInteraction = () => {
-        if (!isPlaying && enabled) {
+        if (!isPlaying && !isAttemptingToStart && enabled) {
           console.log('🎵 Starting music after any user interaction');
           startMusic();
         }
@@ -245,7 +261,7 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
         });
       };
     }
-  }, [enabled, isPlaying]);
+  }, [enabled, isPlaying, isAttemptingToStart]);
 
   // Cleanup on unmount
   useEffect(() => {
