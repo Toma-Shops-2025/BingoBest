@@ -20,9 +20,10 @@ interface BingoCard {
 interface SimpleBingoGameProps {
   onWin: (winType: string, prize: number) => void;
   onGameEnd: () => void;
+  autoStart?: boolean;
 }
 
-const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) => {
+const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, autoStart = false }) => {
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [gameStatus, setGameStatus] = useState<'waiting' | 'playing' | 'finished'>('waiting');
@@ -463,6 +464,14 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd }) =
       }
     };
   }, [autoCallInterval]);
+
+  // Auto-start effect
+  useEffect(() => {
+    if (autoStart && gameStatus === 'waiting') {
+      console.log('🎯 Auto-starting bingo game...');
+      startGame();
+    }
+  }, [autoStart, gameStatus]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
