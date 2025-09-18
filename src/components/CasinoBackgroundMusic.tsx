@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
 
 interface CasinoBackgroundMusicProps {
   enabled?: boolean;
@@ -7,7 +6,7 @@ interface CasinoBackgroundMusicProps {
 
 const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled = true }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.3);
+  const [volume] = useState(0.3);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [currentTrack, setCurrentTrack] = useState(0);
   const [isAttemptingToStart, setIsAttemptingToStart] = useState(false);
@@ -106,21 +105,26 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
 
   // Play next track in shuffle order
   const playNextTrack = () => {
-    if (!audioRef.current || !isPlaying) return;
+    if (!audioRef.current) return;
     
     try {
       // Move to next track in shuffle order
-      const nextShuffleIndex = (shuffleIndex + 1) % shuffleOrder.length;
-      setShuffleIndex(nextShuffleIndex);
+      let nextShuffleIndex = (shuffleIndex + 1) % shuffleOrder.length;
+      let currentShuffleOrder = shuffleOrder;
       
       // If we've played all tracks, create a new shuffle order
       if (nextShuffleIndex === 0) {
         console.log('🎵 Played all tracks, creating new shuffle order');
-        setShuffleOrder(createShuffleOrder());
+        currentShuffleOrder = createShuffleOrder();
+        setShuffleOrder(currentShuffleOrder);
+        setShuffleIndex(0);
+        nextShuffleIndex = 0;
+      } else {
+        setShuffleIndex(nextShuffleIndex);
       }
       
       // Get the next track from the shuffle order
-      const nextTrackIndex = shuffleOrder[nextShuffleIndex];
+      const nextTrackIndex = currentShuffleOrder[nextShuffleIndex];
       setCurrentTrack(nextTrackIndex);
       
       // Update the audio source
@@ -130,38 +134,19 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       // Play the next track
       const playPromise = audioRef.current.play();
       if (playPromise !== undefined) {
-        playPromise.catch((error) => {
+        playPromise.then(() => {
+          console.log(`🎵 Playing track ${nextTrackIndex + 1}/${tracks.length}: ${tracks[nextTrackIndex]}`);
+        }).catch((error) => {
           console.warn('Failed to play next track:', error);
           // Try the track after that
           setTimeout(() => playNextTrack(), 1000);
         });
       }
-      
-      console.log(`🎵 Playing track ${nextTrackIndex + 1}/${tracks.length}: ${tracks[nextTrackIndex]}`);
     } catch (error) {
       console.warn('Error playing next track:', error);
     }
   };
 
-  const stopMusic = () => {
-    if (!isPlaying || !audioRef.current) return;
-    
-    try {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsPlaying(false);
-    } catch (error) {
-      console.warn('Error stopping music:', error);
-    }
-  };
-
-  const toggleMusic = () => {
-    if (isPlaying) {
-      stopMusic();
-    } else {
-      startMusic();
-    }
-  };
 
   // Auto-start music when component mounts (if enabled)
   useEffect(() => {
@@ -254,55 +239,8 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
     };
   }, []);
 
-  if (!enabled) return null;
-
-  return (
-    <div className="fixed bottom-4 right-1 sm:right-4 z-50 flex flex-col gap-2">
-      <Button
-        onClick={toggleMusic}
-        variant={isPlaying ? "default" : "outline"}
-        size="sm"
-        className="bg-black/80 text-white hover:bg-black/90 border-white/20"
-        title={isPlaying ? "Background music is playing" : isAttemptingToStart ? "Starting music..." : "Click to start background music"}
-        disabled={isAttemptingToStart}
-      >
-        {isPlaying ? "🎵 Music On" : isAttemptingToStart ? "🎵 Starting..." : "🎵 Music Off"}
-      </Button>
-      
-      {isPlaying && (
-        <div className="flex flex-col gap-1">
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.1"
-            value={volume}
-            onChange={(e) => setVolume(parseFloat(e.target.value))}
-            className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer"
-            style={{
-              background: `linear-gradient(to right, #10b981 0%, #10b981 ${volume * 100}%, #374151 ${volume * 100}%, #374151 100%)`
-            }}
-          />
-                <button
-                  onClick={() => {
-                    if (isPlaying) {
-                      playNextTrack();
-                    } else {
-                      // If not playing, just advance the shuffle index
-                      const nextShuffleIndex = (shuffleIndex + 1) % shuffleOrder.length;
-                      setShuffleIndex(nextShuffleIndex);
-                      const nextTrackIndex = shuffleOrder[nextShuffleIndex];
-                      setCurrentTrack(nextTrackIndex);
-                    }
-                  }}
-                  className="text-xs text-white/70 hover:text-white bg-black/50 px-2 py-1 rounded"
-                >
-                  Next Track
-                </button>
-        </div>
-      )}
-    </div>
-  );
+  // Return null - no visible controls
+  return null;
 };
 
 export default CasinoBackgroundMusic;
