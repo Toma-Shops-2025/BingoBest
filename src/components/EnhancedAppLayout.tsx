@@ -391,8 +391,13 @@ const EnhancedAppLayout: React.FC = () => {
         try {
           setShowBingoGame(true);
           setActiveTab('home'); // Switch to home tab to show the game
-          // Scroll to top when starting game
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          // Scroll to game area instead of top
+          setTimeout(() => {
+            const gameElement = document.querySelector('[data-game-area]');
+            if (gameElement) {
+              gameElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }, 100);
         } catch (gameError) {
           console.error('Error starting bingo game:', gameError);
           setShowBingoGame(false);
@@ -1281,7 +1286,7 @@ const EnhancedAppLayout: React.FC = () => {
         
         {/* Tab Content */}
         {showBingoGame ? (
-          <div className="space-y-4">
+          <div className="space-y-4" data-game-area>
             <NavigationBreadcrumbs
               items={[
                 { label: 'Game Rooms', onClick: () => setActiveTab('home') },

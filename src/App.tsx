@@ -12,7 +12,7 @@ import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
 import AppFallback from "./components/AppFallback";
 import AdminDashboard from "./components/AdminDashboard";
-import AudioPlayer from "./components/AudioPlayer";
+import CasinoBackgroundMusic from "./components/CasinoBackgroundMusic";
 
 // Lazy initialization to avoid circular dependencies
 let _queryClient: QueryClient | null = null;
@@ -40,7 +40,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
               </BrowserRouter>
-              <AudioPlayer />
+              <CasinoBackgroundMusic />
             </TooltipProvider>
           </AppProvider>
         </AuthProvider>
