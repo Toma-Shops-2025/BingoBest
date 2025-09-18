@@ -446,18 +446,18 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
         setAutoCallInterval(null);
       }
       
-      // Start automatic number calling every 2 seconds
+      // Start automatic number calling every 3 seconds (slower pace)
       const interval = window.setInterval(() => {
         console.log('🎯 Interval triggered - calling number...');
         callNumber();
-      }, 2000);
+      }, 3000);
       setAutoCallInterval(interval);
       
-      // Start the first number call after 1 second
+      // Start the first number call after 2 seconds
       setTimeout(() => {
-        console.log('🎯 First number call (1 second delay)');
+        console.log('🎯 First number call (2 second delay)');
         callNumber();
-      }, 1000);
+      }, 2000);
       
       console.log('🎯 BINGO GAME STARTED - Numbers will be called every 2 seconds');
       console.log('🔊 Audio announcements enabled');
@@ -704,6 +704,12 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
                   console.log('🎯 BINGO Button clicked - checking for win...');
                   console.log('🎯 Card marked array:', card.marked);
                   console.log('🎯 Card numbers:', card.numbers);
+                  
+                  // Debug: Check if marked array is properly structured
+                  console.log('🎯 Marked array length:', card.marked.length);
+                  for (let i = 0; i < card.marked.length; i++) {
+                    console.log(`🎯 Row ${i}:`, card.marked[i]);
+                  }
                   
                   const winType = checkWin(card.marked, card.numbers);
                   console.log('🎯 Win check result:', winType);

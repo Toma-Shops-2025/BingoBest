@@ -181,16 +181,22 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       if (playPromise !== undefined) {
         playPromise.then(() => {
           console.log(`🎵 Playing track ${nextTrackIndex + 1}/${tracks.length}: ${tracks[nextTrackIndex]}`);
+          setIsPlaying(true);
+          setIsAttemptingToStart(false);
         }).catch((error) => {
           console.warn('Failed to play next track:', error);
+          setIsPlaying(false);
+          setIsAttemptingToStart(false);
           // Try to continue with next track
-          setTimeout(() => playNextTrack(), 1000);
+          setTimeout(() => playNextTrack(), 2000);
         });
       }
     } catch (error) {
       console.warn('Error playing next track:', error);
+      setIsPlaying(false);
+      setIsAttemptingToStart(false);
       // Try to continue with next track
-      setTimeout(() => playNextTrack(), 1000);
+      setTimeout(() => playNextTrack(), 2000);
     }
   };
 

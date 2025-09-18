@@ -1353,9 +1353,9 @@ const EnhancedAppLayout: React.FC = () => {
                     rank: Math.floor(Math.random() * 5) + 1,
                     totalPlayers: Math.floor(Math.random() * 20) + 10,
                     prizes: {
-                      first: 1000,
-                      second: 500,
-                      third: 250
+                      first: 50,
+                      second: 25,
+                      third: 10
                     },
                     celebration: true
                   };
