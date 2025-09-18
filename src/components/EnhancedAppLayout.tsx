@@ -93,20 +93,26 @@ const EnhancedAppLayout: React.FC = () => {
     }
   }, [user]);
 
+
   // Listen for user data updates from other devices
   useEffect(() => {
     const handleUserDataUpdate = (event: CustomEvent) => {
       const updatedProfile = event.detail;
+      console.log('🔄 Real-time user data update received:', updatedProfile);
       setPersistentUserProfile(updatedProfile);
       setPlayer(prev => ({
         ...prev,
         balance: updatedProfile.balance,
         withdrawableBalance: updatedProfile.withdrawableBalance,
         bonusBalance: updatedProfile.bonusBalance,
+        level: updatedProfile.level,
+        experience: updatedProfile.experience,
         totalWinnings: updatedProfile.total_winnings,
         gamesPlayed: updatedProfile.games_played,
         gamesWon: updatedProfile.games_won,
-        winRate: updatedProfile.win_rate
+        winRate: updatedProfile.win_rate,
+        vipTier: updatedProfile.vip_tier,
+        vipPoints: updatedProfile.vip_points
       }));
     };
 
@@ -515,8 +521,23 @@ const EnhancedAppLayout: React.FC = () => {
             maxParticipants: 50,
             currentParticipants: 23,
             prizePool: 8.00,
-            startTime: new Date(now.getTime() + 2 * 60 * 60 * 1000), // 2 hours from now
-            endTime: new Date(now.getTime() + 4 * 60 * 60 * 1000), // 4 hours from now
+            startTime: new Date(now.getTime() + 5 * 60 * 1000), // 5 minutes from now
+            endTime: new Date(now.getTime() + 2 * 60 * 60 * 1000), // 2 hours from now
+            status: 'upcoming' as const,
+            rounds: [],
+            winners: [],
+            format: 'single_elimination' as const
+          },
+          {
+            id: 'instant-bingo',
+            name: 'Instant Bingo',
+            description: 'Join immediately - no waiting!',
+            entryFee: 0.50,
+            maxParticipants: 20,
+            currentParticipants: 8,
+            prizePool: 5.00,
+            startTime: new Date(now.getTime() + 30 * 1000), // 30 seconds from now
+            endTime: new Date(now.getTime() + 30 * 60 * 1000), // 30 minutes from now
             status: 'upcoming' as const,
             rounds: [],
             winners: [],
@@ -530,8 +551,8 @@ const EnhancedAppLayout: React.FC = () => {
             maxParticipants: 100,
             currentParticipants: 67,
             prizePool: 25.00,
-            startTime: new Date(now.getTime() + 24 * 60 * 60 * 1000), // 1 day from now
-            endTime: new Date(now.getTime() + 48 * 60 * 60 * 1000), // 2 days from now
+            startTime: new Date(now.getTime() + 2 * 60 * 60 * 1000), // 2 hours from now
+            endTime: new Date(now.getTime() + 6 * 60 * 60 * 1000), // 6 hours from now
             status: 'upcoming' as const,
             rounds: [],
             winners: [],

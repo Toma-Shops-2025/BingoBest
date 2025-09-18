@@ -38,6 +38,7 @@ class UserDataPersistence {
   private userProfile: UserProfile | null = null;
   private deviceId: string;
   private syncInterval: NodeJS.Timeout | null = null;
+  private realtimeSubscription: any = null;
 
   constructor() {
     this.deviceId = this.generateDeviceId();
@@ -80,10 +81,12 @@ class UserDataPersistence {
         await this.loadUserProfile();
         await this.registerDevice();
         this.startDataSync();
+        this.startRealtimeSync();
       } else if (event === 'SIGNED_OUT') {
         this.currentUser = null;
         this.userProfile = null;
         this.stopDataSync();
+        this.stopRealtimeSync();
         await this.unregisterDevice();
       }
     });
@@ -403,6 +406,62 @@ class UserDataPersistence {
       console.error('Error updating sign-out status:', error);
       return false;
     }
+  }
+
+  // Real-time synchronization methods
+  private startRealtimeSync() {
+    if (!this.currentUser || this.realtimeSubscription) return;
+
+    console.log('🔄 Starting real-time sync for user data...');
+    
+    this.realtimeSubscription = this.supabase
+      .channel('user_data_changes')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'users',
+        filter: `id=eq.${this.currentUser.id}`
+      }, (payload) => {
+        console.log('🔄 Real-time update received:', payload);
+        this.handleRealtimeUpdate(payload.new);
+      })
+      .subscribe();
+  }
+
+  private stopRealtimeSync() {
+    if (this.realtimeSubscription) {
+      console.log('🔄 Stopping real-time sync...');
+      this.supabase.removeChannel(this.realtimeSubscription);
+      this.realtimeSubscription = null;
+    }
+  }
+
+  private handleRealtimeUpdate(updatedData: any) {
+    if (!this.userProfile) return;
+
+    // Update local profile with real-time changes
+    const updatedProfile: UserProfile = {
+      ...this.userProfile,
+      balance: updatedData.balance || this.userProfile.balance,
+      withdrawableBalance: updatedData.withdrawable_balance || this.userProfile.withdrawableBalance,
+      bonusBalance: updatedData.bonus_balance || this.userProfile.bonusBalance,
+      vip_tier: updatedData.vip_tier || this.userProfile.vip_tier,
+      vip_points: updatedData.vip_points || this.userProfile.vip_points,
+      total_winnings: updatedData.total_winnings || this.userProfile.total_winnings,
+      games_played: updatedData.games_played || this.userProfile.games_played,
+      games_won: updatedData.games_won || this.userProfile.games_won,
+      win_rate: updatedData.win_rate || this.userProfile.win_rate,
+      updated_at: updatedData.updated_at || this.userProfile.updated_at
+    };
+
+    this.userProfile = updatedProfile;
+    
+    // Dispatch custom event for components to listen to
+    window.dispatchEvent(new CustomEvent('userDataUpdated', {
+      detail: { profile: updatedProfile }
+    }));
+
+    console.log('✅ User profile updated via real-time sync');
   }
 }
 

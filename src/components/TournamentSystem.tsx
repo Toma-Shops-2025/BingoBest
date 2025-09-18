@@ -19,6 +19,16 @@ const TournamentSystem: React.FC<TournamentSystemProps> = ({
   onSpectateTournament
 }) => {
   const [selectedTab, setSelectedTab] = useState<'upcoming' | 'active' | 'completed'>('upcoming');
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update current time every second for accurate countdowns
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // Handle URL hash routing for tabs
   useEffect(() => {
@@ -56,18 +66,20 @@ const TournamentSystem: React.FC<TournamentSystemProps> = ({
   };
 
   const getTimeUntilStart = (startTime: Date) => {
-    const now = new Date();
-    const diff = startTime.getTime() - now.getTime();
+    const diff = startTime.getTime() - currentTime.getTime();
     
     if (diff <= 0) return 'Starting now!';
     
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
     
     if (hours > 0) {
-      return `${hours}h ${minutes}m`;
+      return `${hours}h ${minutes}m ${seconds}s`;
+    } else if (minutes > 0) {
+      return `${minutes}m ${seconds}s`;
     } else {
-      return `${minutes}m`;
+      return `${seconds}s`;
     }
   };
 
