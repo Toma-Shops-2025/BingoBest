@@ -75,8 +75,7 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
         audioRef.current.addEventListener('error', (e) => {
           console.warn('Audio error:', e);
           setIsAttemptingToStart(false);
-          // Try next track
-          playNextTrack();
+          // Don't automatically try next track to avoid loops
         });
       }
       
@@ -91,10 +90,7 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
         }).catch((error) => {
           console.warn('Failed to play audio (autoplay blocked):', error);
           setIsAttemptingToStart(false);
-          // Try next track after a short delay
-          setTimeout(() => {
-            playNextTrack();
-          }, 1000);
+          // Don't automatically try next track to avoid loops
         });
       }
     } catch (error) {
@@ -127,9 +123,12 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       const nextTrackIndex = currentShuffleOrder[nextShuffleIndex];
       setCurrentTrack(nextTrackIndex);
       
+      // Stop current playback before changing source
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      
       // Update the audio source
       audioRef.current.src = tracks[nextTrackIndex];
-      audioRef.current.currentTime = 0;
       
       // Play the next track
       const playPromise = audioRef.current.play();
@@ -138,8 +137,18 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
           console.log(`🎵 Playing track ${nextTrackIndex + 1}/${tracks.length}: ${tracks[nextTrackIndex]}`);
         }).catch((error) => {
           console.warn('Failed to play next track:', error);
-          // Try the track after that
-          setTimeout(() => playNextTrack(), 1000);
+          // Don't recursively call playNextTrack to avoid infinite loops
+          // Just try the next track in the sequence
+          setTimeout(() => {
+            const nextIndex = (nextShuffleIndex + 1) % currentShuffleOrder.length;
+            const fallbackTrackIndex = currentShuffleOrder[nextIndex];
+            if (audioRef.current) {
+              audioRef.current.src = tracks[fallbackTrackIndex];
+              audioRef.current.play().catch(() => {
+                console.warn('Failed to play fallback track');
+              });
+            }
+          }, 1000);
         });
       }
     } catch (error) {
