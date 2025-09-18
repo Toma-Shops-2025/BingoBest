@@ -5,10 +5,10 @@ import { Info, Target, Star } from 'lucide-react';
 
 const GameInstructions: React.FC = () => {
   const winningPatterns = [
-    { name: 'Line', description: 'Complete any horizontal, vertical, or diagonal line', prize: '$50' },
-    { name: '4 CORNERS', description: 'Mark all four corner squares', prize: '$25' },
-    { name: 'X', description: 'Mark both diagonal lines forming an X', prize: '$75' },
-    { name: 'Full House', description: 'Mark all 25 squares on your card', prize: '$200' }
+    { name: 'Line', description: 'Complete any horizontal, vertical, or diagonal line' },
+    { name: '4 CORNERS', description: 'Mark all four corner squares' },
+    { name: 'X', description: 'Mark both diagonal lines forming an X' },
+    { name: 'Full House', description: 'Mark all 25 squares on your card' }
   ];
 
 
@@ -76,9 +76,8 @@ const GameInstructions: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {winningPatterns.map((pattern, index) => (
               <div key={index} className="border border-white/20 rounded-lg p-3 bg-white/10 backdrop-blur-sm">
-                <div className="flex items-center justify-between mb-1">
+                <div className="mb-1">
                   <span className="font-medium text-white">{pattern.name}</span>
-                  <Badge variant="success">{pattern.prize}</Badge>
                 </div>
                 <p className="text-sm text-white/90">{pattern.description}</p>
               </div>
