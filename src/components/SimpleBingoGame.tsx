@@ -154,14 +154,22 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
           });
         }
         
+        // Sort numbers in ascending order for each column
         columnNumbers.sort((a, b) => a.number - b.number);
         numbers.push(columnNumbers);
       }
       
-      // Free space in the middle
+      // Free space in the middle (N column, middle row)
       if (numbers[2] && numbers[2][2]) {
         numbers[2][2] = { number: 0, called: true, letter: 'FREE' };
       }
+      
+      console.log('🎯 Generated bingo card with correct number ranges:');
+      numbers.forEach((column, colIndex) => {
+        const letter = letters[colIndex];
+        const range = numberRanges[colIndex];
+        console.log(`${letter} column (${range.start}-${range.end}):`, column.map(cell => cell.number));
+      });
       
       return {
         id: Math.random().toString(36).substr(2, 9),
@@ -178,7 +186,10 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
 
   // Call a random number
   const callNumber = () => {
-    if (gameStatus !== 'playing') return;
+    if (gameStatus !== 'playing') {
+      console.log('🎯 Cannot call number - game not playing. Status:', gameStatus);
+      return;
+    }
     
     try {
       const availableNumbers = [];
@@ -189,12 +200,15 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
       }
       
       if (availableNumbers.length === 0) {
+        console.log('🎯 All numbers called - game finished');
         setGameStatus('finished');
         onGameEnd();
         return;
       }
       
       const randomNumber = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+      console.log(`🎯 CALLING NUMBER: ${randomNumber} (${getLetter(randomNumber)}-${randomNumber})`);
+      
       setCalledNumbers(prev => [...prev, randomNumber]);
       setCurrentNumber(randomNumber);
       
@@ -220,6 +234,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
             row.map((cell, colIndex) => {
               const cellNumber = card.numbers[colIndex][rowIndex].number;
               if (cellNumber === randomNumber) {
+                console.log(`🎯 Auto-daubing ${randomNumber} on desktop`);
                 return true; // Auto-mark this number
               }
               return cell; // Keep existing state
@@ -248,6 +263,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
                 break;
             }
             
+            console.log(`🎯 WIN DETECTED: ${winType} - Prize: $${prize}`);
             // Handle win asynchronously
             handleWin(winType, prize, card, newMarked);
             return { ...card, numbers: newNumbers, marked: newMarked, completed: true };
@@ -404,6 +420,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
   // Start the game
   const startGame = () => {
     try {
+      console.log('🎯 Starting bingo game...');
       setError(null);
       setGameStatus('playing');
       setCalledNumbers([]);
@@ -411,25 +428,35 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
       setBingoCards([generateBingoCard()]);
       setGameTimer(300);
       
-      // Start automatic number calling every 2 seconds (faster)
+      // Clear any existing interval
+      if (autoCallInterval) {
+        window.clearInterval(autoCallInterval);
+        setAutoCallInterval(null);
+      }
+      
+      // Start automatic number calling every 2 seconds
       const interval = window.setInterval(() => {
+        console.log('🎯 Interval triggered - calling number...');
         callNumber();
       }, 2000);
       setAutoCallInterval(interval);
       
       // Start the first number call immediately
       setTimeout(() => {
+        console.log('🎯 First number call (immediate)');
         callNumber();
       }, 500);
       
       // Call second number after 1 second
       setTimeout(() => {
+        console.log('🎯 Second number call (1 second delay)');
         callNumber();
       }, 1500);
       
       console.log('🎯 BINGO GAME STARTED - Numbers will be called every 2 seconds');
       console.log('🔊 Audio announcements enabled');
       console.log('📱 Notifications enabled');
+      console.log('⏰ Timer started:', gameTimer, 'seconds');
     } catch (error) {
       console.error('Error starting game:', error);
       setError('Failed to start game. Please try again.');
@@ -469,7 +496,10 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
   useEffect(() => {
     if (autoStart && gameStatus === 'waiting') {
       console.log('🎯 Auto-starting bingo game...');
-      startGame();
+      // Add a small delay to ensure component is fully mounted
+      setTimeout(() => {
+        startGame();
+      }, 100);
     }
   }, [autoStart, gameStatus]);
 
