@@ -102,11 +102,12 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
     try {
       // Try to play specific number voice audio file
       const audio = new Audio(`/audio/numbers/bingo-${number}.mp3`);
-      audio.volume = 0.7;
-      audio.play().catch(() => {
+      audio.volume = 0.8; // Increased by 10% (was 0.7)
+      audio.play().catch((error) => {
+        console.warn('Number audio failed, using fallback:', error);
         // Fallback to generic beep if specific audio not found
         const beepAudio = new Audio('/audio/beep.mp3');
-        beepAudio.volume = 0.5;
+        beepAudio.volume = 0.8; // Increased by 10% (was 0.5)
         beepAudio.play().catch(console.warn);
       });
     } catch (error) {
@@ -125,14 +126,18 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
     // Audio feedback
     playNumberCallSound(number);
     
-    // Show notification
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      if (Notification.permission === 'granted') {
-        new Notification(`Bingo Number Called!`, {
-          body: announcement,
-          icon: '/icon-192x192.png'
-        });
+    // Show notification (with error handling)
+    try {
+      if (typeof window !== 'undefined' && 'Notification' in window) {
+        if (Notification.permission === 'granted') {
+          new Notification(`Bingo Number Called!`, {
+            body: announcement,
+            icon: '/icon-192x192.png'
+          });
+        }
       }
+    } catch (error) {
+      console.warn('Notification failed:', error);
     }
   };
 
@@ -246,10 +251,17 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
 
   // Call a random number
   const callNumber = () => {
-    if (gameStatusRef.current !== 'playing') {
-      console.log('🎯 Cannot call number - game not playing. Status:', gameStatusRef.current);
-      return;
-    }
+    try {
+      if (gameStatusRef.current !== 'playing') {
+        console.log('🎯 Cannot call number - game not playing. Status:', gameStatusRef.current);
+        return;
+      }
+      
+      // Additional safety checks
+      if (typeof window === 'undefined') {
+        console.warn('🎯 Window not available, skipping number call');
+        return;
+      }
     
     // Check if auto-dab is active
     if (activePowerUps.autodab) {
@@ -303,8 +315,8 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
             }))
           );
           
-          // Auto-daub on desktop only (screen width > 768px)
-          const isDesktop = window.innerWidth > 768;
+          // Auto-daub disabled on mobile, enabled on desktop
+          const isDesktop = typeof window !== 'undefined' && window.innerWidth > 768;
           let newMarked = card.marked;
           
           if (isDesktop) {

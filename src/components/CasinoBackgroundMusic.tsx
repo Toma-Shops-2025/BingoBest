@@ -6,7 +6,7 @@ interface CasinoBackgroundMusicProps {
 
 const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled = true }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume] = useState(0.3);
+  const [volume] = useState(0.27); // Decreased by 10% (was 0.3)
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(0);
