@@ -520,7 +520,7 @@ const EnhancedAppLayout: React.FC = () => {
             entryFee: 1.00,
             maxParticipants: 50,
             currentParticipants: 23,
-            prizePool: 8.00,
+            prizePool: 10.00,
             startTime: new Date(now.getTime() + 5 * 60 * 1000), // 5 minutes from now
             endTime: new Date(now.getTime() + 2 * 60 * 60 * 1000), // 2 hours from now
             status: 'upcoming' as const,
@@ -535,7 +535,7 @@ const EnhancedAppLayout: React.FC = () => {
             entryFee: 0.50,
             maxParticipants: 20,
             currentParticipants: 8,
-            prizePool: 5.00,
+            prizePool: 10.00,
             startTime: new Date(now.getTime() + 30 * 1000), // 30 seconds from now
             endTime: new Date(now.getTime() + 30 * 60 * 1000), // 30 minutes from now
             status: 'upcoming' as const,
@@ -565,7 +565,7 @@ const EnhancedAppLayout: React.FC = () => {
             entryFee: 2.00,
             maxParticipants: 30,
             currentParticipants: 28,
-            prizePool: 12.00,
+            prizePool: 25.00,
             startTime: new Date(now.getTime() - 30 * 60 * 1000), // 30 minutes ago
             endTime: new Date(now.getTime() + 30 * 60 * 1000), // 30 minutes from now
             status: 'active' as const,
@@ -580,7 +580,7 @@ const EnhancedAppLayout: React.FC = () => {
             entryFee: 5.00,
             maxParticipants: 200,
             currentParticipants: 156,
-            prizePool: 50.00,
+            prizePool: 100.00,
             startTime: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
             endTime: new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000), // 1 week + 1 day
             status: 'upcoming' as const,
@@ -595,7 +595,7 @@ const EnhancedAppLayout: React.FC = () => {
             entryFee: 2.00,
             maxParticipants: 40,
             currentParticipants: 40,
-            prizePool: 15.00,
+            prizePool: 75.00,
             startTime: new Date(now.getTime() - 48 * 60 * 60 * 1000), // 2 days ago
             endTime: new Date(now.getTime() - 24 * 60 * 60 * 1000), // 1 day ago
             status: 'completed' as const,

@@ -43,8 +43,8 @@ export const GAME_CONFIGS: GameConfig[] = [
   {
     id: 'speed-bingo',
     name: 'Speed Bingo',
-    entryFee: 2.00,
-    minPlayers: 3,
+    entryFee: 3.00,
+    minPlayers: 4,
     maxPlayers: 20,
     gameType: 'bingo',
     duration: 5
@@ -53,7 +53,7 @@ export const GAME_CONFIGS: GameConfig[] = [
     id: 'classic-bingo',
     name: 'Classic Bingo',
     entryFee: 5.00,
-    minPlayers: 5,
+    minPlayers: 6,
     maxPlayers: 30,
     gameType: 'bingo',
     duration: 10
@@ -61,8 +61,8 @@ export const GAME_CONFIGS: GameConfig[] = [
   {
     id: 'high-stakes-arena',
     name: 'High Stakes Arena',
-    entryFee: 10.00,
-    minPlayers: 8,
+    entryFee: 12.00,
+    minPlayers: 10,
     maxPlayers: 50,
     gameType: 'bingo',
     duration: 15
@@ -71,7 +71,7 @@ export const GAME_CONFIGS: GameConfig[] = [
     id: 'daily-tournament',
     name: 'Daily Tournament',
     entryFee: 8.00,
-    minPlayers: 10,
+    minPlayers: 11,
     maxPlayers: 100,
     gameType: 'tournament',
     duration: 30
@@ -80,7 +80,7 @@ export const GAME_CONFIGS: GameConfig[] = [
     id: 'weekly-championship',
     name: 'Weekly Championship',
     entryFee: 20.00,
-    minPlayers: 20,
+    minPlayers: 12,
     maxPlayers: 200,
     gameType: 'tournament',
     duration: 60
