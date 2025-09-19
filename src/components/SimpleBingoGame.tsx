@@ -281,9 +281,9 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
       }));
     }
     
-    try {
-      // Use a callback to get the most current calledNumbers state
-      setCalledNumbers(prevCalledNumbers => {
+    // Use a callback to get the most current calledNumbers state
+    setCalledNumbers(prevCalledNumbers => {
+      try {
         const availableNumbers = [];
         for (let i = 1; i <= 75; i++) {
           if (!prevCalledNumbers.includes(i)) {
@@ -383,11 +383,12 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
         }));
         
         return [...prevCalledNumbers, randomNumber];
-      });
-    } catch (error) {
-      console.error('Error calling number:', error);
-      setError('Failed to call number');
-    }
+      } catch (error) {
+        console.error('Error calling number:', error);
+        setError('Failed to call number');
+        return prevCalledNumbers;
+      }
+    });
   };
 
   // Mark a number on a card
