@@ -41,6 +41,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
     'lucky': 0
   });
   const [activePowerUps, setActivePowerUps] = useState<{[key: string]: boolean}>({});
+  const [successfulDaubs, setSuccessfulDaubs] = useState(0);
   
   // Use ref to track game status for immediate access
   const gameStatusRef = useRef<'waiting' | 'playing' | 'finished'>('waiting');
@@ -60,8 +61,8 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
         alert('🎯 Wildcard activated! Click any number to mark it as called!');
         break;
       case 'multiplier':
-        // Double points for next 3 patterns
-        alert('🎯 2x Multiplier activated! Next 3 patterns give double points!');
+        // Double points for next pattern
+        alert('🎯 2x Multiplier activated! Next pattern gives double points!');
         break;
       case 'timefreeze':
         // Add 30 seconds to timer
@@ -248,6 +249,24 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
       return;
     }
     
+    // Check if auto-dab is active
+    if (activePowerUps.autodab) {
+      console.log('🎯 Auto-dab active - marking all called numbers');
+      // Auto-mark all called numbers on the card
+      setBingoCards(prev => prev.map(card => {
+        const newMarked = [...card.marked];
+        for (let row = 0; row < 5; row++) {
+          for (let col = 0; col < 5; col++) {
+            const cell = card.numbers[col][row];
+            if (calledNumbers.includes(cell.number)) {
+              newMarked[row][col] = true;
+            }
+          }
+        }
+        return { ...card, marked: newMarked };
+      }));
+    }
+    
     try {
       // Use a callback to get the most current calledNumbers state
       setCalledNumbers(prevCalledNumbers => {
@@ -305,29 +324,39 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
               let points = 0;
               switch (winType) {
                 case 'line':
-                  points = 5000;
+                  points = 25000;
                   break;
                 case 'diagonal':
-                  points = 7500;
+                  points = 50000;
                   break;
                 case '4-corners':
-                  points = 2500;
+                  points = 10000;
                   break;
                 case 'x-pattern':
-                  points = 15000;
+                  points = 100000;
                   break;
                 case 'full-house':
-                  points = 45500;
+                  points = 500000;
                   break;
               }
               
               console.log(`🎯 WIN DETECTED: ${winType} - Points: ${points}`);
+              
+              // Apply multiplier if active
+              let finalPoints = points;
+              if (activePowerUps.multiplier) {
+                finalPoints = points * 2;
+                console.log(`🎯 Multiplier active! ${points} x 2 = ${finalPoints} points!`);
+                // Deactivate multiplier after use
+                setActivePowerUps(prev => ({ ...prev, multiplier: false }));
+              }
+              
               // Add points to score
-              setPlayerScore(prev => prev + points);
-              console.log(`🎯 Pattern detected: ${winType} - +${points} points!`);
+              setPlayerScore(prev => prev + finalPoints);
+              console.log(`🎯 Pattern detected: ${winType} - +${finalPoints} points!`);
               
               // Show pattern completion notification
-              alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${points.toLocaleString()} points!`);
+              alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${finalPoints.toLocaleString()} points!`);
               
               return { ...card, numbers: newNumbers, marked: newMarked, completed: true };
             }
@@ -347,6 +376,21 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
   // Mark a number on a card
   const markNumber = async (cardId: string, row: number, col: number) => {
     if (gameStatusRef.current !== 'playing') return;
+    
+    // Check if wildcard is active - allow marking any number
+    if (activePowerUps.wildcard) {
+      console.log('🎯 Wildcard active - marking number as called');
+      // Mark the number as called regardless of whether it was actually called
+      setBingoCards(prev => prev.map(card => {
+        if (card.id === cardId) {
+          const newMarked = [...card.marked];
+          newMarked[row][col] = !newMarked[row][col];
+          return { ...card, marked: newMarked };
+        }
+        return card;
+      }));
+      return;
+    }
     
     try {
       setBingoCards(prev => prev.map(card => {
@@ -371,28 +415,37 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
               let points = 0;
               switch (winType) {
                 case 'line':
-                  points = 5000;
+                  points = 25000;
                   break;
                 case 'diagonal':
-                  points = 7500;
+                  points = 50000;
                   break;
                 case '4-corners':
-                  points = 2500;
+                  points = 10000;
                   break;
                 case 'x-pattern':
-                  points = 15000;
+                  points = 100000;
                   break;
                 case 'full-house':
-                  points = 45500;
+                  points = 500000;
                   break;
               }
               
+              // Apply multiplier if active
+              let finalPoints = points;
+              if (activePowerUps.multiplier) {
+                finalPoints = points * 2;
+                console.log(`🎯 Multiplier active! ${points} x 2 = ${finalPoints} points!`);
+                // Deactivate multiplier after use
+                setActivePowerUps(prev => ({ ...prev, multiplier: false }));
+              }
+              
               // Add points to score
-              setPlayerScore(prev => prev + points);
-              console.log(`🎯 Pattern detected: ${winType} - +${points} points!`);
+              setPlayerScore(prev => prev + finalPoints);
+              console.log(`🎯 Pattern detected: ${winType} - +${finalPoints} points!`);
               
               // Show pattern completion notification
-              alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${points.toLocaleString()} points!`);
+              alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${finalPoints.toLocaleString()} points!`);
               
               return { ...card, marked: newMarked, completed: true };
             }

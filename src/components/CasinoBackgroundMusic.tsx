@@ -24,6 +24,11 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       // Create a simple audio context for ambient casino sounds
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       
+      // Resume audio context if suspended
+      if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+      }
+      
       // Create a simple ambient tone
       const oscillator = audioContext.createOscillator();
       const gainNode = audioContext.createGain();
@@ -35,7 +40,7 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       oscillator.type = 'sine';
       
       gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(volume * 0.1, audioContext.currentTime + 1);
+      gainNode.gain.linearRampToValueAtTime(volume * 0.3, audioContext.currentTime + 0.5);
       
       oscillator.start();
       

@@ -121,17 +121,29 @@
       }
     </script>
     
-    <!-- AdCash In-Page Push (Step 2: Put the tag script on the page) -->
-    <script type="text/javascript">
-        // Wait for aclib to load before using it
-        if (typeof aclib !== 'undefined' && aclib.runinPagePush) {
-            aclib.runinPagePush({
-                zoneId: '10419322',
-                maxAds: 2,
-            });
-        } else {
-            console.warn('AdCash aclib not loaded or runinPagePush not available');
-        }
-    </script>
+                <!-- AdCash In-Page Push (Step 2: Put the tag script on the page) -->
+                <script type="text/javascript">
+                    // Wait for aclib to load before using it
+                    function initAdCash() {
+                        if (typeof aclib !== 'undefined' && aclib.runinPagePush) {
+                            aclib.runinPagePush({
+                                zoneId: '10419322',
+                                maxAds: 2,
+                            });
+                            console.log('AdCash initialized successfully');
+                        } else {
+                            console.warn('AdCash aclib not loaded or runinPagePush not available');
+                            // Retry after a short delay
+                            setTimeout(initAdCash, 1000);
+                        }
+                    }
+                    
+                    // Initialize AdCash when page loads
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', initAdCash);
+                    } else {
+                        initAdCash();
+                    }
+                </script>
   </body>
 </html>
