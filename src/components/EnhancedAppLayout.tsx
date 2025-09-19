@@ -1342,7 +1342,11 @@ const EnhancedAppLayout: React.FC = () => {
                   alert(`Congratulations! You won ${winType} and earned $${prize}!`);
                 }}
                 onGameEnd={() => {
-                  // Generate mock game results
+                  // Get the current game session to access real prize distribution
+                  const currentSession = gameSession.currentSessionId ? 
+                    GameSessionManager.getGameSession(gameSession.currentSessionId) : null;
+                  
+                  // Generate game results with real prize amounts
                   const mockResults = {
                     playerScore: Math.floor(Math.random() * 1000) + 500,
                     totalNumbersCalled: Math.floor(Math.random() * 30) + 20,
@@ -1351,8 +1355,12 @@ const EnhancedAppLayout: React.FC = () => {
                     penalties: Math.floor(Math.random() * 50),
                     finalScore: 0,
                     rank: Math.floor(Math.random() * 5) + 1,
-                    totalPlayers: Math.floor(Math.random() * 20) + 10,
-                    prizes: {
+                    totalPlayers: currentSession?.players.length || Math.floor(Math.random() * 20) + 10,
+                    prizes: currentSession ? {
+                      first: Math.round(currentSession.prizeDistribution.firstPlace * 100) / 100,
+                      second: Math.round(currentSession.prizeDistribution.secondPlace * 100) / 100,
+                      third: Math.round(currentSession.prizeDistribution.thirdPlace * 100) / 100
+                    } : {
                       first: 50,
                       second: 25,
                       third: 10
