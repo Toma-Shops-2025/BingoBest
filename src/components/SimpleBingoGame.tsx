@@ -262,8 +262,8 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
         console.warn('🎯 Window not available, skipping number call');
         return;
       }
-    
-    // Check if auto-dab is active
+      
+      // Check if auto-dab is active
     if (activePowerUps.autodab) {
       console.log('🎯 Auto-dab active - marking all called numbers');
       // Auto-mark all called numbers on the card

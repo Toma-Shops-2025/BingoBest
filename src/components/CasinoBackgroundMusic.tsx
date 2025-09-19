@@ -115,13 +115,21 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
 
   // Play next track in shuffle order
   const playNextTrack = () => {
-    if (!audioRef.current) {
-      console.log('🎵 Cannot play next track - no audio ref');
+    if (!enabled || !hasUserInteracted) {
+      console.log('🎵 Cannot play next track - music disabled or no user interaction');
       return;
     }
     
     try {
       console.log('🎵 Playing next track in shuffle order');
+      
+      // Clean up any existing audio first
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.removeEventListener('ended', playNextTrack);
+        audioRef.current.removeEventListener('error', () => {});
+        audioRef.current = null;
+      }
       
       // Move to next track in shuffle order
       let nextShuffleIndex = (shuffleIndex + 1) % shuffleOrder.length;
@@ -142,17 +150,11 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       const nextTrackIndex = currentShuffleOrder[nextShuffleIndex];
       setCurrentTrack(nextTrackIndex);
       
-      // Create a new audio element to avoid conflicts
+      // Create a new audio element
       const newAudio = new Audio(tracks[nextTrackIndex]);
       newAudio.loop = false;
       newAudio.volume = volume;
       newAudio.preload = 'auto';
-      
-      // Clean up old audio
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
       
       // Set new audio reference
       audioRef.current = newAudio;
