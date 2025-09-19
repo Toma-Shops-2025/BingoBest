@@ -331,52 +331,52 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
                 return cell; // Keep existing state
               })
             );
-            
-            // Check for win after auto-daubing
-            const winType = checkWin(newMarked, newNumbers);
-            if (winType) {
-              let points = 0;
-              switch (winType) {
-                case 'line':
-                  points = 25000;
-                  break;
-                case 'diagonal':
-                  points = 50000;
-                  break;
-                case '4-corners':
-                  points = 10000;
-                  break;
-                case 'x-pattern':
-                  points = 100000;
-                  break;
-                case 'full-house':
-                  points = 500000;
-                  break;
-              }
-              
-              console.log(`🎯 WIN DETECTED: ${winType} - Points: ${points}`);
-              
-              // Apply multiplier if active
-              let finalPoints = points;
-              if (activePowerUps.multiplier) {
-                finalPoints = points * 2;
-                console.log(`🎯 Multiplier active! ${points} x 2 = ${finalPoints} points!`);
-                // Deactivate multiplier after use
-                setActivePowerUps(prev => ({ ...prev, multiplier: false }));
-              }
-              
-              // Add points to score
-              setPlayerScore(prev => prev + finalPoints);
-              console.log(`🎯 Pattern detected: ${winType} - +${finalPoints} points!`);
-              
-              // Track successful daub
-              setSuccessfulDaubs(prev => prev + 1);
-              
-              // Show pattern completion notification
-              alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${finalPoints.toLocaleString()} points!`);
-              
-              return { ...card, numbers: newNumbers, marked: newMarked, completed: true };
+          }
+          
+          // Check for win after auto-daubing (works on both desktop and mobile)
+          const winType = checkWin(newMarked, newNumbers);
+          if (winType) {
+            let points = 0;
+            switch (winType) {
+              case 'line':
+                points = 25000;
+                break;
+              case 'diagonal':
+                points = 50000;
+                break;
+              case '4-corners':
+                points = 10000;
+                break;
+              case 'x-pattern':
+                points = 100000;
+                break;
+              case 'full-house':
+                points = 500000;
+                break;
             }
+            
+            console.log(`🎯 WIN DETECTED: ${winType} - Points: ${points}`);
+            
+            // Apply multiplier if active
+            let finalPoints = points;
+            if (activePowerUps.multiplier) {
+              finalPoints = points * 2;
+              console.log(`🎯 Multiplier active! ${points} x 2 = ${finalPoints} points!`);
+              // Deactivate multiplier after use
+              setActivePowerUps(prev => ({ ...prev, multiplier: false }));
+            }
+            
+            // Add points to score
+            setPlayerScore(prev => prev + finalPoints);
+            console.log(`🎯 Pattern detected: ${winType} - +${finalPoints} points!`);
+            
+            // Track successful daub
+            setSuccessfulDaubs(prev => prev + 1);
+            
+            // Show pattern completion notification
+            alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${finalPoints.toLocaleString()} points!`);
+            
+            return { ...card, numbers: newNumbers, marked: newMarked, completed: true };
           }
           
           return { ...card, numbers: newNumbers, marked: newMarked };
@@ -945,7 +945,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-yellow-400 font-bold text-sm">🎁 Power-ups</h3>
               <div className="text-xs text-gray-300">
-                Marks: {successfulMarks}/3 | Timer: {powerUpTimer}/25s
+                Timer: {powerUpTimer}/25s
               </div>
             </div>
             <div className="flex gap-1 mb-2">
