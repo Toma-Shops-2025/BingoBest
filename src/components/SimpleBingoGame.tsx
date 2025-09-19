@@ -28,15 +28,69 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [gameStatus, setGameStatus] = useState<'waiting' | 'playing' | 'finished'>('waiting');
   const [bingoCards, setBingoCards] = useState<BingoCard[]>([]);
-  const [gameTimer, setGameTimer] = useState(300);
+  const [gameTimer, setGameTimer] = useState(210); // 3 minutes 30 seconds
   const [error, setError] = useState<string | null>(null);
   const [autoCallInterval, setAutoCallInterval] = useState<number | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
+  const [playerScore, setPlayerScore] = useState(0);
+  const [powerUps, setPowerUps] = useState<{[key: string]: number}>({
+    'wildcard': 0,
+    'multiplier': 0,
+    'timefreeze': 0,
+    'autodab': 0,
+    'lucky': 0
+  });
+  const [activePowerUps, setActivePowerUps] = useState<{[key: string]: boolean}>({});
   
   // Use ref to track game status for immediate access
   const gameStatusRef = useRef<'waiting' | 'playing' | 'finished'>('waiting');
 
   const letters = ['B', 'I', 'N', 'G', 'O'];
+
+  // Power-up functions
+  const usePowerUp = (type: string) => {
+    if (powerUps[type] <= 0) return;
+    
+    setPowerUps(prev => ({ ...prev, [type]: prev[type] - 1 }));
+    setActivePowerUps(prev => ({ ...prev, [type]: true }));
+    
+    switch (type) {
+      case 'wildcard':
+        // Allow player to mark any number as called
+        alert('🎯 Wildcard activated! Click any number to mark it as called!');
+        break;
+      case 'multiplier':
+        // Double points for next 3 patterns
+        alert('🎯 2x Multiplier activated! Next 3 patterns give double points!');
+        break;
+      case 'timefreeze':
+        // Add 30 seconds to timer
+        setGameTimer(prev => prev + 30);
+        alert('🎯 Time Freeze! +30 seconds added to timer!');
+        break;
+      case 'autodab':
+        // Auto-mark all called numbers for 10 seconds
+        alert('🎯 Auto-Dab activated! All called numbers will be marked automatically for 10 seconds!');
+        break;
+      case 'lucky':
+        // Next number called will be a lucky number (guaranteed to be on card)
+        alert('🎯 Lucky Number activated! Next number will definitely be on your card!');
+        break;
+    }
+    
+    // Deactivate power-up after duration
+    setTimeout(() => {
+      setActivePowerUps(prev => ({ ...prev, [type]: false }));
+    }, 10000); // 10 seconds duration
+  };
+
+  // Award power-ups randomly
+  const awardRandomPowerUp = () => {
+    const powerUpTypes = Object.keys(powerUps);
+    const randomType = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+    setPowerUps(prev => ({ ...prev, [randomType]: prev[randomType] + 1 }));
+    alert(`🎁 Power-up earned: ${randomType.toUpperCase()}!`);
+  };
 
   // Audio functions
   const playNumberCallSound = (number: number) => {
@@ -248,28 +302,33 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
             // Check for win after auto-daubing
             const winType = checkWin(newMarked, newNumbers);
             if (winType) {
-              let prize = 50; // Default prize
+              let points = 0;
               switch (winType) {
                 case 'line':
-                  prize = 50;
+                  points = 5000;
                   break;
                 case 'diagonal':
-                  prize = 75;
+                  points = 7500;
                   break;
                 case '4-corners':
-                  prize = 25;
+                  points = 2500;
                   break;
                 case 'x-pattern':
-                  prize = 150;
+                  points = 15000;
                   break;
                 case 'full-house':
-                  prize = 200;
+                  points = 45500;
                   break;
               }
               
-              console.log(`🎯 WIN DETECTED: ${winType} - Prize: $${prize}`);
-              // Handle win asynchronously
-              handleWin(winType, prize, card, newMarked);
+              console.log(`🎯 WIN DETECTED: ${winType} - Points: ${points}`);
+              // Add points to score
+              setPlayerScore(prev => prev + points);
+              console.log(`🎯 Pattern detected: ${winType} - +${points} points!`);
+              
+              // Show pattern completion notification
+              alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${points.toLocaleString()} points!`);
+              
               return { ...card, numbers: newNumbers, marked: newMarked, completed: true };
             }
           }
@@ -309,27 +368,32 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
             // Check for win
             const winType = checkWin(newMarked, card.numbers);
             if (winType) {
-              let prize = 50; // Default prize
+              let points = 0;
               switch (winType) {
                 case 'line':
-                  prize = 50;
+                  points = 5000;
                   break;
                 case 'diagonal':
-                  prize = 75;
+                  points = 7500;
                   break;
                 case '4-corners':
-                  prize = 25;
+                  points = 2500;
                   break;
                 case 'x-pattern':
-                  prize = 150;
+                  points = 15000;
                   break;
                 case 'full-house':
-                  prize = 200;
+                  points = 45500;
                   break;
               }
               
-              // Handle win asynchronously
-              handleWin(winType, prize, card, newMarked);
+              // Add points to score
+              setPlayerScore(prev => prev + points);
+              console.log(`🎯 Pattern detected: ${winType} - +${points} points!`);
+              
+              // Show pattern completion notification
+              alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${points.toLocaleString()} points!`);
+              
               return { ...card, marked: newMarked, completed: true };
             }
             
@@ -384,51 +448,92 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
   // Check for winning patterns
   const checkWin = (marked: boolean[][], numbers: BingoNumber[][]) => {
     try {
+      console.log('🎯 Checking win patterns...');
+      console.log('🎯 Marked array:', marked);
+      
+      // Debug: Print the marked array structure
+      for (let i = 0; i < marked.length; i++) {
+        console.log(`🎯 Row ${i}:`, marked[i]);
+      }
+      
       // Check rows
       for (let row = 0; row < 5; row++) {
         if (marked[row] && marked[row].every(cell => cell)) {
+          console.log(`🎯 Row ${row} is complete!`);
           return 'line';
         }
       }
       
       // Check columns
       for (let col = 0; col < 5; col++) {
-        if (marked.every(row => row && row[col])) {
+        let columnComplete = true;
+        for (let row = 0; row < 5; row++) {
+          if (!marked[row] || !marked[row][col]) {
+            columnComplete = false;
+            break;
+          }
+        }
+        if (columnComplete) {
+          console.log(`🎯 Column ${col} is complete!`);
           return 'line';
         }
       }
       
       // Check diagonals
-      if (marked[0] && marked[1] && marked[2] && marked[3] && marked[4]) {
-        if (marked[0][0] && marked[1][1] && marked[2][2] && marked[3][3] && marked[4][4]) {
-          return 'diagonal';
+      // Main diagonal (top-left to bottom-right)
+      let mainDiagonalComplete = true;
+      for (let i = 0; i < 5; i++) {
+        if (!marked[i] || !marked[i][i]) {
+          mainDiagonalComplete = false;
+          break;
         }
-        
-        if (marked[0][4] && marked[1][3] && marked[2][2] && marked[3][1] && marked[4][0]) {
-          return 'diagonal';
+      }
+      if (mainDiagonalComplete) {
+        console.log('🎯 Main diagonal is complete!');
+        return 'diagonal';
+      }
+      
+      // Anti-diagonal (top-right to bottom-left)
+      let antiDiagonalComplete = true;
+      for (let i = 0; i < 5; i++) {
+        if (!marked[i] || !marked[i][4-i]) {
+          antiDiagonalComplete = false;
+          break;
         }
+      }
+      if (antiDiagonalComplete) {
+        console.log('🎯 Anti-diagonal is complete!');
+        return 'diagonal';
       }
       
       // Check 4 corners
       if (marked[0] && marked[4]) {
         if (marked[0][0] && marked[0][4] && marked[4][0] && marked[4][4]) {
+          console.log('🎯 4 corners are complete!');
           return '4-corners';
         }
       }
       
-      // Check X pattern
-      if (marked[0] && marked[1] && marked[2] && marked[3] && marked[4]) {
-        if ((marked[0][0] && marked[1][1] && marked[2][2] && marked[3][3] && marked[4][4]) &&
-            (marked[0][4] && marked[1][3] && marked[2][2] && marked[3][1] && marked[4][0])) {
-          return 'x-pattern';
-        }
+      // Check X pattern (both diagonals)
+      if (mainDiagonalComplete && antiDiagonalComplete) {
+        console.log('🎯 X pattern is complete!');
+        return 'x-pattern';
       }
       
       // Check full house
-      if (marked.every(row => row && row.every(cell => cell))) {
+      let fullHouseComplete = true;
+      for (let row = 0; row < 5; row++) {
+        if (!marked[row] || !marked[row].every(cell => cell)) {
+          fullHouseComplete = false;
+          break;
+        }
+      }
+      if (fullHouseComplete) {
+        console.log('🎯 Full house is complete!');
         return 'full-house';
       }
       
+      console.log('🎯 No winning pattern found');
       return null;
     } catch (error) {
       console.error('Error checking win:', error);
@@ -450,7 +555,16 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
       setCalledNumbers([]);
       setCurrentNumber(null);
       setBingoCards([generateBingoCard()]);
-      setGameTimer(300);
+      setGameTimer(210);
+      
+      // Give player some starting power-ups
+      setPowerUps({
+        'wildcard': 2,
+        'multiplier': 1,
+        'timefreeze': 1,
+        'autodab': 1,
+        'lucky': 1
+      });
       
       // Clear any existing interval
       if (autoCallInterval) {
@@ -489,7 +603,15 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
     }
     setGameStatus('finished');
     gameStatusRef.current = 'finished';
-    onGameEnd();
+    console.log(`🎯 Game ended with final score: ${playerScore}`);
+    
+    // Show final score alert
+    alert(`🎯 GAME OVER!\n\nFinal Score: ${playerScore.toLocaleString()} points!\n\nGreat job!`);
+    
+    // Call onGameEnd to show results screen
+    setTimeout(() => {
+      onGameEnd();
+    }, 2000); // Wait 2 seconds to show the alert
   };
 
   // Timer effect
@@ -704,50 +826,59 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
         </Card>
       ))}
       
-      {/* BINGO Button */}
+      {/* Score Display */}
       {gameStatus === 'playing' && (
         <Card className="casino-card">
           <CardContent className="text-center py-6">
-            <Button
-              onClick={() => {
-                // Check if player has a valid bingo
-                const card = bingoCards[0];
-                if (card) {
-                  console.log('🎯 BINGO Button clicked - checking for win...');
-                  console.log('🎯 Card marked array:', card.marked);
-                  console.log('🎯 Card numbers:', card.numbers);
-                  
-                  // Debug: Check if marked array is properly structured
-                  console.log('🎯 Marked array length:', card.marked.length);
-                  for (let i = 0; i < card.marked.length; i++) {
-                    console.log(`🎯 Row ${i}:`, card.marked[i]);
-                  }
-                  
-                  const winType = checkWin(card.marked, card.numbers);
-                  console.log('🎯 Win check result:', winType);
-                  
-                  if (winType) {
-                    let prize = 50;
-                    switch (winType) {
-                      case 'line': prize = 50; break;
-                      case 'diagonal': prize = 75; break;
-                      case '4-corners': prize = 25; break;
-                      case 'x-pattern': prize = 150; break;
-                      case 'full-house': prize = 200; break;
-                    }
-                    console.log(`🎯 Valid BINGO found: ${winType} - Prize: $${prize}`);
-                    handleWin(winType, prize, card, card.marked);
-                  } else {
-                    console.log('🎯 No valid BINGO pattern found');
-                    alert('❌ No valid BINGO pattern found! Keep playing!');
-                  }
-                }
-              }}
-              className="bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-600 hover:to-yellow-700 text-black font-bold text-2xl px-8 py-4 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
-            >
-              🎉 BINGO! 🎉
-            </Button>
-            <p className="text-sm text-gray-300 mt-2">Click when you have a winning pattern!</p>
+            <div className="text-4xl font-bold text-yellow-400 mb-2">
+              Score: {playerScore.toLocaleString()}
+            </div>
+            <p className="text-sm text-gray-300">Automatic scoring - patterns detected instantly!</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Power-ups Display */}
+      {gameStatus === 'playing' && (
+        <Card className="casino-card">
+          <CardHeader>
+            <CardTitle className="text-center text-yellow-400">🎁 Power-ups</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {Object.entries(powerUps).map(([type, count]) => (
+                <Button
+                  key={type}
+                  onClick={() => usePowerUp(type)}
+                  disabled={count <= 0}
+                  className={`text-xs p-2 h-auto ${
+                    count > 0 
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600' 
+                      : 'bg-gray-600 cursor-not-allowed'
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className="text-lg">
+                      {type === 'wildcard' && '🎯'}
+                      {type === 'multiplier' && '⚡'}
+                      {type === 'timefreeze' && '⏰'}
+                      {type === 'autodab' && '🤖'}
+                      {type === 'lucky' && '🍀'}
+                    </div>
+                    <div className="text-xs font-bold">{type.toUpperCase()}</div>
+                    <div className="text-xs">x{count}</div>
+                  </div>
+                </Button>
+              ))}
+            </div>
+            <div className="text-center mt-2">
+              <Button
+                onClick={awardRandomPowerUp}
+                className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2"
+              >
+                🎁 Earn Random Power-up
+              </Button>
+            </div>
           </CardContent>
         </Card>
       )}
