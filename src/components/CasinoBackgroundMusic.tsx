@@ -9,7 +9,7 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
   const [volume] = useState(0.3);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const startMusic = () => {
+  const startMusic = async () => {
     if (!enabled || isPlaying) {
       return;
     }
@@ -76,13 +76,13 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       console.log('🎵 Attempting to start background music automatically');
       
       // Try to start immediately
-      startMusic();
+      startMusic().catch(console.error);
       
       // If that fails, try again after user interaction
       const handleUserInteraction = () => {
         if (!isPlaying && enabled) {
           console.log('🎵 Starting music after user interaction');
-          startMusic();
+          startMusic().catch(console.error);
         }
       };
       
