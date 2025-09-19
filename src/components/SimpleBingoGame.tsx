@@ -251,19 +251,18 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
 
   // Call a random number
   const callNumber = () => {
-    try {
-      if (gameStatusRef.current !== 'playing') {
-        console.log('🎯 Cannot call number - game not playing. Status:', gameStatusRef.current);
-        return;
-      }
-      
-      // Additional safety checks
-      if (typeof window === 'undefined') {
-        console.warn('🎯 Window not available, skipping number call');
-        return;
-      }
-      
-      // Check if auto-dab is active
+    if (gameStatusRef.current !== 'playing') {
+      console.log('🎯 Cannot call number - game not playing. Status:', gameStatusRef.current);
+      return;
+    }
+    
+    // Additional safety checks
+    if (typeof window === 'undefined') {
+      console.warn('🎯 Window not available, skipping number call');
+      return;
+    }
+
+    // Check if auto-dab is active
     if (activePowerUps.autodab) {
       console.log('🎯 Auto-dab active - marking all called numbers');
       // Auto-mark all called numbers on the card
@@ -283,111 +282,105 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
     
     // Use a callback to get the most current calledNumbers state
     setCalledNumbers(prevCalledNumbers => {
-      try {
-        const availableNumbers = [];
-        for (let i = 1; i <= 75; i++) {
-          if (!prevCalledNumbers.includes(i)) {
-            availableNumbers.push(i);
-          }
+      const availableNumbers = [];
+      for (let i = 1; i <= 75; i++) {
+        if (!prevCalledNumbers.includes(i)) {
+          availableNumbers.push(i);
         }
-        
-        if (availableNumbers.length === 0) {
-          console.log('🎯 All numbers called - game finished');
-          setGameStatus('finished');
-          onGameEnd();
-          return prevCalledNumbers;
-        }
-        
-        const randomNumber = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
-        console.log(`🎯 CALLING NUMBER: ${randomNumber} (${getLetter(randomNumber)}-${randomNumber})`);
-        
-        setCurrentNumber(randomNumber);
-        
-        // Enhanced number announcement with visual and audio feedback
-        announceNumber(randomNumber);
-        
-        // Update bingo cards with the called number
-        setBingoCards(prev => prev.map(card => {
-          const newNumbers = card.numbers.map(column => 
-            column.map(cell => ({
-              ...cell,
-              called: cell.number === randomNumber ? true : cell.called
-            }))
-          );
-          
-          // Auto-daub disabled on mobile, enabled on desktop
-          const isDesktop = typeof window !== 'undefined' && window.innerWidth > 768;
-          let newMarked = card.marked;
-          
-          if (isDesktop) {
-            // Auto-daub the called number on desktop
-            newMarked = card.marked.map((row, rowIndex) => 
-              row.map((cell, colIndex) => {
-                const cellNumber = card.numbers[colIndex][rowIndex].number;
-                if (cellNumber === randomNumber) {
-                  console.log(`🎯 Auto-daubing ${randomNumber} on desktop`);
-                  return true; // Auto-mark this number
-                }
-                return cell; // Keep existing state
-              })
-            );
-          }
-          
-          // Check for win after auto-daubing (works on both desktop and mobile)
-          const winType = checkWin(newMarked, newNumbers);
-          if (winType) {
-            let points = 0;
-            switch (winType) {
-              case 'line':
-                points = 25000;
-                break;
-              case 'diagonal':
-                points = 50000;
-                break;
-              case '4-corners':
-                points = 10000;
-                break;
-              case 'x-pattern':
-                points = 100000;
-                break;
-              case 'full-house':
-                points = 500000;
-                break;
-            }
-            
-            console.log(`🎯 WIN DETECTED: ${winType} - Points: ${points}`);
-            
-            // Apply multiplier if active
-            let finalPoints = points;
-            if (activePowerUps.multiplier) {
-              finalPoints = points * 2;
-              console.log(`🎯 Multiplier active! ${points} x 2 = ${finalPoints} points!`);
-              // Deactivate multiplier after use
-              setActivePowerUps(prev => ({ ...prev, multiplier: false }));
-            }
-            
-            // Add points to score
-            setPlayerScore(prev => prev + finalPoints);
-            console.log(`🎯 Pattern detected: ${winType} - +${finalPoints} points!`);
-            
-            // Track successful daub
-            setSuccessfulDaubs(prev => prev + 1);
-            
-            // Show pattern completion notification
-            alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${finalPoints.toLocaleString()} points!`);
-            
-            return { ...card, numbers: newNumbers, marked: newMarked, completed: true };
-          }
-          
-          return { ...card, numbers: newNumbers, marked: newMarked };
-        }));
-        
-        return [...prevCalledNumbers, randomNumber];
-      } catch (error) {
-        console.error('Error calling number:', error);
-        setError('Failed to call number');
+      }
+      
+      if (availableNumbers.length === 0) {
+        console.log('🎯 All numbers called - game finished');
+        setGameStatus('finished');
+        onGameEnd();
         return prevCalledNumbers;
       }
+      
+      const randomNumber = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+      console.log(`🎯 CALLING NUMBER: ${randomNumber} (${getLetter(randomNumber)}-${randomNumber})`);
+      
+      setCurrentNumber(randomNumber);
+      
+      // Enhanced number announcement with visual and audio feedback
+      announceNumber(randomNumber);
+      
+      // Update bingo cards with the called number
+      setBingoCards(prev => prev.map(card => {
+        const newNumbers = card.numbers.map(column => 
+          column.map(cell => ({
+            ...cell,
+            called: cell.number === randomNumber ? true : cell.called
+          }))
+        );
+        
+        // Auto-daub disabled on mobile, enabled on desktop
+        const isDesktop = typeof window !== 'undefined' && window.innerWidth > 768;
+        let newMarked = card.marked;
+        
+        if (isDesktop) {
+          // Auto-daub the called number on desktop
+          newMarked = card.marked.map((row, rowIndex) => 
+            row.map((cell, colIndex) => {
+              const cellNumber = card.numbers[colIndex][rowIndex].number;
+              if (cellNumber === randomNumber) {
+                console.log(`🎯 Auto-daubing ${randomNumber} on desktop`);
+                return true; // Auto-mark this number
+              }
+              return cell; // Keep existing state
+            })
+          );
+        }
+        
+        // Check for win after auto-daubing (works on both desktop and mobile)
+        const winType = checkWin(newMarked, newNumbers);
+        if (winType) {
+          let points = 0;
+          switch (winType) {
+            case 'line':
+              points = 25000;
+              break;
+            case 'diagonal':
+              points = 50000;
+              break;
+            case '4-corners':
+              points = 10000;
+              break;
+            case 'x-pattern':
+              points = 100000;
+              break;
+            case 'full-house':
+              points = 500000;
+              break;
+          }
+          
+          console.log(`🎯 WIN DETECTED: ${winType} - Points: ${points}`);
+          
+          // Apply multiplier if active
+          let finalPoints = points;
+          if (activePowerUps.multiplier) {
+            finalPoints = points * 2;
+            console.log(`🎯 Multiplier active! ${points} x 2 = ${finalPoints} points!`);
+            // Deactivate multiplier after use
+            setActivePowerUps(prev => ({ ...prev, multiplier: false }));
+          }
+          
+          // Add points to score
+          setPlayerScore(prev => prev + finalPoints);
+          console.log(`🎯 Pattern detected: ${winType} - +${finalPoints} points!`);
+          
+          // Track successful daub
+          setSuccessfulDaubs(prev => prev + 1);
+          
+          // Show pattern completion notification
+          alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${finalPoints.toLocaleString()} points!`);
+          
+          return { ...card, numbers: newNumbers, marked: newMarked, completed: true };
+        }
+        
+        return { ...card, numbers: newNumbers, marked: newMarked };
+      }));
+      
+      return [...prevCalledNumbers, randomNumber];
     });
   };
 
