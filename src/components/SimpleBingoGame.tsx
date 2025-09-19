@@ -85,11 +85,17 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
     }, 10000); // 10 seconds duration
   };
 
-  // Award power-ups randomly
+  // Award power-ups randomly (only after 3 successful daubs)
   const awardRandomPowerUp = () => {
+    if (successfulDaubs < 3) {
+      alert(`🎯 Need ${3 - successfulDaubs} more successful daubs to earn a power-up!`);
+      return;
+    }
+    
     const powerUpTypes = Object.keys(powerUps);
     const randomType = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
     setPowerUps(prev => ({ ...prev, [randomType]: prev[randomType] + 1 }));
+    setSuccessfulDaubs(0); // Reset counter after earning power-up
     alert(`🎁 Power-up earned: ${randomType.toUpperCase()}!`);
   };
 
@@ -355,6 +361,9 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
               setPlayerScore(prev => prev + finalPoints);
               console.log(`🎯 Pattern detected: ${winType} - +${finalPoints} points!`);
               
+              // Track successful daub
+              setSuccessfulDaubs(prev => prev + 1);
+              
               // Show pattern completion notification
               alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${finalPoints.toLocaleString()} points!`);
               
@@ -443,6 +452,9 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
               // Add points to score
               setPlayerScore(prev => prev + finalPoints);
               console.log(`🎯 Pattern detected: ${winType} - +${finalPoints} points!`);
+              
+              // Track successful daub
+              setSuccessfulDaubs(prev => prev + 1);
               
               // Show pattern completion notification
               alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${finalPoints.toLocaleString()} points!`);
@@ -618,6 +630,9 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
         'autodab': 1,
         'lucky': 1
       });
+      
+      // Reset successful daubs counter
+      setSuccessfulDaubs(0);
       
       // Clear any existing interval
       if (autoCallInterval) {
@@ -891,47 +906,52 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
         </Card>
       )}
 
-      {/* Power-ups Display */}
+      {/* Power-ups Display - Compact */}
       {gameStatus === 'playing' && (
-        <Card className="casino-card">
-          <CardHeader>
-            <CardTitle className="text-center text-yellow-400">🎁 Power-ups</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+        <Card className="casino-card mb-4">
+          <CardContent className="p-3">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-yellow-400 font-bold text-sm">🎁 Power-ups</h3>
+              <div className="text-xs text-gray-300">
+                Daubs: {successfulDaubs}/3
+              </div>
+            </div>
+            <div className="flex gap-1 mb-2">
               {Object.entries(powerUps).map(([type, count]) => (
                 <Button
                   key={type}
                   onClick={() => usePowerUp(type)}
                   disabled={count <= 0}
-                  className={`text-xs p-2 h-auto ${
+                  className={`text-xs px-2 py-1 h-8 min-w-0 flex-1 ${
                     count > 0 
                       ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600' 
                       : 'bg-gray-600 cursor-not-allowed'
                   }`}
                 >
-                  <div className="text-center">
-                    <div className="text-lg">
+                  <div className="flex flex-col items-center">
+                    <div className="text-sm">
                       {type === 'wildcard' && '🎯'}
                       {type === 'multiplier' && '⚡'}
                       {type === 'timefreeze' && '⏰'}
                       {type === 'autodab' && '🤖'}
                       {type === 'lucky' && '🍀'}
                     </div>
-                    <div className="text-xs font-bold">{type.toUpperCase()}</div>
-                    <div className="text-xs">x{count}</div>
+                    <div className="text-xs font-bold">{count}</div>
                   </div>
                 </Button>
               ))}
             </div>
-            <div className="text-center mt-2">
-              <Button
-                onClick={awardRandomPowerUp}
-                className="bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2"
-              >
-                🎁 Earn Random Power-up
-              </Button>
-            </div>
+            <Button
+              onClick={awardRandomPowerUp}
+              disabled={successfulDaubs < 3}
+              className={`w-full text-xs py-1 h-7 ${
+                successfulDaubs >= 3 
+                  ? 'bg-green-600 hover:bg-green-700' 
+                  : 'bg-gray-600 cursor-not-allowed'
+              }`}
+            >
+              {successfulDaubs >= 3 ? '🎁 Earn Power-up!' : `Need ${3 - successfulDaubs} more daubs`}
+            </Button>
           </CardContent>
         </Card>
       )}
