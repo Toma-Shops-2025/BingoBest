@@ -329,6 +329,10 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
               return cell; // Keep existing state
             })
           );
+        } else {
+          // On mobile, still check if the number exists on the card for win detection
+          // but don't auto-mark it
+          console.log(`🎯 Mobile detected - manual marking required for ${randomNumber}`);
         }
         
         // Check for win after auto-daubing (works on both desktop and mobile)

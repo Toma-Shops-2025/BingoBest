@@ -4,6 +4,9 @@ interface CasinoBackgroundMusicProps {
   enabled?: boolean;
 }
 
+// Global flag to prevent multiple music instances
+let globalMusicPlaying = false;
+
 const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled = true }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume] = useState(0.27); // Decreased by 10% (was 0.3)
@@ -52,11 +55,15 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
   }, []);
 
   const startMusic = () => {
-    if (!enabled || isPlaying || !hasUserInteracted) {
+    if (!enabled || isPlaying || !hasUserInteracted || globalMusicPlaying) {
+      console.log('🎵 Music start blocked - already playing globally or conditions not met');
       return;
     }
     
     try {
+      // Set global flag to prevent multiple instances
+      globalMusicPlaying = true;
+      
       // Clean up any existing audio
       if (audioRef.current) {
         audioRef.current.pause();
@@ -199,6 +206,8 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       audioRef.current = null;
     }
     setIsPlaying(false);
+    globalMusicPlaying = false; // Reset global flag
+    console.log('🎵 Background music stopped');
   };
 
   // Handle user interaction to unlock audio

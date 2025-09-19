@@ -123,18 +123,30 @@
     
                 <!-- AdCash In-Page Push (Step 2: Put the tag script on the page) -->
                 <script type="text/javascript">
+                    let adCashRetryCount = 0;
+                    const maxAdCashRetries = 10; // Maximum 10 retries (10 seconds)
+                    
                     // Wait for aclib to load before using it
                     function initAdCash() {
                         if (typeof aclib !== 'undefined' && aclib.runinPagePush) {
-                            aclib.runinPagePush({
-                                zoneId: '10419322',
-                                maxAds: 2,
-                            });
-                            console.log('AdCash initialized successfully');
+                            try {
+                                aclib.runinPagePush({
+                                    zoneId: '10419322',
+                                    maxAds: 2,
+                                });
+                                console.log('AdCash initialized successfully');
+                            } catch (error) {
+                                console.error('AdCash initialization error:', error);
+                            }
                         } else {
-                            console.warn('AdCash aclib not loaded or runinPagePush not available');
-                            // Retry after a short delay
-                            setTimeout(initAdCash, 1000);
+                            adCashRetryCount++;
+                            if (adCashRetryCount < maxAdCashRetries) {
+                                console.warn(`AdCash aclib not loaded (attempt ${adCashRetryCount}/${maxAdCashRetries})`);
+                                // Retry after a short delay
+                                setTimeout(initAdCash, 1000);
+                            } else {
+                                console.error('AdCash failed to load after maximum retries');
+                            }
                         }
                     }
                     
