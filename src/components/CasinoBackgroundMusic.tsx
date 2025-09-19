@@ -9,6 +9,47 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
   const [volume] = useState(0.3);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState(0);
+  const [shuffleOrder, setShuffleOrder] = useState<number[]>([]);
+  const [shuffleIndex, setShuffleIndex] = useState(0);
+
+  // Available casino ambient tracks
+  const tracks = [
+    '/audio/music/casino-ambient-01.mp3',
+    '/audio/music/casino-ambient-02.mp3',
+    '/audio/music/casino-ambient-03.mp3',
+    '/audio/music/casino-ambient-04.mp3',
+    '/audio/music/casino-ambient-05.mp3',
+    '/audio/music/casino-ambient-06.mp3',
+    '/audio/music/casino-ambient-07.mp3',
+    '/audio/music/casino-ambient-08.mp3',
+    '/audio/music/casino-ambient-09.mp3',
+    '/audio/music/casino-ambient-10.mp3',
+    '/audio/music/casino-ambient-11.mp3',
+    '/audio/music/casino-ambient-12.mp3',
+    '/audio/music/casino-ambient-13.mp3',
+    '/audio/music/casino-ambient-14.mp3',
+    '/audio/music/casino-ambient-15.mp3',
+    '/audio/music/casino-ambient-16.mp3'
+  ];
+
+  // Create shuffled playlist
+  const createShuffleOrder = () => {
+    const order = Array.from({ length: tracks.length }, (_, i) => i);
+    // Fisher-Yates shuffle algorithm
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    return order;
+  };
+
+  // Initialize shuffle order on component mount
+  useEffect(() => {
+    if (shuffleOrder.length === 0) {
+      setShuffleOrder(createShuffleOrder());
+    }
+  }, []);
 
   const startMusic = () => {
     if (!enabled || isPlaying || !hasUserInteracted) {
@@ -22,27 +63,47 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
         audioRef.current = null;
       }
       
-      // Create a simple audio element with a data URL for a silent audio
-      // This is a workaround for autoplay restrictions
-      const silentAudio = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+      // Get current track from shuffle order
+      const trackIndex = shuffleOrder.length > 0 ? shuffleOrder[shuffleIndex] : currentTrack;
+      const audioUrl = tracks[trackIndex];
+      console.log('🎵 Loading audio:', audioUrl);
       
-      audioRef.current = new Audio(silentAudio);
-      audioRef.current.loop = true;
+      audioRef.current = new Audio(audioUrl);
+      audioRef.current.loop = false; // Don't loop individual tracks
       audioRef.current.volume = volume;
-      audioRef.current.muted = false;
+      audioRef.current.preload = 'auto';
       
-      // Try to play the silent audio to unlock audio context
+      // Handle track end - move to next track in shuffle order
+      audioRef.current.addEventListener('ended', () => {
+        console.log('🎵 Track ended, moving to next track in shuffle');
+        playNextTrack();
+      });
+      
+      // Handle errors
+      audioRef.current.addEventListener('error', (e) => {
+        console.warn('Audio error:', e);
+        console.warn('Failed to load audio file:', audioUrl);
+        // Try to continue with next track
+        setTimeout(() => playNextTrack(), 1000);
+      });
+      
+      // Handle successful load
+      audioRef.current.addEventListener('canplaythrough', () => {
+        console.log('🎵 Audio file loaded successfully:', audioUrl);
+      });
+      
+      // Try to play immediately
       const playPromise = audioRef.current.play();
       
       if (playPromise !== undefined) {
         playPromise.then(() => {
-          console.log('🎵 Audio context unlocked');
-          // Now create a simple ambient sound using Web Audio API
-          createAmbientSound();
+          console.log('🎵 Background music started successfully');
+          setIsPlaying(true);
         }).catch((error) => {
-          console.warn('Failed to unlock audio context:', error);
-          // Fallback: just try to create ambient sound anyway
-          createAmbientSound();
+          console.warn('Failed to play audio (autoplay blocked):', error);
+          setIsPlaying(false);
+          // Try to continue with next track
+          setTimeout(() => playNextTrack(), 2000);
         });
       }
       
@@ -52,41 +113,81 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
     }
   };
 
-  const createAmbientSound = () => {
+  // Play next track in shuffle order
+  const playNextTrack = () => {
+    if (!audioRef.current) {
+      console.log('🎵 Cannot play next track - no audio ref');
+      return;
+    }
+    
     try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      console.log('🎵 Playing next track in shuffle order');
       
-      // Create a simple ambient tone
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+      // Move to next track in shuffle order
+      let nextShuffleIndex = (shuffleIndex + 1) % shuffleOrder.length;
+      let currentShuffleOrder = shuffleOrder;
       
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      
-      // Create a more pleasant ambient sound
-      oscillator.frequency.setValueAtTime(220, audioContext.currentTime); // A3 note
-      oscillator.type = 'sine';
-      
-      // Fade in slowly
-      gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(volume * 0.1, audioContext.currentTime + 2);
-      
-      oscillator.start();
-      
-      // Store reference for cleanup
-      if (audioRef.current) {
-        audioRef.current.pause = () => {
-          oscillator.stop();
-          audioContext.close();
-        };
+      // If we've played all tracks, create a new shuffle order
+      if (nextShuffleIndex === 0) {
+        console.log('🎵 Played all tracks, creating new shuffle order');
+        currentShuffleOrder = createShuffleOrder();
+        setShuffleOrder(currentShuffleOrder);
+        setShuffleIndex(0);
+        nextShuffleIndex = 0;
+      } else {
+        setShuffleIndex(nextShuffleIndex);
       }
       
-      setIsPlaying(true);
-      console.log('🎵 Background music started (ambient tone)');
+      // Get the next track from the shuffle order
+      const nextTrackIndex = currentShuffleOrder[nextShuffleIndex];
+      setCurrentTrack(nextTrackIndex);
       
+      // Create a new audio element to avoid conflicts
+      const newAudio = new Audio(tracks[nextTrackIndex]);
+      newAudio.loop = false;
+      newAudio.volume = volume;
+      newAudio.preload = 'auto';
+      
+      // Clean up old audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      
+      // Set new audio reference
+      audioRef.current = newAudio;
+      
+      // Add event listeners
+      audioRef.current.addEventListener('ended', () => {
+        console.log('🎵 Track ended, moving to next track in shuffle');
+        playNextTrack();
+      });
+      
+      audioRef.current.addEventListener('error', (e) => {
+        console.warn('Audio error:', e);
+        console.warn('Failed to load audio file:', tracks[nextTrackIndex]);
+        // Try to continue with next track
+        setTimeout(() => playNextTrack(), 1000);
+      });
+      
+      // Play the next track
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log(`🎵 Playing track ${nextTrackIndex + 1}/${tracks.length}: ${tracks[nextTrackIndex]}`);
+          setIsPlaying(true);
+        }).catch((error) => {
+          console.warn('Failed to play next track:', error);
+          setIsPlaying(false);
+          // Try to continue with next track
+          setTimeout(() => playNextTrack(), 2000);
+        });
+      }
     } catch (error) {
-      console.warn('Error creating ambient sound:', error);
+      console.warn('Error playing next track:', error);
       setIsPlaying(false);
+      // Try to continue with next track
+      setTimeout(() => playNextTrack(), 2000);
     }
   };
 
