@@ -42,6 +42,8 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
   });
   const [activePowerUps, setActivePowerUps] = useState<{[key: string]: boolean}>({});
   const [successfulDaubs, setSuccessfulDaubs] = useState(0);
+  const [successfulMarks, setSuccessfulMarks] = useState(0);
+  const [powerUpTimer, setPowerUpTimer] = useState(0);
   
   // Use ref to track game status for immediate access
   const gameStatusRef = useRef<'waiting' | 'playing' | 'finished'>('waiting');
@@ -85,17 +87,11 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
     }, 10000); // 10 seconds duration
   };
 
-  // Award power-ups randomly (only after 3 successful daubs)
+  // Award power-ups automatically
   const awardRandomPowerUp = () => {
-    if (successfulDaubs < 3) {
-      alert(`🎯 Need ${3 - successfulDaubs} more successful daubs to earn a power-up!`);
-      return;
-    }
-    
     const powerUpTypes = Object.keys(powerUps);
     const randomType = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
     setPowerUps(prev => ({ ...prev, [randomType]: prev[randomType] + 1 }));
-    setSuccessfulDaubs(0); // Reset counter after earning power-up
     alert(`🎁 Power-up earned: ${randomType.toUpperCase()}!`);
   };
 
@@ -386,20 +382,29 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
   const markNumber = async (cardId: string, row: number, col: number) => {
     if (gameStatusRef.current !== 'playing') return;
     
-    // Check if wildcard is active - allow marking any number
-    if (activePowerUps.wildcard) {
-      console.log('🎯 Wildcard active - marking number as called');
-      // Mark the number as called regardless of whether it was actually called
-      setBingoCards(prev => prev.map(card => {
-        if (card.id === cardId) {
-          const newMarked = [...card.marked];
-          newMarked[row][col] = !newMarked[row][col];
-          return { ...card, marked: newMarked };
-        }
-        return card;
-      }));
-      return;
-    }
+            // Check if wildcard is active - allow marking any number
+            if (activePowerUps.wildcard) {
+              console.log('🎯 Wildcard active - marking number as called');
+              // Mark the number as called regardless of whether it was actually called
+              setBingoCards(prev => prev.map(card => {
+                if (card.id === cardId) {
+                  const newMarked = [...card.marked];
+                  newMarked[row][col] = !newMarked[row][col];
+                  return { ...card, marked: newMarked };
+                }
+                return card;
+              }));
+              
+              // Track successful mark for power-up awarding
+              setSuccessfulMarks(prev => {
+                const newCount = prev + 1;
+                if (newCount % 3 === 0) {
+                  awardRandomPowerUp();
+                }
+                return newCount;
+              });
+              return;
+            }
     
     try {
       setBingoCards(prev => prev.map(card => {
@@ -467,6 +472,15 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
         }
         return card;
       }));
+      
+      // Track successful mark for power-up awarding (every 3 marks)
+      setSuccessfulMarks(prev => {
+        const newCount = prev + 1;
+        if (newCount % 3 === 0) {
+          awardRandomPowerUp();
+        }
+        return newCount;
+      });
     } catch (error) {
       console.error('Error marking number:', error);
       setError('Failed to mark number');
@@ -622,17 +636,19 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
       setBingoCards([generateBingoCard()]);
       setGameTimer(210);
       
-      // Give player some starting power-ups
+      // Start with no power-ups
       setPowerUps({
-        'wildcard': 2,
-        'multiplier': 1,
-        'timefreeze': 1,
-        'autodab': 1,
-        'lucky': 1
+        'wildcard': 0,
+        'multiplier': 0,
+        'timefreeze': 0,
+        'autodab': 0,
+        'lucky': 0
       });
       
       // Reset successful daubs counter
       setSuccessfulDaubs(0);
+      setSuccessfulMarks(0);
+      setPowerUpTimer(0);
       
       // Clear any existing interval
       if (autoCallInterval) {
@@ -691,6 +707,23 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
       stopGame();
     }
   }, [gameStatus, gameTimer]);
+
+  // Power-up timer effect (award power-up every 25 seconds)
+  useEffect(() => {
+    if (gameStatus === 'playing') {
+      const timer = setTimeout(() => {
+        setPowerUpTimer(prev => {
+          const newTime = prev + 1;
+          if (newTime >= 25) {
+            awardRandomPowerUp();
+            return 0; // Reset timer
+          }
+          return newTime;
+        });
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [gameStatus, powerUpTimer]);
 
   // Cleanup effect
   useEffect(() => {
@@ -824,19 +857,6 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
                 )}
               </div>
               
-              {/* Current Number */}
-              {currentNumber && (
-                <div className="text-center bg-gradient-to-br from-yellow-500/20 to-orange-500/20 p-6 rounded-xl border-2 border-yellow-400/50">
-                  <div className="text-8xl font-bold text-yellow-400 mb-4 animate-pulse casino-text-glow bg-gradient-to-br from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
-                    {getLetter(currentNumber)}{currentNumber}
-                  </div>
-                  <p className="text-lg text-white font-bold">🎯 CURRENT NUMBER CALLED</p>
-                  <p className="text-sm text-yellow-200">Numbers called automatically every 2 seconds</p>
-                  <div className="mt-2 text-xs text-yellow-300">
-                    🔊 Audio announcement played
-                  </div>
-                </div>
-              )}
             </div>
           )}
         </CardContent>
@@ -913,7 +933,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-yellow-400 font-bold text-sm">🎁 Power-ups</h3>
               <div className="text-xs text-gray-300">
-                Daubs: {successfulDaubs}/3
+                Marks: {successfulMarks}/3 | Timer: {powerUpTimer}/25s
               </div>
             </div>
             <div className="flex gap-1 mb-2">
@@ -941,17 +961,6 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
                 </Button>
               ))}
             </div>
-            <Button
-              onClick={awardRandomPowerUp}
-              disabled={successfulDaubs < 3}
-              className={`w-full text-xs py-1 h-7 ${
-                successfulDaubs >= 3 
-                  ? 'bg-green-600 hover:bg-green-700' 
-                  : 'bg-gray-600 cursor-not-allowed'
-              }`}
-            >
-              {successfulDaubs >= 3 ? '🎁 Earn Power-up!' : `Need ${3 - successfulDaubs} more daubs`}
-            </Button>
           </CardContent>
         </Card>
       )}
