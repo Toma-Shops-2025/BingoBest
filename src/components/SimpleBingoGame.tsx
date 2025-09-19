@@ -358,14 +358,26 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
         // Play bingo win sound
         playBingoSound();
         onWin(winType, prize);
+        // End the game after a win
+        setTimeout(() => {
+          onGameEnd();
+        }, 2000); // Show win message for 2 seconds then end game
       } else {
         // Insufficient funds - show message but don't pay
         alert(`🎉 Congratulations! You won ${winType}!\n\nYour prize of $${prize} is being processed and will be added to your account shortly. Please check your balance in a few moments.\n\nThank you for playing!`);
+        // Still end the game even if payout fails
+        setTimeout(() => {
+          onGameEnd();
+        }, 2000);
       }
     } catch (error) {
       console.error('Error processing win:', error);
       // Still show win message even if payout fails
       alert(`🎉 Congratulations! You won ${winType}!\n\nYour prize of $${prize} is being processed and will be added to your account shortly. Please check your balance in a few moments.\n\nThank you for playing!`);
+      // Still end the game even if there's an error
+      setTimeout(() => {
+        onGameEnd();
+      }, 2000);
     }
   };
 
