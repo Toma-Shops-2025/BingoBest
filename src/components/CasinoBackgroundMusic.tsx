@@ -8,9 +8,10 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume] = useState(0.3);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
 
-  const startMusic = async () => {
-    if (!enabled || isPlaying) {
+  const startMusic = () => {
+    if (!enabled || isPlaying || !hasUserInteracted) {
       return;
     }
     
@@ -21,13 +22,39 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
         audioRef.current = null;
       }
       
-      // Create a simple audio context for ambient casino sounds
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      // Create a simple audio element with a data URL for a silent audio
+      // This is a workaround for autoplay restrictions
+      const silentAudio = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
       
-      // Resume audio context if suspended
-      if (audioContext.state === 'suspended') {
-        await audioContext.resume();
+      audioRef.current = new Audio(silentAudio);
+      audioRef.current.loop = true;
+      audioRef.current.volume = volume;
+      audioRef.current.muted = false;
+      
+      // Try to play the silent audio to unlock audio context
+      const playPromise = audioRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          console.log('🎵 Audio context unlocked');
+          // Now create a simple ambient sound using Web Audio API
+          createAmbientSound();
+        }).catch((error) => {
+          console.warn('Failed to unlock audio context:', error);
+          // Fallback: just try to create ambient sound anyway
+          createAmbientSound();
+        });
       }
+      
+    } catch (error) {
+      console.warn('Error starting music:', error);
+      setIsPlaying(false);
+    }
+  };
+
+  const createAmbientSound = () => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       
       // Create a simple ambient tone
       const oscillator = audioContext.createOscillator();
@@ -36,28 +63,29 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
       oscillator.connect(gainNode);
       gainNode.connect(audioContext.destination);
       
+      // Create a more pleasant ambient sound
       oscillator.frequency.setValueAtTime(220, audioContext.currentTime); // A3 note
       oscillator.type = 'sine';
       
+      // Fade in slowly
       gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-      gainNode.gain.linearRampToValueAtTime(volume * 0.3, audioContext.currentTime + 0.5);
+      gainNode.gain.linearRampToValueAtTime(volume * 0.1, audioContext.currentTime + 2);
       
       oscillator.start();
       
       // Store reference for cleanup
-      audioRef.current = {
-        pause: () => {
+      if (audioRef.current) {
+        audioRef.current.pause = () => {
           oscillator.stop();
           audioContext.close();
-        },
-        volume: volume
-      } as any;
+        };
+      }
       
       setIsPlaying(true);
-      console.log('🎵 Background music started (synthetic ambient)');
+      console.log('🎵 Background music started (ambient tone)');
       
     } catch (error) {
-      console.warn('Error starting music:', error);
+      console.warn('Error creating ambient sound:', error);
       setIsPlaying(false);
     }
   };
@@ -70,34 +98,34 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
     setIsPlaying(false);
   };
 
-  // Auto-start music when component mounts (if enabled)
+  // Handle user interaction to unlock audio
   useEffect(() => {
-    if (enabled && !isPlaying) {
-      console.log('🎵 Attempting to start background music automatically');
-      
-      // Try to start immediately
-      startMusic().catch(console.error);
-      
-      // If that fails, try again after user interaction
-      const handleUserInteraction = () => {
-        if (!isPlaying && enabled) {
-          console.log('🎵 Starting music after user interaction');
-          startMusic().catch(console.error);
-        }
-      };
-      
-      // Add event listeners for user interaction
-      document.addEventListener('click', handleUserInteraction, { once: true });
-      document.addEventListener('keydown', handleUserInteraction, { once: true });
-      document.addEventListener('touchstart', handleUserInteraction, { once: true });
-      
-      return () => {
-        document.removeEventListener('click', handleUserInteraction);
-        document.removeEventListener('keydown', handleUserInteraction);
-        document.removeEventListener('touchstart', handleUserInteraction);
-      };
+    const handleUserInteraction = () => {
+      if (!hasUserInteracted) {
+        setHasUserInteracted(true);
+        console.log('🎵 User interaction detected - audio unlocked');
+      }
+    };
+
+    // Add event listeners for user interaction
+    document.addEventListener('click', handleUserInteraction, { once: true });
+    document.addEventListener('keydown', handleUserInteraction, { once: true });
+    document.addEventListener('touchstart', handleUserInteraction, { once: true });
+
+    return () => {
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+    };
+  }, [hasUserInteracted]);
+
+  // Auto-start music when user has interacted
+  useEffect(() => {
+    if (enabled && hasUserInteracted && !isPlaying) {
+      console.log('🎵 Starting background music after user interaction');
+      startMusic();
     }
-  }, [enabled, isPlaying]);
+  }, [enabled, hasUserInteracted, isPlaying]);
 
   // Update volume when it changes
   useEffect(() => {
