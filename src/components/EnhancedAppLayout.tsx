@@ -1322,6 +1322,20 @@ const EnhancedAppLayout: React.FC = () => {
               <SimpleBingoGame 
                 autoStart={false}
                 gameName={gameSession.currentRoom?.name || 'Speed Bingo'}
+                onNumberCalled={(number) => {
+                  // Track called numbers in game session
+                  setGameSession(prev => ({
+                    ...prev,
+                    calledNumbers: [...prev.calledNumbers, number]
+                  }));
+                }}
+                onScoreUpdate={(newScore) => {
+                  // Track player score updates
+                  setGameSession(prev => ({
+                    ...prev,
+                    playerScore: newScore
+                  }));
+                }}
                 onWin={(winType, prize) => {
                   setShowWinModal(true);
                   
@@ -1367,8 +1381,8 @@ const EnhancedAppLayout: React.FC = () => {
                     playerScore: actualPlayerScore,
                     totalNumbersCalled: actualNumbersCalled,
                     patternsCompleted: actualPatternsCompleted.length > 0 ? actualPatternsCompleted : ['Line'], // Default to Line if no patterns recorded
-                    bonusPoints: Math.floor(Math.random() * 200) + 100,
-                    penalties: Math.floor(Math.random() * 50),
+                    bonusPoints: Math.max(0, actualPlayerScore - (actualNumbersCalled * 1000)), // Calculate bonus from pattern completions
+                    penalties: 0, // No penalties for now
                     finalScore: 0,
                     rank: Math.floor(Math.random() * 5) + 1,
                     totalPlayers: currentSession?.players.length || Math.floor(Math.random() * 20) + 10,

@@ -21,11 +21,13 @@ interface SimpleBingoGameProps {
   onWin: (winType: string, prize: number) => void;
   onGameEnd: () => void;
   onPatternCompleted?: (pattern: string, score: number) => void;
+  onNumberCalled?: (number: number) => void;
+  onScoreUpdate?: (score: number) => void;
   autoStart?: boolean;
   gameName?: string;
 }
 
-const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onPatternCompleted, autoStart = false, gameName = 'Speed Bingo' }) => {
+const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onPatternCompleted, onNumberCalled, onScoreUpdate, autoStart = false, gameName = 'Speed Bingo' }) => {
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [gameStatus, setGameStatus] = useState<'waiting' | 'playing' | 'finished'>('waiting');
@@ -281,6 +283,11 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
       
       setCurrentNumber(randomNumber);
       
+      // Notify parent component of number called
+      if (onNumberCalled) {
+        onNumberCalled(randomNumber);
+      }
+      
       // Enhanced number announcement with visual and audio feedback
       announceNumber(randomNumber);
       
@@ -331,8 +338,17 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
           }
           
           // Add points to score
-          setPlayerScore(prev => prev + finalPoints);
-          console.log(`🎯 Pattern detected: ${winType} - +${finalPoints} points!`);
+          setPlayerScore(prev => {
+            const newScore = prev + finalPoints;
+            console.log(`🎯 Pattern detected: ${winType} - +${finalPoints} points!`);
+            
+            // Notify parent component of score update
+            if (onScoreUpdate) {
+              onScoreUpdate(newScore);
+            }
+            
+            return newScore;
+          });
           
           // Track successful daub
           setSuccessfulDaubs(prev => prev + 1);
@@ -404,6 +420,12 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
             setPlayerScore(prev => {
               const newScore = prev + markPoints;
               console.log(`🎯 Number marked: +${markPoints} points! New score: ${newScore}`);
+              
+              // Notify parent component of score update
+              if (onScoreUpdate) {
+                onScoreUpdate(newScore);
+              }
+              
               return newScore;
             });
             
@@ -439,8 +461,17 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
               }
               
               // Add points to score
-              setPlayerScore(prev => prev + finalPoints);
-              console.log(`🎯 Pattern detected: ${winType} - +${finalPoints} points!`);
+              setPlayerScore(prev => {
+                const newScore = prev + finalPoints;
+                console.log(`🎯 Pattern detected: ${winType} - +${finalPoints} points!`);
+                
+                // Notify parent component of score update
+                if (onScoreUpdate) {
+                  onScoreUpdate(newScore);
+                }
+                
+                return newScore;
+              });
               
               // Track successful daub
               setSuccessfulDaubs(prev => prev + 1);
