@@ -63,20 +63,20 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
     switch (type) {
       case 'wildcard':
         // Allow player to mark any number as called
-        alert('🎯 Wildcard activated! Click any number to mark it as called!');
+        console.log('🎯 Wildcard activated! Click any number to mark it as called!');
         break;
       case 'multiplier':
         // Double points for next pattern
-        alert('🎯 2x Multiplier activated! Next pattern gives double points!');
+        console.log('🎯 2x Multiplier activated! Next pattern gives double points!');
         break;
       case 'timefreeze':
         // Add 30 seconds to timer
         setGameTimer(prev => prev + 30);
-        alert('🎯 Time Freeze! +30 seconds added to timer!');
+        console.log('🎯 Time Freeze! +30 seconds added to timer!');
         break;
       case 'lucky':
         // Next number called will be a lucky number (guaranteed to be on card)
-        alert('🎯 Lucky Number activated! Next number will definitely be on your card!');
+        console.log('🎯 Lucky Number activated! Next number will definitely be on your card!');
         break;
     }
     
@@ -91,7 +91,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
     const powerUpTypes = Object.keys(powerUps);
     const randomType = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
     setPowerUps(prev => ({ ...prev, [randomType]: prev[randomType] + 1 }));
-    alert(`🎁 Power-up earned: ${randomType.toUpperCase()}!`);
+    console.log(`🎁 Power-up earned: ${randomType.toUpperCase()}!`);
   };
 
   // Audio functions
@@ -409,7 +409,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
             const isFreeSpace = cellNumber === 0;
             
             if (!isCalled && !isFreeSpace) {
-              alert(`❌ Number ${cellNumber} hasn't been called yet!`);
+              console.log(`❌ Number ${cellNumber} hasn't been called yet!`);
               return card;
             }
             
@@ -526,7 +526,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
         }, 2000); // Show win message for 2 seconds then end game
       } else {
         // Insufficient funds - show message but don't pay
-        alert(`🎉 Congratulations! You won ${winType}!\n\nYour prize of $${prize} is being processed and will be added to your account shortly. Please check your balance in a few moments.\n\nThank you for playing!`);
+        console.log(`🎉 Congratulations! You won ${winType}!\n\nYour prize of $${prize} is being processed and will be added to your account shortly. Please check your balance in a few moments.\n\nThank you for playing!`);
         // Still end the game even if payout fails
         setTimeout(() => {
           onGameEnd();
@@ -535,7 +535,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
     } catch (error) {
       console.error('Error processing win:', error);
       // Still show win message even if payout fails
-      alert(`🎉 Congratulations! You won ${winType}!\n\nYour prize of $${prize} is being processed and will be added to your account shortly. Please check your balance in a few moments.\n\nThank you for playing!`);
+      console.log(`🎉 Congratulations! You won ${winType}!\n\nYour prize of $${prize} is being processed and will be added to your account shortly. Please check your balance in a few moments.\n\nThank you for playing!`);
       // Still end the game even if there's an error
       setTimeout(() => {
         onGameEnd();
@@ -687,7 +687,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
         callNumber();
       }, 2000);
       
-      console.log('🎯 BINGO GAME STARTED - Numbers will be called every 2 seconds');
+      console.log('🎯 BINGO GAME STARTED - Numbers will be called every 3 seconds');
       console.log('🔊 Audio announcements enabled');
       console.log('📱 Notifications enabled');
       console.log('⏰ Timer started:', gameTimer, 'seconds');
@@ -707,8 +707,8 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
     gameStatusRef.current = 'finished';
     console.log(`🎯 Game ended with final score: ${playerScore}`);
     
-    // Show final score alert
-    alert(`🎯 GAME OVER!\n\nFinal Score: ${playerScore.toLocaleString()} points!\n\nGreat job!`);
+    // Show final score in console
+    console.log(`🎯 GAME OVER!\n\nFinal Score: ${playerScore.toLocaleString()} points!\n\nGreat job!`);
     
     // Call onGameEnd to show results screen
     setTimeout(() => {
