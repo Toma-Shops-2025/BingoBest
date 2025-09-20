@@ -65,10 +65,10 @@ const TournamentSystem: React.FC<TournamentSystemProps> = ({
     }).format(date);
   };
 
-  const getTimeUntilStart = (startTime: Date) => {
-    const diff = startTime.getTime() - currentTime.getTime();
+  const getTimeUntilEnd = (endTime: Date) => {
+    const diff = endTime.getTime() - currentTime.getTime();
     
-    if (diff <= 0) return 'Starting now!';
+    if (diff <= 0) return 'Cycle ending now!';
     
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -228,52 +228,31 @@ const TournamentSystem: React.FC<TournamentSystemProps> = ({
                 <div className="flex items-center gap-1">
                   <Clock className="w-4 h-4 text-purple-500" />
                   <span>
-                    {tournament.status === 'upcoming' && getTimeUntilStart(tournament.startTime)}
-                    {tournament.status === 'active' && 'Live Now!'}
+                    {tournament.status === 'active' && getTimeUntilEnd(tournament.endTime)}
                     {tournament.status === 'completed' && formatDate(tournament.startTime)}
                   </span>
                 </div>
               </div>
               
-              {/* Tournament Actions based on status */}
-              {tournament.status === 'upcoming' && (
+              {/* Tournament Actions - All tournaments are playable */}
+              {tournament.status === 'active' && (
                 <div className="space-y-2">
                   <Button
                     onClick={() => onJoinTournament(tournament.id)}
-                    disabled={player.balance < tournament.entryFee || 
-                             tournament.currentParticipants >= tournament.maxParticipants}
-                    className="w-full"
+                    disabled={player.balance < tournament.entryFee}
+                    className="w-full bg-green-600 hover:bg-green-700"
                   >
-                    <Calendar className="w-4 h-4 mr-2" />
-                    Join Tournament
+                    <Play className="w-4 h-4 mr-2" />
+                    Play Now
                   </Button>
+                  <p className="text-xs text-green-600 text-center font-medium">
+                    Play as many times as you want!
+                  </p>
                   {player.balance < tournament.entryFee && (
                     <p className="text-xs text-red-500 text-center">
                       Need ${(tournament.entryFee - player.balance).toFixed(2)} more
                     </p>
                   )}
-                </div>
-              )}
-              
-              {tournament.status === 'active' && (
-                <div className="space-y-2">
-                  <Button
-                    onClick={() => {
-                      if (onSpectateTournament) {
-                        onSpectateTournament(tournament.id);
-                      } else {
-                        // Fallback: show alert if no spectate handler provided
-                        alert(`🎮 Spectating ${tournament.name}!\n\nWatch the live action unfold!`);
-                      }
-                    }}
-                    className="w-full bg-green-600 hover:bg-green-700"
-                  >
-                    <Eye className="w-4 h-4 mr-2" />
-                    Watch Live
-                  </Button>
-                  <p className="text-xs text-green-600 text-center font-medium">
-                    Tournament in progress!
-                  </p>
                 </div>
               )}
               

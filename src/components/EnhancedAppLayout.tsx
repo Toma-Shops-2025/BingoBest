@@ -165,6 +165,15 @@ const EnhancedAppLayout: React.FC = () => {
     gameType: 'bingo' as 'bingo' | 'tournament',
     tournamentId: null as string | null
   });
+
+  // Tournament score tracking
+  const [tournamentScores, setTournamentScores] = useState<Record<string, Array<{
+    playerId: string;
+    playerName: string;
+    score: number;
+    timestamp: Date;
+    gameId: string;
+  }>>>({});
   
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -514,106 +523,80 @@ const EnhancedAppLayout: React.FC = () => {
 
     switch (activeTab) {
       case 'tournaments':
-        // Create exciting tournaments
+        // Create tournament system with proper timing cycles
         const now = new Date();
+        
+        // Calculate next cycle end times for each tournament
+        const getNextCycleEnd = (cycleHours: number) => {
+          const cycleMs = cycleHours * 60 * 60 * 1000;
+          const currentCycleStart = new Date(Math.floor(now.getTime() / cycleMs) * cycleMs);
+          return new Date(currentCycleStart.getTime() + cycleMs);
+        };
+        
         const tournaments = [
           {
-            id: 'daily-quick-fire',
-            name: 'Daily Quick Fire',
-            description: 'Fast-paced bingo tournament with quick rounds',
-            entryFee: 1.00,
+            id: 'hourly-blast',
+            name: 'Hourly Blast',
+            description: 'Fast-paced bingo tournament - play as many times as you want!',
+            entryFee: 5.00,
             maxParticipants: 50,
             currentParticipants: 23,
-            prizePool: 10.00,
-            startTime: new Date(now.getTime() + 2 * 60 * 1000), // 2 minutes from now
-            endTime: new Date(now.getTime() + 12 * 60 * 1000), // 12 minutes from now (10 min game)
-            status: 'upcoming' as const,
-            rounds: [],
-            winners: [],
-            format: 'single_elimination' as const
-          },
-          {
-            id: 'instant-bingo',
-            name: 'Instant Bingo',
-            description: 'Join immediately - no waiting!',
-            entryFee: 0.50,
-            maxParticipants: 20,
-            currentParticipants: 8,
-            prizePool: 10.00,
-            startTime: new Date(now.getTime() + 1 * 60 * 1000), // 1 minute from now
-            endTime: new Date(now.getTime() + 11 * 60 * 1000), // 11 minutes from now (10 min game)
-            status: 'upcoming' as const,
-            rounds: [],
-            winners: [],
-            format: 'single_elimination' as const
-          },
-          {
-            id: 'weekend-championship',
-            name: 'Weekend Championship',
-            description: 'The ultimate bingo championship with massive prizes',
-            entryFee: 3.00,
-            maxParticipants: 100,
-            currentParticipants: 67,
-            prizePool: 25.00,
-            startTime: new Date(now.getTime() + 3 * 60 * 1000), // 3 minutes from now
-            endTime: new Date(now.getTime() + 13 * 60 * 1000), // 13 minutes from now (10 min game)
-            status: 'upcoming' as const,
-            rounds: [],
-            winners: [],
-            format: 'double_elimination' as const
-          },
-          {
-            id: 'speed-masters',
-            name: 'Speed Masters',
-            description: 'Currently running - join the action!',
-            entryFee: 2.00,
-            maxParticipants: 30,
-            currentParticipants: 28,
-            prizePool: 25.00,
-            startTime: new Date(now.getTime() - 5 * 60 * 1000), // 5 minutes ago
-            endTime: new Date(now.getTime() + 5 * 60 * 1000), // 5 minutes from now
+            prizePool: 50.00,
+            startTime: new Date(now.getTime() - 30 * 60 * 1000), // Started 30 minutes ago
+            endTime: getNextCycleEnd(1), // Ends every hour
             status: 'active' as const,
             rounds: [],
             winners: [],
-            format: 'round_robin' as const
+            format: 'score_based' as const,
+            cycleHours: 1
+          },
+          {
+            id: 'quick-strike',
+            name: 'Quick Strike',
+            description: 'Join immediately - no waiting! Play multiple times!',
+            entryFee: 10.00,
+            maxParticipants: 20,
+            currentParticipants: 8,
+            prizePool: 100.00,
+            startTime: new Date(now.getTime() - 2 * 60 * 1000), // Started 2 minutes ago
+            endTime: getNextCycleEnd(5), // Ends every 5 hours
+            status: 'active' as const,
+            rounds: [],
+            winners: [],
+            format: 'score_based' as const,
+            cycleHours: 5
+          },
+          {
+            id: 'daily-championship',
+            name: 'Daily Championship',
+            description: 'The ultimate bingo championship with massive prizes',
+            entryFee: 15.00,
+            maxParticipants: 100,
+            currentParticipants: 67,
+            prizePool: 150.00,
+            startTime: new Date(now.getTime() - 6 * 60 * 60 * 1000), // Started 6 hours ago
+            endTime: getNextCycleEnd(12), // Ends every 12 hours
+            status: 'active' as const,
+            rounds: [],
+            winners: [],
+            format: 'score_based' as const,
+            cycleHours: 12
           },
           {
             id: 'mega-jackpot',
             name: 'Mega Jackpot Tournament',
             description: 'The biggest tournament of the month!',
-            entryFee: 5.00,
+            entryFee: 20.00,
             maxParticipants: 200,
             currentParticipants: 156,
-            prizePool: 100.00,
-            startTime: new Date(now.getTime() + 4 * 60 * 1000), // 4 minutes from now
-            endTime: new Date(now.getTime() + 14 * 60 * 1000), // 14 minutes from now (10 min game)
-            status: 'upcoming' as const,
+            prizePool: 200.00,
+            startTime: new Date(now.getTime() - 12 * 60 * 60 * 1000), // Started 12 hours ago
+            endTime: getNextCycleEnd(24), // Ends every 24 hours
+            status: 'active' as const,
             rounds: [],
             winners: [],
-            format: 'single_elimination' as const
-          },
-          {
-            id: 'yesterday-winner',
-            name: 'Yesterday\'s Winner',
-            description: 'Completed tournament - see who won!',
-            entryFee: 2.00,
-            maxParticipants: 40,
-            currentParticipants: 40,
-            prizePool: 75.00,
-            startTime: new Date(now.getTime() - 48 * 60 * 60 * 1000), // 2 days ago
-            endTime: new Date(now.getTime() - 24 * 60 * 60 * 1000), // 1 day ago
-            status: 'completed' as const,
-            rounds: [],
-            winners: [
-              {
-                id: 'winner1',
-                username: 'BingoChamp',
-                balance: 1000,
-                wins: 25,
-                gamesPlayed: 50
-              }
-            ],
-            format: 'single_elimination' as const
+            format: 'score_based' as const,
+            cycleHours: 24
           }
         ];
 
@@ -627,29 +610,35 @@ const EnhancedAppLayout: React.FC = () => {
                 alert(`❌ Insufficient Funds!\n\nYou need $${tournament.entryFee} to join this tournament.\n\nCurrent balance: $${player.balance}`);
                 return;
               }
-              if (tournament.currentParticipants >= tournament.maxParticipants) {
-                alert(`❌ Tournament Full!\n\n${tournament.name} is already full.\n\nTry joining another tournament!`);
-                return;
-              }
               
-              // Route to tournament play area
-              setSelectedTournament(tournament);
-              setShowTournamentPlay(true);
-              
-              // Update player balance (deduct entry fee)
+              // Deduct entry fee and start game immediately
               setPlayer(prev => ({
                 ...prev,
                 balance: prev.balance - tournament.entryFee
               }));
               
-              // Update tournament participants
-              const updatedTournaments = tournaments.map(t => 
-                t.id === id 
-                  ? { ...t, currentParticipants: t.currentParticipants + 1 }
-                  : t
-              );
+              // Set tournament context and start game immediately
+              setGameSession(prev => ({
+                ...prev,
+                currentRoom: {
+                  id: tournament.id,
+                  name: tournament.name,
+                  maxPlayers: tournament.maxParticipants,
+                  currentPlayers: tournament.currentParticipants,
+                  entryFee: tournament.entryFee,
+                  prizePool: tournament.prizePool,
+                  status: 'playing' as const,
+                  createdAt: tournament.startTime
+                },
+                gameType: 'tournament',
+                tournamentId: tournament.id
+              }));
               
-              alert(`🎉 Tournament Joined!\n\n${tournament.name}\n\nEntry Fee: $${tournament.entryFee}\nPrize Pool: $${tournament.prizePool}\n\nGood luck!`);
+              // Start the bingo game immediately
+              setShowBingoGame(true);
+              setActiveTab('home');
+              
+              console.log(`🎮 Starting tournament game: ${tournament.name}`);
             }
           }}
           onSpectateTournament={handleSpectateTournament}
@@ -1377,6 +1366,28 @@ const EnhancedAppLayout: React.FC = () => {
                   const actualPlayerScore = gameSession.playerScore || 0;
                   const actualNumbersCalled = gameSession.calledNumbers?.length || 0;
                   const actualPatternsCompleted = gameSession.completedPatterns || [];
+                  
+                  // Track tournament score if this is a tournament game
+                  if (gameSession.gameType === 'tournament' && gameSession.tournamentId) {
+                    const tournamentId = gameSession.tournamentId;
+                    const gameId = `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                    
+                    setTournamentScores(prev => ({
+                      ...prev,
+                      [tournamentId]: [
+                        ...(prev[tournamentId] || []),
+                        {
+                          playerId: player.id,
+                          playerName: player.username,
+                          score: actualPlayerScore,
+                          timestamp: new Date(),
+                          gameId: gameId
+                        }
+                      ]
+                    }));
+                    
+                    console.log(`🏆 Tournament score recorded: ${actualPlayerScore} points for ${tournamentId}`);
+                  }
                   
                   // Generate game results with real data
                   const mockResults = {
