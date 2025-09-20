@@ -25,9 +25,11 @@ interface SimpleBingoGameProps {
   onScoreUpdate?: (score: number) => void;
   autoStart?: boolean;
   gameName?: string;
+  gameId?: string;
+  gameType?: 'bingo' | 'tournament';
 }
 
-const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onPatternCompleted, onNumberCalled, onScoreUpdate, autoStart = false, gameName = 'Speed Bingo' }) => {
+const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onPatternCompleted, onNumberCalled, onScoreUpdate, autoStart = false, gameName = 'Speed Bingo', gameId, gameType = 'bingo' }) => {
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [gameStatus, setGameStatus] = useState<'waiting' | 'playing' | 'finished'>('waiting');
@@ -53,6 +55,32 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
   const gameStatusRef = useRef<'waiting' | 'playing' | 'finished'>('waiting');
 
   const letters = ['B', 'I', 'N', 'G', 'O'];
+
+  // Get background image based on game type and ID
+  const getBackgroundImage = () => {
+    if (gameType === 'tournament' && gameId) {
+      // Tournament backgrounds
+      const tournamentBackgrounds: Record<string, string> = {
+        'hourly-blast': '/backgrounds/tournament-hourly-blast.jpg',
+        'quick-strike': '/backgrounds/tournament-quick-strike.jpg',
+        'daily-championship': '/backgrounds/tournament-daily-championship.jpg',
+        'mega-jackpot': '/backgrounds/tournament-mega-jackpot.jpg'
+      };
+      return tournamentBackgrounds[gameId] || '/bingocard-background.jpg';
+    } else if (gameType === 'bingo' && gameId) {
+      // Game room backgrounds
+      const gameRoomBackgrounds: Record<string, string> = {
+        'speed-bingo': '/backgrounds/game-speed-bingo.jpg',
+        'classic-bingo': '/backgrounds/game-classic-bingo.jpg',
+        'high-stakes-arena': '/backgrounds/game-high-stakes-arena.jpg',
+        'daily-tournament': '/backgrounds/game-daily-tournament.jpg',
+        'weekly-championship': '/backgrounds/game-weekly-championship.jpg'
+      };
+      return gameRoomBackgrounds[gameId] || '/bingocard-background.jpg';
+    }
+    // Default background
+    return '/bingocard-background.jpg';
+  };
 
   // Power-up functions
   const usePowerUp = (type: string) => {
@@ -789,7 +817,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
     <div 
       className="space-y-6 min-h-screen p-4"
       style={{
-        backgroundImage: 'url(/bingocard-background.jpg)',
+        backgroundImage: `url(${getBackgroundImage()})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
