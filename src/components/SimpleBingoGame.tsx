@@ -20,10 +20,11 @@ interface BingoCard {
 interface SimpleBingoGameProps {
   onWin: (winType: string, prize: number) => void;
   onGameEnd: () => void;
+  onPatternCompleted?: (pattern: string, score: number) => void;
   autoStart?: boolean;
 }
 
-const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, autoStart = false }) => {
+const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onPatternCompleted, autoStart = false }) => {
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [gameStatus, setGameStatus] = useState<'waiting' | 'playing' | 'finished'>('waiting');
@@ -357,6 +358,11 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
           // Track successful daub
           setSuccessfulDaubs(prev => prev + 1);
           
+          // Notify parent component of pattern completion
+          if (onPatternCompleted) {
+            onPatternCompleted(winType, finalPoints);
+          }
+          
           // Show pattern completion notification
           alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${finalPoints.toLocaleString()} points!`);
           
@@ -457,6 +463,11 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
               
               // Track successful daub
               setSuccessfulDaubs(prev => prev + 1);
+              
+              // Notify parent component of pattern completion
+              if (onPatternCompleted) {
+                onPatternCompleted(winType, finalPoints);
+              }
               
               // Show pattern completion notification
               alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${finalPoints.toLocaleString()} points!`);

@@ -159,7 +159,9 @@ const EnhancedAppLayout: React.FC = () => {
     calledNumbers: [] as number[],
     bingoCards: [] as any[],
     gameTimer: 300,
-    currentSessionId: null as string | null
+    currentSessionId: null as string | null,
+    playerScore: 0,
+    completedPatterns: [] as string[]
   });
   
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
@@ -1341,16 +1343,29 @@ const EnhancedAppLayout: React.FC = () => {
                   
                   alert(`Congratulations! You won ${winType} and earned $${prize}!`);
                 }}
+                onPatternCompleted={(pattern, score) => {
+                  // Track completed patterns in game session
+                  setGameSession(prev => ({
+                    ...prev,
+                    completedPatterns: [...prev.completedPatterns, pattern],
+                    playerScore: prev.playerScore + score
+                  }));
+                }}
                 onGameEnd={() => {
                   // Get the current game session to access real prize distribution
                   const currentSession = gameSession.currentSessionId ? 
                     GameSessionManager.getGameSession(gameSession.currentSessionId) : null;
                   
-                  // Generate game results with real prize amounts
+                  // Get actual game data from the bingo game
+                  const actualPlayerScore = gameSession.playerScore || 0;
+                  const actualNumbersCalled = gameSession.calledNumbers?.length || 0;
+                  const actualPatternsCompleted = gameSession.completedPatterns || [];
+                  
+                  // Generate game results with real data
                   const mockResults = {
-                    playerScore: Math.floor(Math.random() * 1000) + 500,
-                    totalNumbersCalled: Math.floor(Math.random() * 30) + 20,
-                    patternsCompleted: ['Line', 'Diagonal', '4 Corners'].slice(0, Math.floor(Math.random() * 3) + 1),
+                    playerScore: actualPlayerScore,
+                    totalNumbersCalled: actualNumbersCalled,
+                    patternsCompleted: actualPatternsCompleted.length > 0 ? actualPatternsCompleted : ['Line'], // Default to Line if no patterns recorded
                     bonusPoints: Math.floor(Math.random() * 200) + 100,
                     penalties: Math.floor(Math.random() * 50),
                     finalScore: 0,
