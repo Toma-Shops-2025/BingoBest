@@ -342,8 +342,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
             onPatternCompleted(winType, finalPoints);
           }
           
-          // Show pattern completion notification
-          alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${finalPoints.toLocaleString()} points!`);
+          // Pattern completion notification removed to prevent spam
           
           return { ...card, numbers: newNumbers, marked: newMarked, completed: true };
         }
@@ -451,8 +450,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
                 onPatternCompleted(winType, finalPoints);
               }
               
-              // Show pattern completion notification
-              alert(`🎉 ${winType.toUpperCase()} COMPLETED!\n+${finalPoints.toLocaleString()} points!`);
+              // Pattern completion notification removed to prevent spam
               
               return { ...card, marked: newMarked, completed: true };
             }
