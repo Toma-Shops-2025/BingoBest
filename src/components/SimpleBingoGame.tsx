@@ -38,7 +38,6 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
     'wildcard': 0,
     'multiplier': 0,
     'timefreeze': 0,
-    'autodab': 0,
     'lucky': 0
   });
   const [activePowerUps, setActivePowerUps] = useState<{[key: string]: boolean}>({});
@@ -72,10 +71,6 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
         setGameTimer(prev => prev + 30);
         alert('🎯 Time Freeze! +30 seconds added to timer!');
         break;
-      case 'autodab':
-        // Auto-mark all called numbers for 10 seconds
-        alert('🎯 Auto-Dab activated! All called numbers will be marked automatically for 10 seconds!');
-        break;
       case 'lucky':
         // Next number called will be a lucky number (guaranteed to be on card)
         alert('🎯 Lucky Number activated! Next number will definitely be on your card!');
@@ -103,12 +98,12 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
     try {
       // Try to play specific number voice audio file
       const audio = new Audio(`/audio/numbers/bingo-${number}.mp3`);
-      audio.volume = 0.8; // Increased by 10% (was 0.7)
+      audio.volume = 0.88; // Increased by 10% (was 0.8)
       audio.play().catch((error) => {
         console.warn('Number audio failed, using fallback:', error);
         // Fallback to generic beep if specific audio not found
         const beepAudio = new Audio('/audio/beep.mp3');
-        beepAudio.volume = 0.8; // Increased by 10% (was 0.5)
+        beepAudio.volume = 0.88; // Increased by 10% (was 0.8)
         beepAudio.play().catch(console.warn);
       });
     } catch (error) {
@@ -263,23 +258,6 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
       return;
     }
 
-    // Check if auto-dab is active
-    if (activePowerUps.autodab) {
-      console.log('🎯 Auto-dab active - marking all called numbers');
-      // Auto-mark all called numbers on the card
-      setBingoCards(prev => prev.map(card => {
-        const newMarked = [...card.marked];
-        for (let row = 0; row < 5; row++) {
-          for (let col = 0; col < 5; col++) {
-            const cell = card.numbers[col][row];
-            if (calledNumbers.includes(cell.number)) {
-              newMarked[row][col] = true;
-            }
-          }
-        }
-        return { ...card, marked: newMarked };
-      }));
-    }
     
     // Use a callback to get the most current calledNumbers state
     setCalledNumbers(prevCalledNumbers => {
@@ -314,11 +292,11 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
           }))
         );
         
-        // Auto-daubing completely disabled - manual marking required for all platforms
+        // Manual marking required for all platforms - no auto-daubing
         let newMarked = card.marked;
-        console.log(`🎯 Manual marking required for ${randomNumber} - auto-daubing disabled`);
+        console.log(`🎯 Manual marking required for ${randomNumber}`);
         
-        // Check for win after auto-daubing (works on both desktop and mobile)
+        // Check for win patterns (manual marking only)
         const winType = checkWin(newMarked, newNumbers);
         if (winType) {
           let points = 0;
@@ -423,8 +401,11 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
             
             // Award points for successful mark (automatic scoring)
             const markPoints = 1000; // Base points for marking a number
-            setPlayerScore(prev => prev + markPoints);
-            console.log(`🎯 Number marked: +${markPoints} points!`);
+            setPlayerScore(prev => {
+              const newScore = prev + markPoints;
+              console.log(`🎯 Number marked: +${markPoints} points! New score: ${newScore}`);
+              return newScore;
+            });
             
             // Check for win
             const winType = checkWin(newMarked, card.numbers);
@@ -649,7 +630,6 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
         'wildcard': 0,
         'multiplier': 0,
         'timefreeze': 0,
-        'autodab': 0,
         'lucky': 0
       });
       
@@ -961,7 +941,6 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
                       {type === 'wildcard' && '🎯'}
                       {type === 'multiplier' && '⚡'}
                       {type === 'timefreeze' && '⏰'}
-                      {type === 'autodab' && '🤖'}
                       {type === 'lucky' && '🍀'}
                     </div>
                     <div className="text-xs font-bold">{count}</div>
