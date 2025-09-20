@@ -876,7 +876,20 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
             <CardTitle>Your Bingo Card</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-5 gap-1 max-w-md mx-auto">
+            <div 
+              className="relative p-4 rounded-2xl max-w-md mx-auto"
+              style={{
+                backgroundImage: 'url(/bingocard-background.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }}
+            >
+              {/* Semi-transparent overlay for better text readability */}
+              <div className="absolute inset-0 bg-black/20 rounded-2xl"></div>
+              
+              {/* Bingo card grid */}
+              <div className="relative z-10 grid grid-cols-5 gap-1">
               {/* Header */}
               {letters.map((letter, index) => (
                 <div 
@@ -916,6 +929,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
                           );
                         })
                       )}
+              </div>
             </div>
           </CardContent>
         </Card>
