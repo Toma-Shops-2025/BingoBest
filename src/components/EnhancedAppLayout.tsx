@@ -22,6 +22,7 @@ import ChatSystem from './ChatSystem';
 import MainNavigation from './MainNavigation';
 import TournamentSystem from './TournamentSystem';
 import TournamentPlayArea from './TournamentPlayArea';
+import TournamentResultsScreen from './TournamentResultsScreen';
 import AchievementSystem from './AchievementSystem';
 import DailyChallenges from './DailyChallenges';
 import FriendsSystem from './FriendsSystem';
@@ -275,6 +276,8 @@ const EnhancedAppLayout: React.FC = () => {
   const [showBingoGame, setShowBingoGame] = useState(false);
   const [showGameResults, setShowGameResults] = useState(false);
   const [gameResults, setGameResults] = useState<any>(null);
+  const [showTournamentResults, setShowTournamentResults] = useState(false);
+  const [tournamentResults, setTournamentResults] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
   // Room timers state removed
@@ -1340,11 +1343,13 @@ const EnhancedAppLayout: React.FC = () => {
                   const actualNumbersCalled = gameSession.calledNumbers?.length || 0;
                   const actualPatternsCompleted = gameSession.completedPatterns || [];
                   
-                  // Track tournament score if this is a tournament game
+                  // Handle tournament vs regular game results
                   if (gameSession.gameType === 'tournament' && gameSession.tournamentId) {
+                    // Tournament game - show tournament results
                     const tournamentId = gameSession.tournamentId;
                     const gameId = `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
                     
+                    // Track tournament score
                     setTournamentScores(prev => ({
                       ...prev,
                       [tournamentId]: [
@@ -1360,37 +1365,60 @@ const EnhancedAppLayout: React.FC = () => {
                     }));
                     
                     console.log(`🏆 Tournament score recorded: ${actualPlayerScore} points for ${tournamentId}`);
+                    
+                    // Generate tournament results
+                    const tournamentResults = {
+                      tournamentName: gameSession.currentRoom?.name || 'Tournament',
+                      tournamentId: tournamentId,
+                      playerScore: actualPlayerScore,
+                      rank: Math.floor(Math.random() * 10) + 1, // Mock rank for now
+                      totalPlayers: Math.floor(Math.random() * 50) + 20, // Mock total players
+                      cycleTimeRemaining: '2h 15m', // Mock remaining time
+                      nextCycleEnd: new Date(Date.now() + 2 * 60 * 60 * 1000), // Mock next cycle end
+                      bestScore: actualPlayerScore + Math.floor(Math.random() * 10000), // Mock best score
+                      averageScore: Math.floor(actualPlayerScore * 0.7), // Mock average score
+                      gamesPlayed: (tournamentScores[tournamentId]?.length || 0) + 1,
+                      patternsCompleted: actualPatternsCompleted.length > 0 ? actualPatternsCompleted : ['Line'],
+                      numbersCalled: actualNumbersCalled,
+                      bonusPoints: Math.max(0, actualPlayerScore - (actualNumbersCalled * 1000)),
+                      penalties: 0,
+                      finalScore: actualPlayerScore + Math.max(0, actualPlayerScore - (actualNumbersCalled * 1000))
+                    };
+                    
+                    setTournamentResults(tournamentResults);
+                    setShowBingoGame(false);
+                    setShowTournamentResults(true);
+                    setGameSession(prev => ({ ...prev, gameStatus: 'finished' }));
+                  } else {
+                    // Regular game - show regular results
+                    const mockResults = {
+                      playerScore: actualPlayerScore,
+                      totalNumbersCalled: actualNumbersCalled,
+                      patternsCompleted: actualPatternsCompleted.length > 0 ? actualPatternsCompleted : ['Line'],
+                      bonusPoints: Math.max(0, actualPlayerScore - (actualNumbersCalled * 1000)),
+                      penalties: 0,
+                      finalScore: 0,
+                      rank: Math.floor(Math.random() * 5) + 1,
+                      totalPlayers: currentSession?.players.length || Math.floor(Math.random() * 20) + 10,
+                      prizes: currentSession ? {
+                        first: Math.round(currentSession.prizeDistribution.firstPlace * 100) / 100,
+                        second: Math.round(currentSession.prizeDistribution.secondPlace * 100) / 100,
+                        third: Math.round(currentSession.prizeDistribution.thirdPlace * 100) / 100
+                      } : {
+                        first: 50,
+                        second: 25,
+                        third: 10
+                      },
+                      celebration: true
+                    };
+                    
+                    mockResults.finalScore = mockResults.playerScore + mockResults.bonusPoints - mockResults.penalties;
+                    
+                    setGameResults(mockResults);
+                    setShowBingoGame(false);
+                    setShowGameResults(true);
+                    setGameSession(prev => ({ ...prev, gameStatus: 'finished' }));
                   }
-                  
-                  // Generate game results with real data
-                  const mockResults = {
-                    playerScore: actualPlayerScore,
-                    totalNumbersCalled: actualNumbersCalled,
-                    patternsCompleted: actualPatternsCompleted.length > 0 ? actualPatternsCompleted : ['Line'], // Default to Line if no patterns recorded
-                    bonusPoints: Math.max(0, actualPlayerScore - (actualNumbersCalled * 1000)), // Calculate bonus from pattern completions
-                    penalties: 0, // No penalties for now
-                    finalScore: 0,
-                    rank: Math.floor(Math.random() * 5) + 1,
-                    totalPlayers: currentSession?.players.length || Math.floor(Math.random() * 20) + 10,
-                    prizes: currentSession ? {
-                      first: Math.round(currentSession.prizeDistribution.firstPlace * 100) / 100,
-                      second: Math.round(currentSession.prizeDistribution.secondPlace * 100) / 100,
-                      third: Math.round(currentSession.prizeDistribution.thirdPlace * 100) / 100
-                    } : {
-                      first: 50,
-                      second: 25,
-                      third: 10
-                    },
-                    celebration: true
-                  };
-                  
-                  // Calculate final score
-                  mockResults.finalScore = mockResults.playerScore + mockResults.bonusPoints - mockResults.penalties;
-                  
-                  setGameResults(mockResults);
-                  setShowBingoGame(false);
-                  setShowGameResults(true);
-                  setGameSession(prev => ({ ...prev, gameStatus: 'finished' }));
                 }}
               />
             </ErrorBoundary>
@@ -1405,6 +1433,18 @@ const EnhancedAppLayout: React.FC = () => {
             onBackToGameRoom={() => {
               setShowGameResults(false);
               setActiveTab('home');
+            }}
+          />
+        ) : showTournamentResults && tournamentResults ? (
+          <TournamentResultsScreen
+            results={tournamentResults}
+            onPlayAgain={() => {
+              setShowTournamentResults(false);
+              setShowBingoGame(true);
+            }}
+            onBackToTournaments={() => {
+              setShowTournamentResults(false);
+              setActiveTab('tournaments');
             }}
           />
         ) : showTournamentPlay && selectedTournament ? (
