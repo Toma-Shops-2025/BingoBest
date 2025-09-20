@@ -584,7 +584,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
       // Check X pattern (both diagonals)
       if (mainDiagonalComplete && antiDiagonalComplete) {
         console.log('🎯 X pattern is complete!');
-        return 'x-pattern';
+          return 'x-pattern';
       }
       
       // Check full house
@@ -681,7 +681,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
     
     // Call onGameEnd to show results screen
     setTimeout(() => {
-      onGameEnd();
+    onGameEnd();
     }, 2000); // Wait 2 seconds to show the alert
   };
 
@@ -811,13 +811,13 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
                   </Button>
                 </div>
                 <div className="flex gap-2">
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={stopGame}
-                  >
-                    Stop Game
-                  </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={stopGame}
+                >
+                  Stop Game
+                </Button>
                 </div>
               </div>
 
@@ -881,18 +881,18 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
                           return (
                             <div
                               key={`${rowIndex}-${colIndex}`}
-                              className={`
-                                bingo-number aspect-square border-2 rounded-xl flex items-center justify-center text-sm font-bold cursor-pointer transition-all duration-300 shadow-lg
-                                ${cell.called ? 'called' : 'bg-gradient-to-br from-blue-500 to-blue-700 border-blue-400 text-white shadow-blue-500/50'}
-                                ${card.marked[rowIndex] && card.marked[rowIndex][colIndex] ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 border-yellow-300 text-black shadow-yellow-400/50' : ''}
-                                ${cell.number === 0 ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-300 text-white font-bold shadow-green-400/50' : ''}
-                                hover:scale-105 hover:shadow-xl
-                              `}
-                              onClick={() => markNumber(card.id, rowIndex, colIndex)}
+                            className={`
+                              bingo-number aspect-square border-2 rounded-xl flex items-center justify-center text-sm font-bold cursor-pointer transition-all duration-300 shadow-lg
+                                ${card.marked[rowIndex] && card.marked[rowIndex][colIndex] ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-300 text-white shadow-green-400/50' : ''}
+                                ${!card.marked[rowIndex] || !card.marked[rowIndex][colIndex] ? (cell.called ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 border-yellow-300 text-black shadow-yellow-400/50' : 'bg-gradient-to-br from-blue-500 to-blue-700 border-blue-400 text-white shadow-blue-500/50') : ''}
+                              ${cell.number === 0 ? 'bg-gradient-to-br from-green-400 to-green-600 border-green-300 text-white font-bold shadow-green-400/50' : ''}
+                              hover:scale-105 hover:shadow-xl
+                            `}
+                            onClick={() => markNumber(card.id, rowIndex, colIndex)}
                               title={`${cell.letter}-${cell.number} (${cell.called ? 'Called' : 'Not Called'})`}
-                            >
-                              {cell.number === 0 ? 'FREE' : cell.number}
-                            </div>
+                          >
+                            {cell.number === 0 ? 'FREE' : cell.number}
+                          </div>
                           );
                         })
                       )}
@@ -914,7 +914,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
             </div>
             <div className="flex gap-1 mb-2">
               {Object.entries(powerUps).map(([type, count]) => (
-                <Button
+            <Button
                   key={type}
                   onClick={() => usePowerUp(type)}
                   disabled={count <= 0}
@@ -933,7 +933,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
                     </div>
                     <div className="text-xs font-bold">{count}</div>
                   </div>
-                </Button>
+            </Button>
               ))}
             </div>
           </CardContent>
