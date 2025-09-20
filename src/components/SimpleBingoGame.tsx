@@ -786,7 +786,21 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
   }
 
   return (
-    <div className="space-y-6">
+    <div 
+      className="space-y-6 min-h-screen p-4"
+      style={{
+        backgroundImage: 'url(/bingocard-background.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      }}
+    >
+      {/* Semi-transparent overlay for better content readability */}
+      <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
+      
+      {/* Game content with relative positioning */}
+      <div className="relative z-10">
       {/* Game Header */}
       <Card className="casino-card">
         <CardHeader>
@@ -876,20 +890,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
             <CardTitle>Your Bingo Card</CardTitle>
           </CardHeader>
           <CardContent>
-            <div 
-              className="relative p-4 rounded-2xl max-w-md mx-auto"
-              style={{
-                backgroundImage: 'url(/bingocard-background.jpg)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat'
-              }}
-            >
-              {/* Semi-transparent overlay for better text readability */}
-              <div className="absolute inset-0 bg-black/20 rounded-2xl"></div>
-              
-              {/* Bingo card grid */}
-              <div className="relative z-10 grid grid-cols-5 gap-1">
+            <div className="grid grid-cols-5 gap-1 max-w-md mx-auto">
               {/* Header */}
               {letters.map((letter, index) => (
                 <div 
@@ -929,7 +930,6 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
                           );
                         })
                       )}
-              </div>
             </div>
           </CardContent>
         </Card>
@@ -980,6 +980,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
           </CardContent>
         </Card>
       )}
+      </div>
     </div>
   );
 };
