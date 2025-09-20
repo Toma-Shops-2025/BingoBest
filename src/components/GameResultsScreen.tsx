@@ -155,23 +155,6 @@ const GameResultsScreen: React.FC<GameResultsScreenProps> = ({
           </CardContent>
         </Card>
 
-        {/* Patterns Completed */}
-        {results.patternsCompleted.length > 0 && (
-          <Card className="casino-card">
-            <CardHeader>
-              <CardTitle className="text-2xl text-center">Patterns Completed</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {results.patternsCompleted.map((pattern, index) => (
-                  <Badge key={index} variant="default" className="text-lg px-4 py-2">
-                    {pattern}
-                  </Badge>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Prize Pool */}
         <Card className="casino-card">

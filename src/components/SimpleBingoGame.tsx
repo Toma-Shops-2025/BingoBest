@@ -22,14 +22,15 @@ interface SimpleBingoGameProps {
   onGameEnd: () => void;
   onPatternCompleted?: (pattern: string, score: number) => void;
   autoStart?: boolean;
+  gameName?: string;
 }
 
-const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onPatternCompleted, autoStart = false }) => {
+const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onPatternCompleted, autoStart = false, gameName = 'Speed Bingo' }) => {
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [gameStatus, setGameStatus] = useState<'waiting' | 'playing' | 'finished'>('waiting');
   const [bingoCards, setBingoCards] = useState<BingoCard[]>([]);
-  const [gameTimer, setGameTimer] = useState(210); // 3 minutes 30 seconds
+  const [gameTimer, setGameTimer] = useState(120); // 2 minutes
   const [error, setError] = useState<string | null>(null);
   const [autoCallInterval, setAutoCallInterval] = useState<number | null>(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
@@ -623,7 +624,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
       setCalledNumbers([]);
       setCurrentNumber(null);
       setBingoCards([generateBingoCard()]);
-      setGameTimer(210);
+      setGameTimer(120);
       
       // Start with no power-ups
       setPowerUps({
@@ -772,7 +773,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
       <Card className="casino-card">
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            <span>Speed Bingo</span>
+            <span>{gameName}</span>
             <div className="flex items-center gap-4">
               {gameStatus === 'playing' && (
                 <Badge variant="secondary">
@@ -788,7 +789,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
         <CardContent>
           {gameStatus === 'waiting' && (
             <div className="text-center py-8">
-              <h3 className="text-xl font-semibold mb-4">Ready to Play Speed Bingo?</h3>
+              <h3 className="text-xl font-semibold mb-4">Ready to Play {gameName}?</h3>
               <div className="flex gap-4 justify-center">
                 <Button onClick={startGame} size="lg">
                   Start Game
@@ -902,17 +903,6 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
         </Card>
       ))}
       
-      {/* Score Display */}
-      {gameStatus === 'playing' && (
-        <Card className="casino-card">
-          <CardContent className="text-center py-6">
-            <div className="text-4xl font-bold text-yellow-400 mb-2">
-              Score: {playerScore.toLocaleString()}
-            </div>
-            <p className="text-sm text-gray-300">Automatic scoring - patterns detected instantly!</p>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Power-ups Display - Compact */}
       {gameStatus === 'playing' && (

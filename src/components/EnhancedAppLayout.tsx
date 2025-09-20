@@ -1321,6 +1321,7 @@ const EnhancedAppLayout: React.FC = () => {
             <ErrorBoundary>
               <SimpleBingoGame 
                 autoStart={false}
+                gameName={gameSession.currentRoom?.name || 'Speed Bingo'}
                 onWin={(winType, prize) => {
                   setShowWinModal(true);
                   
