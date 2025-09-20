@@ -24,6 +24,16 @@
         gtag('js', new Date());
         gtag('config', gaId);
       }
+
+      // Handle service worker messages for force reload
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data && event.data.type === 'FORCE_RELOAD') {
+            console.log('Service Worker: Force reload requested');
+            window.location.reload(true);
+          }
+        });
+      }
     </script>
     <meta name="description" content="Crypto Bingo Adventures - Play online bingo for real money at BingoBest! Join tournaments, win cash prizes, and enjoy the ultimate bingo experience with friends. Secure, fun, and rewarding!" />
     <meta name="keywords" content="online bingo, bingo for money, cash bingo, bingo tournaments, real money bingo, bingo games, bingo prizes, bingo online" />

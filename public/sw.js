@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bingobest-v4.0.0';
+const CACHE_NAME = 'bingobest-v4.1.0';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -29,6 +29,7 @@ self.addEventListener('install', (event) => {
         return Promise.resolve();
       })
   );
+  // Force immediate activation and skip waiting
   self.skipWaiting();
 });
 
@@ -50,10 +51,15 @@ self.addEventListener('activate', (event) => {
       return self.clients.matchAll().then((clients) => {
         clients.forEach((client) => {
           client.postMessage({ type: 'FORCE_RELOAD' });
+          // Force navigation to ensure fresh content
+          if (client.url && client.navigate) {
+            client.navigate(client.url);
+          }
         });
       });
     })
   );
+  // Immediately take control of all clients
   self.clients.claim();
 });
 
@@ -70,11 +76,37 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // For navigation requests (main page), always try network first
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Update cache with fresh content
+          if (response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME)
+              .then((cache) => {
+                cache.put(event.request, responseToCache);
+              })
+              .catch((error) => {
+                console.log('Service Worker: Cache put failed', error);
+              });
+          }
+          return response;
+        })
+        .catch(() => {
+          // Fallback to cache if network fails
+          return caches.match('/');
+        })
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request)
+        // For non-navigation requests, try network first, then cache
+        return fetch(event.request)
           .then((fetchResponse) => {
             // Don't cache non-GET requests
             if (event.request.method !== 'GET') {
@@ -96,13 +128,9 @@ self.addEventListener('fetch', (event) => {
             return fetchResponse;
           })
           .catch((error) => {
-            console.log('Service Worker: Fetch failed', error);
-            // Return offline page for navigation requests
-            if (event.request.mode === 'navigate') {
-              return caches.match('/');
-            }
-            // For other requests, just return the error
-            throw error;
+            console.log('Service Worker: Fetch failed, using cache', error);
+            // Return cached version if network fails
+            return response;
           });
       })
   );

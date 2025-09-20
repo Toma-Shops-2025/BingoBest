@@ -2,7 +2,7 @@
   "name": "BingoBest - Crypto Bingo Adventures",
   "short_name": "BingoBest",
   "description": "Crypto Bingo Adventures - The ultimate online bingo experience with real money prizes, tournaments, and social features.",
-  "start_url": "/",
+  "start_url": "/?v=4.1.0",
   "display": "standalone",
   "background_color": "#8B5CF6",
   "theme_color": "#8B5CF6",
