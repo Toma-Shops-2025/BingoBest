@@ -47,6 +47,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
   const [successfulDaubs, setSuccessfulDaubs] = useState(0);
   const [successfulMarks, setSuccessfulMarks] = useState(0);
   const [powerUpTimer, setPowerUpTimer] = useState(0);
+  const [powerUpMeter, setPowerUpMeter] = useState(0); // 0-3, fills 1/3 per daub
   
   // Use ref to track game status for immediate access
   const gameStatusRef = useRef<'waiting' | 'playing' | 'finished'>('waiting');
@@ -70,9 +71,9 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
         console.log('🎯 2x Multiplier activated! Next pattern gives double points!');
         break;
       case 'timefreeze':
-        // Add 30 seconds to timer
-        setGameTimer(prev => prev + 30);
-        console.log('🎯 Time Freeze! +30 seconds added to timer!');
+        // Add 10 seconds to timer
+        setGameTimer(prev => prev + 10);
+        console.log('🎯 Time Freeze! +10 seconds added to timer!');
         break;
       case 'lucky':
         // Next number called will be a lucky number (guaranteed to be on card)
@@ -387,13 +388,14 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
                 return card;
               }));
               
-              // Track successful mark for power-up awarding
-              setSuccessfulMarks(prev => {
-                const newCount = prev + 1;
-                if (newCount % 3 === 0) {
+              // Track successful mark for power-up meter
+              setPowerUpMeter(prev => {
+                const newMeter = prev + 1;
+                if (newMeter >= 3) {
                   awardRandomPowerUp();
+                  return 0; // Reset meter
                 }
-                return newCount;
+                return newMeter;
               });
               return;
             }
@@ -492,13 +494,14 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
         return card;
       }));
       
-      // Track successful mark for power-up awarding (every 3 marks)
-      setSuccessfulMarks(prev => {
-        const newCount = prev + 1;
-        if (newCount % 3 === 0) {
+      // Track successful mark for power-up meter
+      setPowerUpMeter(prev => {
+        const newMeter = prev + 1;
+        if (newMeter >= 3) {
           awardRandomPowerUp();
+          return 0; // Reset meter
         }
-        return newCount;
+        return newMeter;
       });
     } catch (error) {
       console.error('Error marking number:', error);
@@ -662,6 +665,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
         'timefreeze': 0,
         'lucky': 0
       });
+      setPowerUpMeter(0); // Reset power-up meter
       
       // Reset successful daubs counter
       setSuccessfulDaubs(0);
@@ -726,22 +730,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
     }
   }, [gameStatus, gameTimer]);
 
-  // Power-up timer effect (award power-up every 25 seconds)
-  useEffect(() => {
-    if (gameStatus === 'playing') {
-      const timer = setTimeout(() => {
-        setPowerUpTimer(prev => {
-          const newTime = prev + 1;
-          if (newTime >= 25) {
-            awardRandomPowerUp();
-            return 0; // Reset timer
-          }
-          return newTime;
-        });
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [gameStatus, powerUpTimer]);
+  // Power-up meter is now handled in markNumber function
 
   // Cleanup effect
   useEffect(() => {
@@ -940,8 +929,15 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-yellow-400 font-bold text-sm">🎁 Power-ups</h3>
               <div className="text-xs text-gray-300">
-                Timer: {powerUpTimer}/25s
+                Meter: {powerUpMeter}/3
               </div>
+            </div>
+            {/* Power-up meter visualization */}
+            <div className="w-full bg-gray-700 rounded-full h-2 mb-2">
+              <div 
+                className="bg-gradient-to-r from-yellow-400 to-yellow-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${(powerUpMeter / 3) * 100}%` }}
+              ></div>
             </div>
             <div className="flex gap-1 mb-2">
               {Object.entries(powerUps).map(([type, count]) => (
