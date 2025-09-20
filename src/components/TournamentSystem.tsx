@@ -18,7 +18,7 @@ const TournamentSystem: React.FC<TournamentSystemProps> = ({
   onJoinTournament,
   onSpectateTournament
 }) => {
-  const [selectedTab, setSelectedTab] = useState<'upcoming' | 'active' | 'completed'>('upcoming');
+  const [selectedTab, setSelectedTab] = useState<'upcoming' | 'active' | 'completed'>('active');
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update current time every second for accurate countdowns
@@ -35,6 +35,9 @@ const TournamentSystem: React.FC<TournamentSystemProps> = ({
     const hash = window.location.hash.replace('#', '');
     if (['upcoming', 'active', 'completed'].includes(hash)) {
       setSelectedTab(hash as 'upcoming' | 'active' | 'completed');
+    } else {
+      // Default to active tab if no hash is provided
+      setSelectedTab('active');
     }
   }, []);
 
