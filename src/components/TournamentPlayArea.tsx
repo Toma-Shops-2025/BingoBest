@@ -34,7 +34,7 @@ const TournamentPlayArea: React.FC<TournamentPlayAreaProps> = ({
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [gamePhase, setGamePhase] = useState<'waiting' | 'starting' | 'playing' | 'finished'>('waiting');
   const [currentRound, setCurrentRound] = useState(1);
-  const [totalRounds] = useState(5);
+  const [totalRounds] = useState(1); // Single round tournaments for now
 
   // Update countdown timer
   useEffect(() => {
@@ -257,11 +257,11 @@ const TournamentPlayArea: React.FC<TournamentPlayAreaProps> = ({
                 Tournament Rules
               </h4>
               <ul className="space-y-2 text-white/80 text-sm">
-                <li>• Complete all {totalRounds} rounds to finish the tournament</li>
-                <li>• Each round has different bingo patterns to complete</li>
-                <li>• Points are awarded based on speed and accuracy</li>
-                <li>• Top players advance to the next round</li>
-                <li>• Winner takes the entire prize pool!</li>
+                <li>• Complete bingo patterns as fast as possible</li>
+                <li>• Points are awarded for each number marked and pattern completed</li>
+                <li>• Higher scores earn better tournament rankings</li>
+                <li>• Tournament lasts 2 minutes - play your best!</li>
+                <li>• Winner takes the prize pool based on final ranking!</li>
               </ul>
             </div>
           </CardContent>

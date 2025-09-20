@@ -161,7 +161,9 @@ const EnhancedAppLayout: React.FC = () => {
     gameTimer: 300,
     currentSessionId: null as string | null,
     playerScore: 0,
-    completedPatterns: [] as string[]
+    completedPatterns: [] as string[],
+    gameType: 'bingo' as 'bingo' | 'tournament',
+    tournamentId: null as string | null
   });
   
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
@@ -523,8 +525,8 @@ const EnhancedAppLayout: React.FC = () => {
             maxParticipants: 50,
             currentParticipants: 23,
             prizePool: 10.00,
-            startTime: new Date(now.getTime() + 5 * 60 * 1000), // 5 minutes from now
-            endTime: new Date(now.getTime() + 2 * 60 * 60 * 1000), // 2 hours from now
+            startTime: new Date(now.getTime() + 2 * 60 * 1000), // 2 minutes from now
+            endTime: new Date(now.getTime() + 12 * 60 * 1000), // 12 minutes from now (10 min game)
             status: 'upcoming' as const,
             rounds: [],
             winners: [],
@@ -538,8 +540,8 @@ const EnhancedAppLayout: React.FC = () => {
             maxParticipants: 20,
             currentParticipants: 8,
             prizePool: 10.00,
-            startTime: new Date(now.getTime() + 30 * 1000), // 30 seconds from now
-            endTime: new Date(now.getTime() + 30 * 60 * 1000), // 30 minutes from now
+            startTime: new Date(now.getTime() + 1 * 60 * 1000), // 1 minute from now
+            endTime: new Date(now.getTime() + 11 * 60 * 1000), // 11 minutes from now (10 min game)
             status: 'upcoming' as const,
             rounds: [],
             winners: [],
@@ -553,8 +555,8 @@ const EnhancedAppLayout: React.FC = () => {
             maxParticipants: 100,
             currentParticipants: 67,
             prizePool: 25.00,
-            startTime: new Date(now.getTime() + 2 * 60 * 60 * 1000), // 2 hours from now
-            endTime: new Date(now.getTime() + 6 * 60 * 60 * 1000), // 6 hours from now
+            startTime: new Date(now.getTime() + 3 * 60 * 1000), // 3 minutes from now
+            endTime: new Date(now.getTime() + 13 * 60 * 1000), // 13 minutes from now (10 min game)
             status: 'upcoming' as const,
             rounds: [],
             winners: [],
@@ -568,8 +570,8 @@ const EnhancedAppLayout: React.FC = () => {
             maxParticipants: 30,
             currentParticipants: 28,
             prizePool: 25.00,
-            startTime: new Date(now.getTime() - 30 * 60 * 1000), // 30 minutes ago
-            endTime: new Date(now.getTime() + 30 * 60 * 1000), // 30 minutes from now
+            startTime: new Date(now.getTime() - 5 * 60 * 1000), // 5 minutes ago
+            endTime: new Date(now.getTime() + 5 * 60 * 1000), // 5 minutes from now
             status: 'active' as const,
             rounds: [],
             winners: [],
@@ -583,8 +585,8 @@ const EnhancedAppLayout: React.FC = () => {
             maxParticipants: 200,
             currentParticipants: 156,
             prizePool: 100.00,
-            startTime: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000), // 1 week from now
-            endTime: new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000), // 1 week + 1 day
+            startTime: new Date(now.getTime() + 4 * 60 * 1000), // 4 minutes from now
+            endTime: new Date(now.getTime() + 14 * 60 * 1000), // 14 minutes from now (10 min game)
             status: 'upcoming' as const,
             rounds: [],
             winners: [],
@@ -1433,6 +1435,22 @@ const EnhancedAppLayout: React.FC = () => {
               // Start the actual bingo game for the tournament
               setShowBingoGame(true);
               setShowTournamentPlay(false);
+              // Set tournament context for the game
+              setGameSession(prev => ({
+                ...prev,
+                currentRoom: {
+                  id: selectedTournament.id,
+                  name: selectedTournament.name,
+                  maxPlayers: selectedTournament.maxParticipants,
+                  currentPlayers: selectedTournament.currentParticipants,
+                  entryFee: selectedTournament.entryFee,
+                  prizePool: selectedTournament.prizePool,
+                  status: 'playing' as const,
+                  createdAt: selectedTournament.startTime
+                },
+                gameType: 'tournament',
+                tournamentId: selectedTournament.id
+              }));
             }}
           />
         ) : (
