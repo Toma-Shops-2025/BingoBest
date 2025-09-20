@@ -1005,6 +1005,97 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
             </Button>
               ))}
             </div>
+            
+            {/* Power-up Information */}
+            <div className="mt-3 p-2 bg-black/20 rounded-lg">
+              <div className="text-xs text-gray-300 mb-2">
+                <strong className="text-yellow-400">How to Earn Power-ups:</strong>
+              </div>
+              <div className="text-xs text-gray-400 space-y-1">
+                <div>• Fill the meter by daubing numbers (1/3 per daub)</div>
+                <div>• When meter is full, you get a random power-up!</div>
+                <div>• Power-ups reset each game</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Power-up Guide - Show when game is waiting or finished */}
+      {(gameStatus === 'waiting' || gameStatus === 'finished') && (
+        <Card className="casino-card mb-4">
+          <CardContent className="p-4">
+            <h3 className="text-yellow-400 font-bold text-lg mb-4 flex items-center gap-2">
+              🎁 Power-up System Guide
+            </h3>
+            
+            <div className="space-y-4">
+              {/* How to Earn */}
+              <div className="bg-blue-500/10 border border-blue-400/30 rounded-lg p-3">
+                <h4 className="text-blue-400 font-bold text-sm mb-2">🎯 How to Earn Power-ups</h4>
+                <ul className="text-xs text-gray-300 space-y-1">
+                  <li>• <strong>Daub Numbers:</strong> Every time you mark a number on your bingo card, the power-up meter fills by 1/3</li>
+                  <li>• <strong>Meter Full:</strong> When the meter reaches 3/3, you automatically receive one random power-up</li>
+                  <li>• <strong>Reset:</strong> The meter resets to 0 after earning a power-up</li>
+                  <li>• <strong>New Game:</strong> All power-ups reset when you start a new game</li>
+                </ul>
+              </div>
+
+              {/* Power-up Types */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="bg-green-500/10 border border-green-400/30 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">🎯</span>
+                    <h4 className="text-green-400 font-bold text-sm">Wildcard</h4>
+                  </div>
+                  <p className="text-xs text-gray-300">
+                    <strong>Effect:</strong> Mark any number on your card as called, even if it hasn't been called yet!
+                  </p>
+                </div>
+
+                <div className="bg-yellow-500/10 border border-yellow-400/30 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">⚡</span>
+                    <h4 className="text-yellow-400 font-bold text-sm">Multiplier</h4>
+                  </div>
+                  <p className="text-xs text-gray-300">
+                    <strong>Effect:</strong> Double the points for your next pattern completion!
+                  </p>
+                </div>
+
+                <div className="bg-blue-500/10 border border-blue-400/30 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">⏰</span>
+                    <h4 className="text-blue-400 font-bold text-sm">Time Freeze</h4>
+                  </div>
+                  <p className="text-xs text-gray-300">
+                    <strong>Effect:</strong> Add 10 seconds to the game timer for more time to play!
+                  </p>
+                </div>
+
+                <div className="bg-purple-500/10 border border-purple-400/30 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">🍀</span>
+                    <h4 className="text-purple-400 font-bold text-sm">Lucky Number</h4>
+                  </div>
+                  <p className="text-xs text-gray-300">
+                    <strong>Effect:</strong> The next number called will definitely be on your bingo card!
+                  </p>
+                </div>
+              </div>
+
+              {/* Strategy Tips */}
+              <div className="bg-orange-500/10 border border-orange-400/30 rounded-lg p-3">
+                <h4 className="text-orange-400 font-bold text-sm mb-2">💡 Strategy Tips</h4>
+                <ul className="text-xs text-gray-300 space-y-1">
+                  <li>• <strong>Save Power-ups:</strong> Don't use them immediately - wait for the right moment!</li>
+                  <li>• <strong>Wildcard:</strong> Use when you're close to completing a pattern</li>
+                  <li>• <strong>Multiplier:</strong> Save for high-value patterns like Full House or Blackout</li>
+                  <li>• <strong>Time Freeze:</strong> Use when you're running out of time but close to winning</li>
+                  <li>• <strong>Lucky Number:</strong> Use when you need a specific number to complete a pattern</li>
+                </ul>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
