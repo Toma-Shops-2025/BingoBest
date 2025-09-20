@@ -156,31 +156,6 @@ const GameResultsScreen: React.FC<GameResultsScreenProps> = ({
         </Card>
 
 
-        {/* Prize Pool */}
-        <Card className="casino-card">
-          <CardHeader>
-            <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
-              <Gift className="w-6 h-6 text-yellow-400" />
-              Prize Pool
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="bg-yellow-500/20 p-4 rounded-lg border border-yellow-400/50">
-                <div className="text-yellow-400 font-bold text-2xl">${results.prizes.first.toLocaleString()}</div>
-                <div className="text-yellow-300">1st Place</div>
-              </div>
-              <div className="bg-gray-500/20 p-4 rounded-lg border border-gray-400/50">
-                <div className="text-gray-400 font-bold text-2xl">${results.prizes.second.toLocaleString()}</div>
-                <div className="text-gray-300">2nd Place</div>
-              </div>
-              <div className="bg-amber-500/20 p-4 rounded-lg border border-amber-400/50">
-                <div className="text-amber-400 font-bold text-2xl">${results.prizes.third.toLocaleString()}</div>
-                <div className="text-amber-300">3rd Place</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Action Buttons */}
         <Card className="casino-card">
