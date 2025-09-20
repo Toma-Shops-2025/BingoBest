@@ -310,19 +310,19 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
           let points = 0;
           switch (winType) {
             case 'line':
-              points = 250000; // 25,000 * 10
+              points = 125000; // 25,000 * 5 (reduced by half)
               break;
             case 'diagonal':
-              points = 500000; // 50,000 * 10
+              points = 250000; // 50,000 * 5 (reduced by half)
               break;
             case '4-corners':
-              points = 100000; // 10,000 * 10
+              points = 50000; // 10,000 * 5 (reduced by half)
               break;
             case 'x-pattern':
-              points = 1000000; // 100,000 * 10
+              points = 500000; // 100,000 * 5 (reduced by half)
               break;
             case 'full-house':
-              points = 5000000; // 500,000 * 10
+              points = 2500000; // 500,000 * 5 (reduced by half)
               break;
           }
           
@@ -416,7 +416,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
             newMarked[row][col] = !newMarked[row][col];
             
             // Award points for successful mark (automatic scoring)
-            const markPoints = 1000; // Base points for marking a number
+            const markPoints = 500; // Base points for marking a number
             setPlayerScore(prev => {
               const newScore = prev + markPoints;
               console.log(`🎯 Number marked: +${markPoints} points! New score: ${newScore}`);
@@ -435,19 +435,19 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
               let points = 0;
               switch (winType) {
                 case 'line':
-                  points = 250000; // 25,000 * 10
+                  points = 125000; // 25,000 * 5 (reduced by half)
                   break;
                 case 'diagonal':
-                  points = 500000; // 50,000 * 10
+                  points = 250000; // 50,000 * 5 (reduced by half)
                   break;
                 case '4-corners':
-                  points = 100000; // 10,000 * 10
+                  points = 50000; // 10,000 * 5 (reduced by half)
                   break;
                 case 'x-pattern':
-                  points = 1000000; // 100,000 * 10
+                  points = 500000; // 100,000 * 5 (reduced by half)
                   break;
                 case 'full-house':
-                  points = 5000000; // 500,000 * 10
+                  points = 2500000; // 500,000 * 5 (reduced by half)
                   break;
               }
               
