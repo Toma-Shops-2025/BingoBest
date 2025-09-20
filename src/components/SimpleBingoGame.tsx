@@ -61,20 +61,20 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
     if (gameType === 'tournament' && gameId) {
       // Tournament backgrounds
       const tournamentBackgrounds: Record<string, string> = {
-        'hourly-blast': '/backgrounds/tournament-hourly-blast.jpg',
-        'quick-strike': '/backgrounds/tournament-quick-strike.jpg',
-        'daily-championship': '/backgrounds/tournament-daily-championship.jpg',
-        'mega-jackpot': '/backgrounds/tournament-mega-jackpot.jpg'
+        'hourly-blast': '/tournament-hourly-blast.png',
+        'quick-strike': '/tournament-quick-strike.jpg',
+        'daily-championship': '/tournament-daily-championship.jpg',
+        'mega-jackpot': '/tournament-mega-jackpot.jpg'
       };
       return tournamentBackgrounds[gameId] || '/bingocard-background.jpg';
     } else if (gameType === 'bingo' && gameId) {
       // Game room backgrounds
       const gameRoomBackgrounds: Record<string, string> = {
-        'speed-bingo': '/backgrounds/game-speed-bingo.jpg',
-        'classic-bingo': '/backgrounds/game-classic-bingo.jpg',
-        'high-stakes-arena': '/backgrounds/game-high-stakes-arena.jpg',
-        'daily-tournament': '/backgrounds/game-daily-tournament.jpg',
-        'weekly-championship': '/backgrounds/game-weekly-championship.jpg'
+        'speed-bingo': '/game-speed-bingo.jpg',
+        'classic-bingo': '/game-classic-bingo.png',
+        'high-stakes-arena': '/game-high-stakes-arena.jpg',
+        'daily-tournament': '/game-daily-tournament.jpg',
+        'weekly-championship': '/game-weekly-championship.jpg'
       };
       return gameRoomBackgrounds[gameId] || '/bingocard-background.jpg';
     }
