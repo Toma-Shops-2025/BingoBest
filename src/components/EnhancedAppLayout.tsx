@@ -258,7 +258,7 @@ const EnhancedAppLayout: React.FC = () => {
       prizePool: calculatePrizePool(config),
       gameType: config.gameType === 'bingo' ? 'bingo' : 'tournament',
       status: 'waiting' as const,
-      timeLeft: config.duration * 60,
+      // timeLeft removed
       rules: getGameRules(config.id),
       powerUpsAllowed: true,
       minLevel: 1,
@@ -277,7 +277,7 @@ const EnhancedAppLayout: React.FC = () => {
   const [gameResults, setGameResults] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
-  const [roomTimers, setRoomTimers] = useState<Record<string, number>>({});
+  // Room timers state removed
   const [showSpectatorMode, setShowSpectatorMode] = useState(false);
   const [spectatingTournament, setSpectatingTournament] = useState<string | null>(null);
 
@@ -299,31 +299,7 @@ const EnhancedAppLayout: React.FC = () => {
     }
   }, [user, activeTab]);
 
-  // Initialize room timers
-  useEffect(() => {
-    const initialTimers: Record<string, number> = {};
-    gameRooms.forEach(room => {
-      initialTimers[room.id] = room.timeLeft;
-    });
-    setRoomTimers(initialTimers);
-  }, []);
-
-  // Update room timers every second
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRoomTimers(prev => {
-        const newTimers = { ...prev };
-        Object.keys(newTimers).forEach(roomId => {
-          if (newTimers[roomId] > 0) {
-            newTimers[roomId] -= 1;
-          }
-        });
-        return newTimers;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // Room timers removed - no longer needed
 
   const heroImage = "/1000015560.png";
   const ballImages = [
@@ -1152,10 +1128,7 @@ const EnhancedAppLayout: React.FC = () => {
               }}
             >
               <GameRooms
-                rooms={gameRooms.map(room => ({
-                  ...room,
-                  timeLeft: roomTimers[room.id] || room.timeLeft
-                }))}
+                rooms={gameRooms}
                 onJoinRoom={handleJoinRoom}
                 playerBalance={player.balance}
               />

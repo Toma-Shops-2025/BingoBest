@@ -29,7 +29,7 @@ const GameRooms: React.FC<GameRoomsProps> = ({ rooms, onJoinRoom, playerBalance 
               </span>
             </div>
             
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="flex items-center space-x-3">
                 <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
                   <span className="text-green-400 text-sm">$</span>
@@ -57,16 +57,6 @@ const GameRooms: React.FC<GameRoomsProps> = ({ rooms, onJoinRoom, playerBalance 
                 <div>
                   <p className="text-gray-300 text-sm">Players</p>
                   <p className="text-white font-semibold">{room.playerCount}/{room.maxPlayers}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-purple-500/20 rounded-full flex items-center justify-center">
-                  <span className="text-purple-400 text-sm">⏰</span>
-                </div>
-                <div>
-                  <p className="text-gray-300 text-sm">Time Left</p>
-                  <p className="text-blue-400 font-bold">{Math.floor(room.timeLeft / 60)}:{(room.timeLeft % 60).toString().padStart(2, '0')}</p>
                 </div>
               </div>
             </div>

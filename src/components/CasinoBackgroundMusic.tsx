@@ -16,25 +16,10 @@ const CasinoBackgroundMusic: React.FC<CasinoBackgroundMusicProps> = ({ enabled =
   const [shuffleOrder, setShuffleOrder] = useState<number[]>([]);
   const [shuffleIndex, setShuffleIndex] = useState(0);
 
-  // Available casino ambient tracks
-  const tracks = [
-    '/audio/music/casino-ambient-01.mp3',
-    '/audio/music/casino-ambient-02.mp3',
-    '/audio/music/casino-ambient-03.mp3',
-    '/audio/music/casino-ambient-04.mp3',
-    '/audio/music/casino-ambient-05.mp3',
-    '/audio/music/casino-ambient-06.mp3',
-    '/audio/music/casino-ambient-07.mp3',
-    '/audio/music/casino-ambient-08.mp3',
-    '/audio/music/casino-ambient-09.mp3',
-    '/audio/music/casino-ambient-10.mp3',
-    '/audio/music/casino-ambient-11.mp3',
-    '/audio/music/casino-ambient-12.mp3',
-    '/audio/music/casino-ambient-13.mp3',
-    '/audio/music/casino-ambient-14.mp3',
-    '/audio/music/casino-ambient-15.mp3',
-    '/audio/music/casino-ambient-16.mp3'
-  ];
+  // Available casino ambient tracks (61 tracks total)
+  const tracks = Array.from({ length: 61 }, (_, i) => 
+    `/audio/music/casino-ambient-${String(i + 1).padStart(2, '0')}.mp3`
+  );
 
   // Create shuffled playlist
   const createShuffleOrder = () => {
