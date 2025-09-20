@@ -313,27 +313,9 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
           }))
         );
         
-        // Auto-daub disabled on mobile, enabled on desktop
-        const isDesktop = typeof window !== 'undefined' && window.innerWidth > 768;
+        // Auto-daubing completely disabled - manual marking required for all platforms
         let newMarked = card.marked;
-        
-        if (isDesktop) {
-          // Auto-daub the called number on desktop
-          newMarked = card.marked.map((row, rowIndex) => 
-            row.map((cell, colIndex) => {
-              const cellNumber = card.numbers[colIndex][rowIndex].number;
-              if (cellNumber === randomNumber) {
-                console.log(`🎯 Auto-daubing ${randomNumber} on desktop`);
-                return true; // Auto-mark this number
-              }
-              return cell; // Keep existing state
-            })
-          );
-        } else {
-          // On mobile, still check if the number exists on the card for win detection
-          // but don't auto-mark it
-          console.log(`🎯 Mobile detected - manual marking required for ${randomNumber}`);
-        }
+        console.log(`🎯 Manual marking required for ${randomNumber} - auto-daubing disabled`);
         
         // Check for win after auto-daubing (works on both desktop and mobile)
         const winType = checkWin(newMarked, newNumbers);
@@ -341,19 +323,19 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
           let points = 0;
           switch (winType) {
             case 'line':
-              points = 25000;
+              points = 250000; // 25,000 * 10
               break;
             case 'diagonal':
-              points = 50000;
+              points = 500000; // 50,000 * 10
               break;
             case '4-corners':
-              points = 10000;
+              points = 100000; // 10,000 * 10
               break;
             case 'x-pattern':
-              points = 100000;
+              points = 1000000; // 100,000 * 10
               break;
             case 'full-house':
-              points = 500000;
+              points = 5000000; // 500,000 * 10
               break;
           }
           
@@ -433,25 +415,30 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, aut
             
             newMarked[row][col] = !newMarked[row][col];
             
+            // Award points for successful mark (automatic scoring)
+            const markPoints = 1000; // Base points for marking a number
+            setPlayerScore(prev => prev + markPoints);
+            console.log(`🎯 Number marked: +${markPoints} points!`);
+            
             // Check for win
             const winType = checkWin(newMarked, card.numbers);
             if (winType) {
               let points = 0;
               switch (winType) {
                 case 'line':
-                  points = 25000;
+                  points = 250000; // 25,000 * 10
                   break;
                 case 'diagonal':
-                  points = 50000;
+                  points = 500000; // 50,000 * 10
                   break;
                 case '4-corners':
-                  points = 10000;
+                  points = 100000; // 10,000 * 10
                   break;
                 case 'x-pattern':
-                  points = 100000;
+                  points = 1000000; // 100,000 * 10
                   break;
                 case 'full-house':
-                  points = 500000;
+                  points = 5000000; // 500,000 * 10
                   break;
               }
               
