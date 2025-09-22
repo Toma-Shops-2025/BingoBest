@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import PayPalPayment from './PayPalPayment';
+import WithdrawalModal from './WithdrawalModal';
 
 interface SimplePaymentSystemProps {
   playerBalance: number;
@@ -21,6 +22,7 @@ const SimplePaymentSystem: React.FC<SimplePaymentSystemProps> = ({
   const [showAddFunds, setShowAddFunds] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
   const [showPayPal, setShowPayPal] = useState(false);
+  const [showWithdrawalModal, setShowWithdrawalModal] = useState(false);
 
   const handleAddFunds = () => {
     if (addAmount > 0) {
@@ -38,6 +40,20 @@ const SimplePaymentSystem: React.FC<SimplePaymentSystemProps> = ({
     } else if (withdrawAmount > playerBalance) {
       alert('Insufficient funds!');
     }
+  };
+
+  const handleAdvancedWithdraw = (amount: number, method: string, details: any) => {
+    onWithdraw(amount);
+    setShowWithdrawalModal(false);
+    
+    const methodNames = {
+      paypal: 'PayPal',
+      bank: 'Bank Transfer',
+      crypto: 'Cryptocurrency',
+      check: 'Check by Mail'
+    };
+    
+    alert(`Withdrawal request submitted!\n\nAmount: $${amount.toFixed(2)}\nMethod: ${methodNames[method as keyof typeof methodNames]}\n\nYour withdrawal will be processed within 1-3 business days.`);
   };
 
   const handlePayPalSuccess = (amount: number, transactionId: string) => {
@@ -142,30 +158,37 @@ const SimplePaymentSystem: React.FC<SimplePaymentSystemProps> = ({
           <CardTitle>💸 Withdraw Winnings</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Amount to Withdraw</Label>
-            <div className="flex gap-2">
-              <Input
-                type="number"
-                value={withdrawAmount}
-                onChange={(e) => setWithdrawAmount(parseFloat(e.target.value) || 0)}
-                min="1"
-                max={playerBalance}
-                step="0.01"
-                className="flex-1"
-              />
-              <Button 
-                onClick={handleWithdraw} 
-                className="bg-blue-600 hover:bg-blue-700"
-                disabled={withdrawAmount <= 0 || withdrawAmount > playerBalance}
-              >
-                Withdraw ${withdrawAmount.toFixed(2)}
-              </Button>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-green-600 mb-2">
+              ${playerBalance.toFixed(2)}
+            </div>
+            <div className="text-sm text-gray-600 mb-4">
+              Available for withdrawal
             </div>
           </div>
-          
-          <div className="text-sm text-gray-600">
-            Maximum withdrawal: ${playerBalance.toFixed(2)}
+
+          <div className="grid grid-cols-2 gap-2">
+            <Button 
+              onClick={() => setShowWithdrawalModal(true)}
+              className="bg-blue-600 hover:bg-blue-700"
+              disabled={playerBalance <= 0}
+            >
+              💳 Withdraw Funds
+            </Button>
+            <Button 
+              onClick={() => {
+                setWithdrawAmount(playerBalance);
+                handleWithdraw();
+              }} 
+              variant="outline"
+              disabled={playerBalance <= 0}
+            >
+              Quick Withdraw All
+            </Button>
+          </div>
+
+          <div className="text-xs text-gray-500 text-center">
+            Choose from PayPal, Bank Transfer, Crypto, or Check by Mail
           </div>
         </CardContent>
       </Card>
@@ -205,6 +228,14 @@ const SimplePaymentSystem: React.FC<SimplePaymentSystemProps> = ({
           </div>
         </div>
       )}
+
+      {/* Withdrawal Modal */}
+      <WithdrawalModal
+        isOpen={showWithdrawalModal}
+        onClose={() => setShowWithdrawalModal(false)}
+        playerBalance={playerBalance}
+        onWithdraw={handleAdvancedWithdraw}
+      />
     </div>
   );
 };
