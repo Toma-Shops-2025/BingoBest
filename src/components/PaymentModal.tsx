@@ -1,5 +1,5 @@
 import React from 'react';
-import InstantPaymentModal from './InstantPaymentModal';
+import VisiblePaymentModal from './VisiblePaymentModal';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -15,7 +15,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   onPaymentSuccess 
 }) => {
   return (
-    <InstantPaymentModal
+    <VisiblePaymentModal
       isOpen={isOpen}
       onClose={onClose}
       amount={amount}
