@@ -9,7 +9,8 @@ import {
   Users, 
   Star, 
   Crown, 
-  Eye 
+  Eye,
+  Wallet
 } from 'lucide-react';
 
 interface MainNavigationProps {
@@ -24,6 +25,7 @@ const MainNavigation: React.FC<MainNavigationProps> = ({
   const navItems = [
     { id: 'home', label: 'Game Rooms', icon: Home },
     { id: 'tournaments', label: 'Tournaments', icon: Trophy },
+    { id: 'wallet', label: 'Wallet', icon: Wallet },
     { id: 'achievements', label: 'Achievements', icon: Target },
     { id: 'challenges', label: 'Daily', icon: Calendar },
     { id: 'friends', label: 'Friends', icon: Users },

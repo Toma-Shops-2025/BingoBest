@@ -13,7 +13,7 @@ import BalanceBreakdown from './BalanceBreakdown';
 import BingoCard from './BingoCard';
 import NumberDisplay from './NumberDisplay';
 import GameRooms from './GameRooms';
-import PaymentModal from './PaymentModal';
+import SimplePaymentSystem from './SimplePaymentSystem';
 import Leaderboard from './Leaderboard';
 import GameInstructions from './GameInstructions';
 import WinModal from './WinModal';
@@ -177,10 +177,8 @@ const EnhancedAppLayout: React.FC = () => {
   }>>>({});
   
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showWinModal, setShowWinModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [paymentAmount, setPaymentAmount] = useState(0);
   const [activeTab, setActiveTab] = useState('home');
   
   // Tournament routing state
@@ -314,10 +312,25 @@ const EnhancedAppLayout: React.FC = () => {
   ];
 
 
+  const handleAddFunds = (amount: number) => {
+    setPlayer(prev => ({
+      ...prev,
+      balance: (prev.balance || 0) + amount
+    }));
+  };
+
+  const handleWithdraw = (amount: number) => {
+    if (amount <= (player.balance || 0)) {
+      setPlayer(prev => ({
+        ...prev,
+        balance: (prev.balance || 0) - amount
+      }));
+    }
+  };
+
   const handleAddFundsClick = () => {
-    setPaymentAmount(10);
-    setShowPaymentModal(true);
-    // Scroll to top when opening payment modal
+    setActiveTab('wallet');
+    // Scroll to top when opening wallet
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -437,49 +450,6 @@ const EnhancedAppLayout: React.FC = () => {
   }, [gameRooms, player.balance]);
 
 
-  const handlePaymentSuccess = async (method: string, transactionId: string) => {
-    setIsLoading(true);
-    try {
-      console.log(`Payment successful: ${method} - ${transactionId}`);
-      
-      // Record deposit in financial system
-      await financialSafety.processDeposit(
-        user?.id || 'anonymous',
-        paymentAmount,
-        method === 'paypal' ? 'paypal_payment' : 'crypto_payment'
-      );
-
-      // Update balance in database
-      if (user) {
-        const { error } = await supabase
-          .from('users')
-          .update({ balance: player.balance + paymentAmount })
-          .eq('id', user.id);
-        
-        if (error) {
-          console.error('Error updating balance:', error);
-          alert('Payment processed but failed to update balance. Please contact support.');
-          return;
-        }
-      }
-      
-      // Update local state
-      setPlayer(prev => ({
-        ...prev,
-        balance: (prev.balance || 0) + paymentAmount
-      }));
-      
-      setShowPaymentModal(false);
-      
-      const methodName = method === 'paypal' ? 'PayPal' : method.toUpperCase();
-      alert(`Payment successful! Added $${paymentAmount} to your balance via ${methodName}.\n\nTransaction ID: ${transactionId}\nYour new balance is $${((player.balance || 0) + paymentAmount).toFixed(2)}`);
-    } catch (error) {
-      console.error('Payment success error:', error);
-      alert('Payment processed but there was an error updating your balance. Please contact support.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSpectateTournament = (tournamentId: string) => {
     setSpectatingTournament(tournamentId);
@@ -1122,6 +1092,16 @@ const EnhancedAppLayout: React.FC = () => {
             />
           </div>
         );
+      case 'wallet':
+        return (
+          <div className="space-y-6">
+            <SimplePaymentSystem 
+              playerBalance={player.balance}
+              onAddFunds={handleAddFunds}
+              onWithdraw={handleWithdraw}
+            />
+          </div>
+        );
       default:
         return (
           <div className="space-y-6">
@@ -1510,12 +1490,6 @@ const EnhancedAppLayout: React.FC = () => {
       </div>
       
       {/* Modals */}
-      <PaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        amount={paymentAmount}
-        onPaymentSuccess={handlePaymentSuccess}
-      />
       
       <WinModal
         isOpen={showWinModal}
