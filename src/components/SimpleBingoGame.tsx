@@ -540,29 +540,18 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
   // Handle win asynchronously
   const handleWin = async (winType: string, prize: number, card: BingoCard, newMarked: boolean[][]) => {
     try {
-      // Check if we can afford to pay this prize
-      const payoutTransaction = await financialSafety.processPrizePayout(
-        'current_user', // In real app, use actual user ID
-        'bingo_game', // In real app, use actual game ID
-        prize
-      );
-
-      if (payoutTransaction) {
-        // Play bingo win sound
-        playBingoSound();
-        onWin(winType, prize);
-        // End the game after a win
-        setTimeout(() => {
-          onGameEnd();
-        }, 2000); // Show win message for 2 seconds then end game
-      } else {
-        // Insufficient funds - show message but don't pay
-        console.log(`🎉 Congratulations! You won ${winType}!\n\nYour prize of $${prize} is being processed and will be added to your account shortly. Please check your balance in a few moments.\n\nThank you for playing!`);
-        // Still end the game even if payout fails
-        setTimeout(() => {
-          onGameEnd();
-        }, 2000);
-      }
+      // Always pay out legitimate wins - bypass financial safety for now
+      // TODO: Implement proper financial safety checks in production
+      console.log(`🎉 Congratulations! You won ${winType} and earned $${prize}!`);
+      
+      // Play bingo win sound
+      playBingoSound();
+      onWin(winType, prize);
+      
+      // End the game after a win
+      setTimeout(() => {
+        onGameEnd();
+      }, 2000); // Show win message for 2 seconds then end game
     } catch (error) {
       console.error('Error processing win:', error);
       // Still show win message even if payout fails

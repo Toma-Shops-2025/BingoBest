@@ -1305,25 +1305,36 @@ const EnhancedAppLayout: React.FC = () => {
                     playerScore: newScore
                   }));
                 }}
-                onWin={(winType, prize) => {
+                onWin={async (winType, prize) => {
                   setShowWinModal(true);
                   
                   // Complete game session and track progress
                   gameState.completeGameSession(gameState.currentSessionId!, prize, true);
                   
                   // Update player balance and stats
-                  setPlayer(prev => {
-                    const newStats = gameState.getPlayerStats();
-                    return {
-                      ...prev,
-                      balance: (prev.balance || 0) + prize,
-                      withdrawableBalance: (prev.withdrawableBalance || 0) + prize,
-                      totalWinnings: newStats.totalWinnings,
-                      gamesPlayed: newStats.gamesPlayed,
-                      gamesWon: newStats.gamesWon,
-                      winRate: newStats.gamesPlayed > 0 ? (newStats.gamesWon / newStats.gamesPlayed) * 100 : 0
-                    };
-                  });
+                  const newBalance = (player.balance || 0) + prize;
+                  const newWithdrawableBalance = (player.withdrawableBalance || 0) + prize;
+                  const newStats = gameState.getPlayerStats();
+                  
+                  setPlayer(prev => ({
+                    ...prev,
+                    balance: newBalance,
+                    withdrawableBalance: newWithdrawableBalance,
+                    totalWinnings: newStats.totalWinnings,
+                    gamesPlayed: newStats.gamesPlayed,
+                    gamesWon: newStats.gamesWon,
+                    winRate: newStats.gamesPlayed > 0 ? (newStats.gamesWon / newStats.gamesPlayed) * 100 : 0
+                  }));
+                  
+                  // Persist the balance update to the database
+                  if (user) {
+                    try {
+                      await userDataPersistence.updateBalance(newBalance, newWithdrawableBalance, player.bonusBalance);
+                      console.log(`✅ Balance updated: +$${prize} (Total: $${newBalance})`);
+                    } catch (error) {
+                      console.error('Error updating balance:', error);
+                    }
+                  }
                   
                   alert(`Congratulations! You won ${winType} and earned $${prize}!`);
                 }}
