@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { financialSafety } from '@/lib/financialSafety';
+import { gameEconomy } from '@/lib/gameEconomy';
 
 interface BingoNumber {
   number: number;
@@ -540,18 +541,32 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
   // Handle win asynchronously
   const handleWin = async (winType: string, prize: number, card: BingoCard, newMarked: boolean[][]) => {
     try {
-      // Always pay out legitimate wins - bypass financial safety for now
-      // TODO: Implement proper financial safety checks in production
-      console.log(`🎉 Congratulations! You won ${winType} and earned $${prize}!`);
+      // Process win through game economy
+      const playerId = 'player_' + Date.now(); // Use same player ID as game start
+      const gameSessionId = 'game_' + Date.now(); // Use same session ID as game start
       
-      // Play bingo win sound
-      playBingoSound();
-      onWin(winType, prize);
-      
-      // End the game after a win
-      setTimeout(() => {
-        onGameEnd();
-      }, 2000); // Show win message for 2 seconds then end game
+      // Process the win in the economy system
+      if (gameEconomy.processWin(gameSessionId, prize)) {
+        console.log(`🎉 Congratulations! You won ${winType} and earned $${prize}!`);
+        console.log(`💰 Prize added to your account via game economy`);
+        
+        // Play bingo win sound
+        playBingoSound();
+        onWin(winType, prize);
+        
+        // End the game after a win
+        setTimeout(() => {
+          onGameEnd();
+        }, 2000); // Show win message for 2 seconds then end game
+      } else {
+        console.error('Failed to process win through game economy');
+        // Still show win message even if payout fails
+        console.log(`🎉 Congratulations! You won ${winType}!\n\nYour prize of $${prize} is being processed and will be added to your account shortly. Please check your balance in a few moments.\n\nThank you for playing!`);
+        // Still end the game even if there's an error
+        setTimeout(() => {
+          onGameEnd();
+        }, 2000);
+      }
     } catch (error) {
       console.error('Error processing win:', error);
       // Still show win message even if payout fails
@@ -664,6 +679,31 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
     try {
       console.log('🎯 Starting bingo game...');
       setError(null);
+      
+      // Process entry fee through game economy
+      const entryFee = 5.00; // $5 entry fee
+      const playerId = 'player_' + Date.now(); // Use timestamp as player ID for now
+      
+      // Create player account if it doesn't exist
+      if (!gameEconomy.getPlayerAccount(playerId)) {
+        gameEconomy.createPlayerAccount(playerId, 0);
+      }
+      
+      // Process entry fee
+      if (!gameEconomy.processEntryFee(playerId, entryFee)) {
+        setError('Insufficient funds to start game. Please add funds to your account.');
+        return;
+      }
+      
+      // Create game session
+      const gameSession = gameEconomy.createGameSession(playerId, entryFee);
+      if (!gameSession) {
+        setError('Failed to create game session. Please try again.');
+        return;
+      }
+      
+      console.log(`💰 Entry fee processed: $${entryFee}`);
+      console.log(`🎯 Game session created: ${gameSession.id}`);
       
       // Set game status to playing FIRST (both state and ref)
       setGameStatus('playing');

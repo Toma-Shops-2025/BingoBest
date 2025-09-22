@@ -14,6 +14,7 @@ import BingoCard from './BingoCard';
 import NumberDisplay from './NumberDisplay';
 import GameRooms from './GameRooms';
 import SimplePaymentSystem from './SimplePaymentSystem';
+import BingoBestDashboard from './BingoBestDashboard';
 import Leaderboard from './Leaderboard';
 import GameInstructions from './GameInstructions';
 import WinModal from './WinModal';
@@ -1100,6 +1101,12 @@ const EnhancedAppLayout: React.FC = () => {
               onAddFunds={handleAddFunds}
               onWithdraw={handleWithdraw}
             />
+          </div>
+        );
+      case 'platform':
+        return (
+          <div className="space-y-6">
+            <BingoBestDashboard />
           </div>
         );
       default:
