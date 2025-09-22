@@ -385,9 +385,9 @@ class UserDataPersistence {
           id: user.id,
           username: additionalData.username,
           email: additionalData.email,
-          balance: additionalData.balance || 100, // Welcome bonus
+          balance: additionalData.balance || 20, // Welcome bonus
           withdrawable_balance: additionalData.withdrawableBalance || 0,
-          bonus_balance: additionalData.bonusBalance || 100, // Welcome bonus
+          bonus_balance: additionalData.bonusBalance || 20, // Welcome bonus
           level: 1,
           experience: 0,
           total_winnings: 0,

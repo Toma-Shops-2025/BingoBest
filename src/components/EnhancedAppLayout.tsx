@@ -1218,7 +1218,7 @@ const EnhancedAppLayout: React.FC = () => {
             <span className="text-2xl">🎉</span>
           </div>
           <p className="text-green-300 font-medium">
-            Start with $100 free credits to explore all our games!
+            Start with $20 free credits to explore all our games!
           </p>
           <p className="text-sm text-gray-300 mt-1">
             One-time bonus for new players only
@@ -1638,7 +1638,7 @@ const EnhancedAppLayout: React.FC = () => {
               </p>
               <div className="mb-3 p-2 bg-green-500/10 border border-green-500/30 rounded-md">
                 <p className="text-xs text-green-300 font-medium">
-                  ✨ New players start with $100 welcome bonus!
+                  ✨ New players start with $20 welcome bonus!
                 </p>
               </div>
               <div className="space-y-2">

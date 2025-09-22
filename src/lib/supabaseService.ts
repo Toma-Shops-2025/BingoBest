@@ -44,7 +44,7 @@ export class SupabaseService {
           id: userId,
           username: 'Player',
           email: 'player@bingobest.com',
-          balance: 100.00,
+          balance: 20.00,
           level: 1,
           experience: 0,
           created_at: new Date().toISOString(),

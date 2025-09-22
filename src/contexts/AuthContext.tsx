@@ -136,7 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUserProfile({
         id: userId,
         username: 'Player',
-        balance: 100.00,
+        balance: 20.00,
         level: 1,
         experience: 0,
         created_at: new Date().toISOString(),
@@ -170,7 +170,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         await SupabaseService.createUser({
           username,
           email,
-          balance: 100.00, // Starting balance
+          balance: 20.00, // Starting balance
         });
       }
 
