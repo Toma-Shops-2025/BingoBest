@@ -15,6 +15,7 @@ import NumberDisplay from './NumberDisplay';
 import GameRooms from './GameRooms';
 import SimplePaymentSystem from './SimplePaymentSystem';
 import BingoBestDashboard from './BingoBestDashboard';
+import AdminAccess from './AdminAccess';
 import Leaderboard from './Leaderboard';
 import GameInstructions from './GameInstructions';
 import WinModal from './WinModal';
@@ -282,6 +283,9 @@ const EnhancedAppLayout: React.FC = () => {
   // Room timers state removed
   const [showSpectatorMode, setShowSpectatorMode] = useState(false);
   const [spectatingTournament, setSpectatingTournament] = useState<string | null>(null);
+  const [showAdminAccess, setShowAdminAccess] = useState(false);
+  const [showPlatform, setShowPlatform] = useState(false);
+  const [adminClickCount, setAdminClickCount] = useState(0);
 
   // Scroll to top when component mounts or activeTab changes
   useEffect(() => {
@@ -333,6 +337,20 @@ const EnhancedAppLayout: React.FC = () => {
     setActiveTab('wallet');
     // Scroll to top when opening wallet
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleAdminLogoClick = () => {
+    setAdminClickCount(prev => prev + 1);
+    if (adminClickCount >= 4) { // After 5 clicks
+      setShowAdminAccess(true);
+      setAdminClickCount(0);
+    }
+  };
+
+  const handleAdminAccess = () => {
+    setShowAdminAccess(false);
+    setShowPlatform(true);
+    setActiveTab('platform');
   };
 
   const handleTabChange = (tab: string) => {
@@ -1106,6 +1124,14 @@ const EnhancedAppLayout: React.FC = () => {
           </div>
         );
       case 'platform':
+        if (!showPlatform) {
+          return (
+            <div className="text-center py-8">
+              <div className="text-gray-400">Access Denied</div>
+              <div className="text-sm text-gray-500 mt-2">Admin access required</div>
+            </div>
+          );
+        }
         return (
           <div className="space-y-6">
             <BingoBestDashboard />
@@ -1175,8 +1201,9 @@ const EnhancedAppLayout: React.FC = () => {
             <img 
               src="/Hero-Logo-Overlay.png" 
               alt="BingoBest Logo" 
-              className="mx-auto max-w-full h-auto max-h-[30rem] drop-shadow-2xl opacity-75"
+              className="mx-auto max-w-full h-auto max-h-[30rem] drop-shadow-2xl opacity-75 cursor-pointer"
               style={{ transform: 'scale(1.25)' }}
+              onClick={handleAdminLogoClick}
             />
           </div>
         </div>
@@ -1540,6 +1567,11 @@ const EnhancedAppLayout: React.FC = () => {
       {/* Casino Background Music */}
       <CasinoBackgroundMusic enabled={true} />
 
+
+      {/* Admin Access Modal */}
+      {showAdminAccess && (
+        <AdminAccess onAdminAccess={handleAdminAccess} />
+      )}
 
       {/* Footer */}
       <footer className="bg-gray-800 text-white py-6 sm:py-8 mt-8 sm:mt-12">

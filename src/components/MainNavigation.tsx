@@ -27,7 +27,6 @@ const MainNavigation: React.FC<MainNavigationProps> = ({
     { id: 'home', label: 'Game Rooms', icon: Home },
     { id: 'tournaments', label: 'Tournaments', icon: Trophy },
     { id: 'wallet', label: 'Wallet', icon: Wallet },
-    { id: 'platform', label: 'Platform', icon: BarChart3 },
     { id: 'achievements', label: 'Achievements', icon: Target },
     { id: 'challenges', label: 'Daily', icon: Calendar },
     { id: 'friends', label: 'Friends', icon: Users },
