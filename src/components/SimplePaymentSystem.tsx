@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import PayPalPayment from './PayPalPayment';
 
 interface SimplePaymentSystemProps {
   playerBalance: number;
@@ -19,6 +20,7 @@ const SimplePaymentSystem: React.FC<SimplePaymentSystemProps> = ({
   const [withdrawAmount, setWithdrawAmount] = useState(0);
   const [showAddFunds, setShowAddFunds] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
+  const [showPayPal, setShowPayPal] = useState(false);
 
   const handleAddFunds = () => {
     if (addAmount > 0) {
@@ -36,6 +38,17 @@ const SimplePaymentSystem: React.FC<SimplePaymentSystemProps> = ({
     } else if (withdrawAmount > playerBalance) {
       alert('Insufficient funds!');
     }
+  };
+
+  const handlePayPalSuccess = (amount: number, transactionId: string) => {
+    onAddFunds(amount);
+    setShowPayPal(false);
+    console.log(`PayPal payment successful: $${amount} - ${transactionId}`);
+  };
+
+  const handlePayPalError = (error: string) => {
+    alert(`PayPal Error: ${error}`);
+    setShowPayPal(false);
   };
 
   return (
@@ -111,6 +124,15 @@ const SimplePaymentSystem: React.FC<SimplePaymentSystemProps> = ({
               $100
             </Button>
           </div>
+
+          <div className="pt-4 border-t">
+            <Button 
+              onClick={() => setShowPayPal(true)} 
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              💳 Pay with PayPal
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -151,19 +173,38 @@ const SimplePaymentSystem: React.FC<SimplePaymentSystemProps> = ({
       {/* Quick Actions */}
       <div className="grid grid-cols-2 gap-4">
         <Button 
-          onClick={() => setAddAmount(10); handleAddFunds()} 
+          onClick={() => {
+            setAddAmount(10);
+            handleAddFunds();
+          }} 
           className="bg-green-600 hover:bg-green-700"
         >
           Quick Add $10
         </Button>
         <Button 
-          onClick={() => setWithdrawAmount(playerBalance); handleWithdraw()} 
+          onClick={() => {
+            setWithdrawAmount(playerBalance);
+            handleWithdraw();
+          }} 
           className="bg-blue-600 hover:bg-blue-700"
           disabled={playerBalance <= 0}
         >
           Withdraw All
         </Button>
       </div>
+
+      {/* PayPal Payment Modal */}
+      {showPayPal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <PayPalPayment
+              onPaymentSuccess={handlePayPalSuccess}
+              onPaymentError={handlePayPalError}
+              onClose={() => setShowPayPal(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

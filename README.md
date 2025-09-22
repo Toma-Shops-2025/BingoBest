@@ -56,6 +56,7 @@ A modern, feature-rich online bingo platform built with React, TypeScript, and S
    VITE_SITE_URL=https://your-domain.com
    VITE_APP_NAME=BingoBest
    VITE_APP_VERSION=1.0.0
+   VITE_PAYPAL_CLIENT_ID=your_paypal_client_id
    ```
 
 5. **Start development server**
@@ -65,6 +66,22 @@ A modern, feature-rich online bingo platform built with React, TypeScript, and S
 
 6. **Open your browser**
    Navigate to `http://localhost:5173`
+
+## PayPal Setup
+
+1. **Create PayPal Developer Account**
+   - Go to [PayPal Developer](https://developer.paypal.com/)
+   - Sign in with your PayPal account
+   - Create a new application
+
+2. **Get Client ID**
+   - Copy your Sandbox Client ID for testing
+   - Copy your Live Client ID for production
+   - Add to your `.env.local` file
+
+3. **Configure Webhooks (Optional)**
+   - Set up webhook endpoints for payment notifications
+   - Configure return/cancel URLs
 
 ## Database Setup
 

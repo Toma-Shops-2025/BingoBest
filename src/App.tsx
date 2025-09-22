@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AppProvider } from "@/contexts/AppContext";
+import PayPalProvider from "./components/PayPalProvider";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -28,22 +29,24 @@ const App = () => (
   <ErrorBoundary>
     <ThemeProvider defaultTheme="dark">
       <QueryClientProvider client={getQueryClient()}>
-        <AuthProvider>
-          <AppProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              </BrowserRouter>
-              <CasinoBackgroundMusic />
-            </TooltipProvider>
-          </AppProvider>
-        </AuthProvider>
+        <PayPalProvider>
+          <AuthProvider>
+            <AppProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/admin" element={<AdminDashboard />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                </BrowserRouter>
+                <CasinoBackgroundMusic />
+              </TooltipProvider>
+            </AppProvider>
+          </AuthProvider>
+        </PayPalProvider>
       </QueryClientProvider>
     </ThemeProvider>
   </ErrorBoundary>
