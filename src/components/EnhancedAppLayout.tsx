@@ -437,14 +437,16 @@ const EnhancedAppLayout: React.FC = () => {
   }, [gameRooms, player.balance]);
 
 
-  const handlePaymentSuccess = async () => {
+  const handlePaymentSuccess = async (method: string, transactionId: string) => {
     setIsLoading(true);
     try {
+      console.log(`Payment successful: ${method} - ${transactionId}`);
+      
       // Record deposit in financial system
       await financialSafety.processDeposit(
         user?.id || 'anonymous',
         paymentAmount,
-        'credit_card'
+        method === 'paypal' ? 'paypal_payment' : 'crypto_payment'
       );
 
       // Update balance in database
@@ -468,7 +470,9 @@ const EnhancedAppLayout: React.FC = () => {
       }));
       
       setShowPaymentModal(false);
-      alert(`Payment successful! Added $${paymentAmount} to your balance. Your new balance is $${((player.balance || 0) + paymentAmount).toFixed(2)}`);
+      
+      const methodName = method === 'paypal' ? 'PayPal' : method.toUpperCase();
+      alert(`Payment successful! Added $${paymentAmount} to your balance via ${methodName}.\n\nTransaction ID: ${transactionId}\nYour new balance is $${((player.balance || 0) + paymentAmount).toFixed(2)}`);
     } catch (error) {
       console.error('Payment success error:', error);
       alert('Payment processed but there was an error updating your balance. Please contact support.');
@@ -1510,7 +1514,7 @@ const EnhancedAppLayout: React.FC = () => {
         isOpen={showPaymentModal}
         onClose={() => setShowPaymentModal(false)}
         amount={paymentAmount}
-        onPaymentSuccess={() => {}}
+        onPaymentSuccess={handlePaymentSuccess}
       />
       
       <WinModal

@@ -1,11 +1,11 @@
 import React from 'react';
-import CryptoPaymentModal from './CryptoPaymentModal';
+import EnhancedPaymentModal from './EnhancedPaymentModal';
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   amount: number;
-  onPaymentSuccess: () => void;
+  onPaymentSuccess: (method: string, transactionId: string) => void;
 }
 
 const PaymentModal: React.FC<PaymentModalProps> = ({ 
@@ -15,7 +15,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   onPaymentSuccess 
 }) => {
   return (
-    <CryptoPaymentModal
+    <EnhancedPaymentModal
       isOpen={isOpen}
       onClose={onClose}
       amount={amount}
