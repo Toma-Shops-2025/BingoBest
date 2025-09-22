@@ -42,5 +42,6 @@ export default defineConfig(({ mode }) => ({
     'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL || 'https://lykaexuftxqwuwnvrakr.supabase.co'),
     'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY || 'sbp_b50161dc6327c9999a86debc655a2b17502fe232'),
     'import.meta.env.VITE_GA_MEASUREMENT_ID': JSON.stringify(process.env.VITE_GA_MEASUREMENT_ID || 'GA_MEASUREMENT_ID'),
+    'import.meta.env.VITE_SITE_URL': JSON.stringify(process.env.VITE_SITE_URL || 'https://bingobest.live'),
   },
 }));

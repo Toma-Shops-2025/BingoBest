@@ -124,6 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           data: {
             username,
           },
+          emailRedirectTo: (import.meta.env.VITE_SITE_URL || 'https://bingobest.live') + '/email-confirmation.html',
         },
       });
 

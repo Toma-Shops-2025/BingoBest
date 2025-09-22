@@ -53,6 +53,7 @@ A modern, feature-rich online bingo platform built with React, TypeScript, and S
    ```env
    VITE_SUPABASE_URL=your_supabase_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   VITE_SITE_URL=https://your-domain.com
    VITE_APP_NAME=BingoBest
    VITE_APP_VERSION=1.0.0
    ```
@@ -108,6 +109,7 @@ A modern, feature-rich online bingo platform built with React, TypeScript, and S
 |----------|-------------|----------|
 | `VITE_SUPABASE_URL` | Your Supabase project URL | Yes |
 | `VITE_SUPABASE_ANON_KEY` | Your Supabase anonymous key | Yes |
+| `VITE_SITE_URL` | Your production site URL for email confirmations | Yes |
 | `VITE_APP_NAME` | Application name | No |
 | `VITE_APP_VERSION` | Application version | No |
 

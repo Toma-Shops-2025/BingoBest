@@ -13,7 +13,13 @@ let _supabase: any = null;
 
 export const getSupabase = () => {
   if (!_supabase) {
-    _supabase = createClient(supabaseUrl, supabaseAnonKey);
+    _supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        // Set the correct site URL for email confirmations
+        siteUrl: import.meta.env.VITE_SITE_URL || 'https://bingobest.live',
+        redirectTo: (import.meta.env.VITE_SITE_URL || 'https://bingobest.live') + '/email-confirmation.html'
+      }
+    });
   }
   return _supabase;
 };
