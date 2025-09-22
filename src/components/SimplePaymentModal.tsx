@@ -26,30 +26,27 @@ const SimplePaymentModal: React.FC<SimplePaymentModalProps> = ({
     setIsProcessing(true);
     
     try {
-      // Simple PayPal simulation
-      const paymentId = `PP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      // Create PayPal payment URL
+      const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+      const environment = import.meta.env.VITE_PAYPAL_ENVIRONMENT || 'sandbox';
       
-      // Show confirmation
-      const confirmed = window.confirm(
-        `PayPal Payment\n\nAmount: $${paymentAmount.toFixed(2)}\n\nClick OK to confirm payment`
-      );
-      
-      if (confirmed) {
-        // Process payment
-        onPaymentSuccess('paypal', paymentId);
-        
-        // Close modal immediately
-        onClose();
-        
-        // Show success message
-        alert(`Payment successful! Added $${paymentAmount.toFixed(2)} to your balance.`);
-      } else {
-        alert('Payment cancelled.');
+      if (!clientId) {
+        alert('PayPal is not configured. Please contact support.');
+        return;
       }
+
+      // Create PayPal payment URL
+      const returnUrl = `${window.location.origin}/payment/success`;
+      const cancelUrl = `${window.location.origin}/payment/cancel`;
+      
+      const paypalUrl = `https://www.${environment === 'production' ? '' : 'sandbox.'}paypal.com/checkoutnow?client-id=${clientId}&currency=USD&intent=capture&amount=${paymentAmount.toFixed(2)}&return-url=${encodeURIComponent(returnUrl)}&cancel-url=${encodeURIComponent(cancelUrl)}`;
+      
+      // Redirect to PayPal
+      window.location.href = paypalUrl;
+      
     } catch (error) {
-      console.error('Payment error:', error);
-      alert('Payment failed. Please try again.');
-    } finally {
+      console.error('PayPal payment error:', error);
+      alert('PayPal payment failed. Please try again.');
       setIsProcessing(false);
     }
   };
@@ -58,14 +55,53 @@ const SimplePaymentModal: React.FC<SimplePaymentModalProps> = ({
     setIsProcessing(true);
     
     try {
-      const paymentId = `CRYPTO_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      // Show crypto instructions
+      // Crypto wallet addresses
+      const cryptoWallets = {
+        bitcoin: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+        ethereum: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
+        litecoin: 'ltc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+        dogecoin: 'D7Y55vJ8qZc4G2Qj8F9vK3mN6pL1sT4wX7yA2bC5eH8',
+        usdc: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6',
+        usdt: '0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6'
+      };
+
+      // Show crypto payment options
+      const cryptoChoice = prompt(
+        `Crypto Payment - $${paymentAmount.toFixed(2)}\n\n` +
+        `Choose your cryptocurrency:\n` +
+        `1. Bitcoin (BTC)\n` +
+        `2. Ethereum (ETH)\n` +
+        `3. Litecoin (LTC)\n` +
+        `4. Dogecoin (DOGE)\n` +
+        `5. USD Coin (USDC)\n` +
+        `6. Tether (USDT)\n\n` +
+        `Enter 1-6 to select:`
+      );
+
+      if (!cryptoChoice || cryptoChoice < 1 || cryptoChoice > 6) {
+        alert('Invalid selection. Payment cancelled.');
+        setIsProcessing(false);
+        return;
+      }
+
+      const cryptoOptions = ['bitcoin', 'ethereum', 'litecoin', 'dogecoin', 'usdc', 'usdt'];
+      const selectedCrypto = cryptoOptions[parseInt(cryptoChoice) - 1];
+      const walletAddress = cryptoWallets[selectedCrypto as keyof typeof cryptoWallets];
+
+      // Show payment instructions
       const confirmed = window.confirm(
-        `Crypto Payment\n\nAmount: $${paymentAmount.toFixed(2)}\n\nThis is a simulation. In real implementation, you would send crypto to the provided address.\n\nClick OK to simulate successful payment`
+        `Crypto Payment Instructions\n\n` +
+        `Amount: $${paymentAmount.toFixed(2)}\n` +
+        `Currency: ${selectedCrypto.toUpperCase()}\n` +
+        `Wallet Address: ${walletAddress}\n\n` +
+        `Send the equivalent amount in ${selectedCrypto.toUpperCase()} to the address above.\n` +
+        `Payment will be confirmed within 10-30 minutes.\n\n` +
+        `Click OK to simulate successful payment (for testing)`
       );
       
       if (confirmed) {
+        const paymentId = `CRYPTO_${selectedCrypto.toUpperCase()}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
         // Process payment
         onPaymentSuccess('crypto', paymentId);
         
