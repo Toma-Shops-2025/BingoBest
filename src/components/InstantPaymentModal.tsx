@@ -55,12 +55,12 @@ const InstantPaymentModal: React.FC<InstantPaymentModalProps> = ({
           boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
         }}
       >
-        <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>💳 Add Funds</h2>
+        <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#333' }}>💳 Add Funds</h2>
         
         <div style={{ marginBottom: '20px' }}>
-          <label style={{ display: 'block', marginBottom: '5px' }}>Amount (USD)</label>
+          <label style={{ display: 'block', marginBottom: '5px', color: '#333' }}>Amount (USD)</label>
           <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span>$</span>
+            <span style={{ color: '#333' }}>$</span>
             <input
               type="number"
               value={paymentAmount}
@@ -70,7 +70,9 @@ const InstantPaymentModal: React.FC<InstantPaymentModalProps> = ({
                 border: '1px solid #ccc',
                 borderRadius: '4px',
                 fontSize: '16px',
-                width: '100px'
+                width: '100px',
+                color: '#333',
+                backgroundColor: 'white'
               }}
               min="1"
               max="1000"
