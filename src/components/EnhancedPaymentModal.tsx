@@ -97,7 +97,13 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
         onPaymentSuccess('paypal', paymentId);
         // Close the modal after successful payment
         setTimeout(() => {
-          onClose();
+          try {
+            onClose();
+          } catch (error) {
+            console.error('Error closing modal:', error);
+            // Force close by refreshing the page
+            window.location.reload();
+          }
         }, 100);
       } else {
         // Simulate failed payment
@@ -122,7 +128,13 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
       onPaymentSuccess(selectedMethod, txId);
       // Close the modal after successful payment
       setTimeout(() => {
-        onClose();
+        try {
+          onClose();
+        } catch (error) {
+          console.error('Error closing modal:', error);
+          // Force close by refreshing the page
+          window.location.reload();
+        }
       }, 100);
     } catch (error) {
       console.error('Crypto payment error:', error);
