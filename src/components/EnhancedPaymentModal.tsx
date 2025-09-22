@@ -95,7 +95,10 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
       if (confirmPayment) {
         // Simulate successful payment
         onPaymentSuccess('paypal', paymentId);
-        alert(`Payment successful! Added $${paymentAmount.toFixed(2)} to your balance.`);
+        // Close the modal after successful payment
+        setTimeout(() => {
+          onClose();
+        }, 100);
       } else {
         // Simulate failed payment
         alert('Payment cancelled by user.');
@@ -117,6 +120,8 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
       const txId = `${selectedMethod.toUpperCase()}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       setTransactionId(txId);
       onPaymentSuccess(selectedMethod, txId);
+      // Close the modal after successful payment
+      onClose();
     } catch (error) {
       console.error('Crypto payment error:', error);
     } finally {
