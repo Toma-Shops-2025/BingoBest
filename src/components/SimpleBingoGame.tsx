@@ -1092,7 +1092,7 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
                   <li>• <strong>Wildcard:</strong> Use when you're close to completing a pattern</li>
                   <li>• <strong>Multiplier:</strong> Save for high-value patterns like Full House or Blackout</li>
                   <li>• <strong>Time Freeze:</strong> Use when you're running out of time but close to winning</li>
-                  <li>• <strong>Lucky Number:</strong> Use when you need a specific number to complete a pattern</li>
+                  <li>• <strong>Lucky Number:</strong> Use when you want to guarantee the next number called will be on your card</li>
                 </ul>
               </div>
             </div>
