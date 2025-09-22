@@ -121,7 +121,9 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
       setTransactionId(txId);
       onPaymentSuccess(selectedMethod, txId);
       // Close the modal after successful payment
-      onClose();
+      setTimeout(() => {
+        onClose();
+      }, 100);
     } catch (error) {
       console.error('Crypto payment error:', error);
     } finally {
@@ -137,6 +139,23 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
     }
   };
 
+  // Add escape key handler to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
+
   useEffect(() => {
     if (selectedMethod && cryptoWallets[selectedMethod as keyof typeof cryptoWallets]) {
       setWalletAddress(getWalletAddress());
@@ -150,6 +169,12 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
           <DialogTitle className="text-2xl font-bold text-center">
             💳 Add Funds to Your Account
           </DialogTitle>
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl"
+          >
+            ×
+          </button>
         </DialogHeader>
 
         <Tabs defaultValue="paypal" className="w-full">
