@@ -76,26 +76,59 @@ class UserDataPersistence {
 
   private initializeAuthListener() {
     this.supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('🔄 Auth state change:', event, session?.user?.id);
+      
       if (event === 'SIGNED_IN' && session?.user) {
+        // Clear any existing data first
+        this.clearAllData();
+        
         this.currentUser = session.user;
         await this.loadUserProfile();
         await this.registerDevice();
         this.startDataSync();
         this.startRealtimeSync();
       } else if (event === 'SIGNED_OUT') {
-        this.currentUser = null;
-        this.userProfile = null;
-        this.stopDataSync();
-        this.stopRealtimeSync();
-        await this.unregisterDevice();
+        this.clearAllData();
+      } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+        // Handle token refresh - ensure we have the right user
+        if (this.currentUser?.id !== session.user.id) {
+          console.log('🔄 User changed during token refresh, clearing data');
+          this.clearAllData();
+          this.currentUser = session.user;
+          await this.loadUserProfile();
+          await this.registerDevice();
+          this.startDataSync();
+          this.startRealtimeSync();
+        }
       }
     });
+  }
+
+  private clearAllData() {
+    console.log('🧹 Clearing all user data');
+    this.currentUser = null;
+    this.userProfile = null;
+    this.stopDataSync();
+    this.stopRealtimeSync();
+    this.unregisterDevice();
+    
+    // Clear any cached data in localStorage
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && (key.includes('user') || key.includes('profile') || key.includes('balance'))) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
   }
 
   async loadUserProfile(): Promise<UserProfile | null> {
     if (!this.currentUser) return null;
 
     try {
+      console.log('🔄 Loading user profile for:', this.currentUser.id);
+      
       const { data, error } = await this.supabase
         .from('users')
         .select('*')
@@ -104,6 +137,15 @@ class UserDataPersistence {
 
       if (error) {
         console.error('Error loading user profile:', error);
+        return null;
+      }
+
+      // Verify we're loading the correct user's data
+      if (data.id !== this.currentUser.id) {
+        console.error('🚨 SECURITY ALERT: User ID mismatch!', {
+          currentUser: this.currentUser.id,
+          profileData: data.id
+        });
         return null;
       }
 
@@ -315,6 +357,18 @@ class UserDataPersistence {
 
   getUserProfile(): UserProfile | null {
     return this.userProfile;
+  }
+
+  // Force clear all data - useful for debugging or security
+  forceClearAllData() {
+    console.log('🧹 Force clearing all user data');
+    this.clearAllData();
+  }
+
+  // Check if user data is properly isolated
+  isDataIsolated(): boolean {
+    if (!this.currentUser || !this.userProfile) return true;
+    return this.userProfile.id === this.currentUser.id;
   }
 
   async createUserProfile(user: User, additionalData: {

@@ -65,14 +65,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       try {
+        console.log('🔄 AuthContext: Auth state change', event, session?.user?.id);
+        
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
+          // Clear any existing profile data first
+          setUserProfile(null);
           await fetchUserProfile(session.user.id);
         } else {
+          // Clear all user data on sign out
           setUserProfile(null);
           setLoading(false);
+          
+          // Clear any cached data
+          const keysToRemove = [];
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && (key.includes('user') || key.includes('profile') || key.includes('balance'))) {
+              keysToRemove.push(key);
+            }
+          }
+          keysToRemove.forEach(key => localStorage.removeItem(key));
         }
       } catch (error) {
         console.error('Error in auth state change:', error);
@@ -91,7 +106,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      console.log('🔄 Fetching user profile for:', userId);
+      
+      // Verify we have a valid user ID
+      if (!userId || userId.trim() === '') {
+        console.error('🚨 Invalid user ID provided');
+        setUserProfile(null);
+        setLoading(false);
+        return;
+      }
+      
       const profile = await SupabaseService.getUser(userId);
+      
+      // Verify the profile belongs to the correct user
+      if (profile && profile.id !== userId) {
+        console.error('🚨 SECURITY ALERT: Profile ID mismatch!', {
+          requestedUserId: userId,
+          profileId: profile.id
+        });
+        setUserProfile(null);
+        setLoading(false);
+        return;
+      }
+      
       setUserProfile(profile);
     } catch (error) {
       console.error('Error fetching user profile:', error);
@@ -158,23 +195,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     try {
       console.log('AuthContext: Starting sign out process');
+      
+      // Clear all local data first
+      setUser(null);
+      setSession(null);
+      setUserProfile(null);
+      setLoading(false);
+      
+      // Clear localStorage
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.includes('user') || key.includes('profile') || key.includes('balance') || key.includes('supabase'))) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      // Clear sessionStorage
+      const sessionKeysToRemove = [];
+      for (let i = 0; i < sessionStorage.length; i++) {
+        const key = sessionStorage.key(i);
+        if (key && (key.includes('user') || key.includes('profile') || key.includes('balance') || key.includes('supabase'))) {
+          sessionKeysToRemove.push(key);
+        }
+      }
+      sessionKeysToRemove.forEach(key => sessionStorage.removeItem(key));
+      
       const { error } = await supabase.auth.signOut();
       console.log('Supabase signOut response:', { error });
       
       if (error) {
         console.error('Error signing out:', error);
-        // Force local sign out even if Supabase fails
-        setUser(null);
-        setSession(null);
-        setUserProfile(null);
-        setLoading(false);
       } else {
         console.log('AuthContext: Sign out successful');
-        // Ensure local state is cleared
-        setUser(null);
-        setSession(null);
-        setUserProfile(null);
-        setLoading(false);
       }
     } catch (error) {
       console.error('Error signing out:', error);
