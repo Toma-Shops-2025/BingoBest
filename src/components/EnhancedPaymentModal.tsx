@@ -29,6 +29,7 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
   const [copied, setCopied] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [transactionId, setTransactionId] = useState<string>('');
+  const [paymentAmount, setPaymentAmount] = useState(amount);
 
   // Crypto wallet addresses
   const cryptoWallets = {
@@ -73,14 +74,35 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
   const handlePayPalPayment = async () => {
     setIsProcessing(true);
     try {
-      // Simulate PayPal payment processing
+      // For development - simulate PayPal payment
+      console.log(`Creating PayPal payment for $${paymentAmount}`);
+      
+      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const txId = `PP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      setTransactionId(txId);
-      onPaymentSuccess('paypal', txId);
+      // Create mock PayPal payment
+      const paymentId = `PP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Simulate PayPal redirect
+      const confirmPayment = confirm(
+        `PayPal Payment Simulation\n\n` +
+        `Amount: $${paymentAmount.toFixed(2)}\n` +
+        `Payment ID: ${paymentId}\n\n` +
+        `Click OK to simulate successful payment\n` +
+        `Click Cancel to simulate payment failure`
+      );
+      
+      if (confirmPayment) {
+        // Simulate successful payment
+        onPaymentSuccess('paypal', paymentId);
+        alert(`Payment successful! Added $${paymentAmount.toFixed(2)} to your balance.`);
+      } else {
+        // Simulate failed payment
+        alert('Payment cancelled by user.');
+      }
     } catch (error) {
       console.error('PayPal payment error:', error);
+      alert('PayPal payment failed. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -154,7 +176,19 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-semibold text-blue-900">Payment Amount</p>
-                      <p className="text-2xl font-bold text-blue-600">${amount.toFixed(2)} USD</p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl font-bold text-blue-600">$</span>
+                        <Input
+                          type="number"
+                          value={paymentAmount}
+                          onChange={(e) => setPaymentAmount(parseFloat(e.target.value) || 0)}
+                          className="text-2xl font-bold text-blue-600 border-none bg-transparent p-0 w-24"
+                          min="1"
+                          max="1000"
+                          step="0.01"
+                        />
+                        <span className="text-2xl font-bold text-blue-600">USD</span>
+                      </div>
                     </div>
                     <DollarSign className="w-8 h-8 text-blue-500" />
                   </div>
@@ -191,7 +225,7 @@ const EnhancedPaymentModal: React.FC<EnhancedPaymentModalProps> = ({
                   ) : (
                     <>
                       <CreditCard className="w-4 h-4 mr-2" />
-                      Pay ${amount.toFixed(2)} with PayPal
+                      Pay ${paymentAmount.toFixed(2)} with PayPal
                     </>
                   )}
                 </Button>
