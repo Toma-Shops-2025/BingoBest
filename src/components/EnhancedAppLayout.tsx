@@ -1282,6 +1282,7 @@ const EnhancedAppLayout: React.FC = () => {
                 gameName={gameSession.currentRoom?.name || 'Speed Bingo'}
                 gameId={gameSession.currentRoom?.id}
                 gameType={gameSession.gameType}
+                entryFee={gameSession.currentRoom?.entryFee || 5.00}
                 onNumberCalled={(number) => {
                   // Track called numbers in game session
                   setGameSession(prev => ({

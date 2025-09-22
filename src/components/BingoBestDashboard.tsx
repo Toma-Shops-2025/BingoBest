@@ -161,6 +161,42 @@ const BingoBestDashboard: React.FC = () => {
         </Card>
       </div>
 
+      {/* Game Rooms & Entry Fees */}
+      <Card className="bg-gray-900/20 border-gray-700">
+        <CardHeader>
+          <CardTitle className="text-white">🎮 Game Rooms & Entry Fees</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="p-4 bg-blue-900/20 rounded-lg">
+              <h3 className="font-bold text-blue-400 mb-2">Speed Bingo</h3>
+              <p className="text-sm text-gray-300 mb-2">Entry Fee: $3.00</p>
+              <p className="text-sm text-green-400">Prize Pool: $10.00</p>
+            </div>
+            <div className="p-4 bg-green-900/20 rounded-lg">
+              <h3 className="font-bold text-green-400 mb-2">Classic Bingo</h3>
+              <p className="text-sm text-gray-300 mb-2">Entry Fee: $5.00</p>
+              <p className="text-sm text-green-400">Prize Pool: $25.00</p>
+            </div>
+            <div className="p-4 bg-purple-900/20 rounded-lg">
+              <h3 className="font-bold text-purple-400 mb-2">High Stakes Arena</h3>
+              <p className="text-sm text-gray-300 mb-2">Entry Fee: $12.00</p>
+              <p className="text-sm text-green-400">Prize Pool: $100.00</p>
+            </div>
+            <div className="p-4 bg-orange-900/20 rounded-lg">
+              <h3 className="font-bold text-orange-400 mb-2">Daily Tournament</h3>
+              <p className="text-sm text-gray-300 mb-2">Entry Fee: $8.00</p>
+              <p className="text-sm text-green-400">Prize Pool: $75.00</p>
+            </div>
+            <div className="p-4 bg-red-900/20 rounded-lg">
+              <h3 className="font-bold text-red-400 mb-2">Weekly Championship</h3>
+              <p className="text-sm text-gray-300 mb-2">Entry Fee: $20.00</p>
+              <p className="text-sm text-green-400">Prize Pool: $200.00</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* How It Works */}
       <Card className="bg-gray-900/20 border-gray-700">
         <CardHeader>
@@ -179,14 +215,14 @@ const BingoBestDashboard: React.FC = () => {
               <div className="text-2xl mb-2">🎮</div>
               <h3 className="font-bold text-green-400 mb-2">2. Entry Fees</h3>
               <p className="text-sm text-gray-300">
-                Players pay $5 entry fee to play games. Fees go to BingoBest account
+                Players pay entry fees ($3-$20) to play games. Fees go to BingoBest account
               </p>
             </div>
             <div className="text-center p-4 bg-purple-900/20 rounded-lg">
               <div className="text-2xl mb-2">🏆</div>
               <h3 className="font-bold text-purple-400 mb-2">3. Prize Payouts</h3>
               <p className="text-sm text-gray-300">
-                Winners receive prizes from the prize pool. Winnings can be withdrawn or used to play more games
+                Winners receive prizes from prize pools ($10-$200). Winnings can be withdrawn or used to play more games
               </p>
             </div>
           </div>

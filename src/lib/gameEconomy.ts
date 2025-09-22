@@ -117,7 +117,7 @@ class GameEconomy {
   }
 
   // Prize Pool Management
-  createGameSession(playerId: string, entryFee: number): GameSession | null {
+  createGameSession(playerId: string, entryFee: number, prizePool: number): GameSession | null {
     const account = this.getPlayerAccount(playerId);
     if (!account) {
       console.error('Player account not found:', playerId);
@@ -133,7 +133,7 @@ class GameEconomy {
       id: `game_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       playerId,
       entryFee,
-      prizePool: entryFee, // Prize pool starts with entry fee
+      prizePool: prizePool, // Use the actual prize pool amount
       startTime: new Date(),
       status: 'active'
     };

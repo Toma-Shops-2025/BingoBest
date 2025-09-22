@@ -28,9 +28,10 @@ interface SimpleBingoGameProps {
   gameName?: string;
   gameId?: string;
   gameType?: 'bingo' | 'tournament';
+  entryFee?: number;
 }
 
-const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onPatternCompleted, onNumberCalled, onScoreUpdate, autoStart = false, gameName = 'Speed Bingo', gameId, gameType = 'bingo' }) => {
+const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onPatternCompleted, onNumberCalled, onScoreUpdate, autoStart = false, gameName = 'Speed Bingo', gameId, gameType = 'bingo', entryFee = 5.00 }) => {
   const [calledNumbers, setCalledNumbers] = useState<number[]>([]);
   const [currentNumber, setCurrentNumber] = useState<number | null>(null);
   const [gameStatus, setGameStatus] = useState<'waiting' | 'playing' | 'finished'>('waiting');
@@ -623,9 +624,9 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
       }
       if (mainDiagonalComplete) {
         console.log('🎯 Main diagonal is complete!');
-        return 'diagonal';
-      }
-      
+          return 'diagonal';
+        }
+        
       // Anti-diagonal (top-right to bottom-left)
       let antiDiagonalComplete = true;
       for (let i = 0; i < 5; i++) {
@@ -681,7 +682,6 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
       setError(null);
       
       // Process entry fee through game economy
-      const entryFee = 5.00; // $5 entry fee
       const playerId = 'player_' + Date.now(); // Use timestamp as player ID for now
       
       // Create player account if it doesn't exist
@@ -691,18 +691,35 @@ const SimpleBingoGame: React.FC<SimpleBingoGameProps> = ({ onWin, onGameEnd, onP
       
       // Process entry fee
       if (!gameEconomy.processEntryFee(playerId, entryFee)) {
-        setError('Insufficient funds to start game. Please add funds to your account.');
+        setError(`Insufficient funds to start game. You need $${entryFee.toFixed(2)} to play ${gameName}. Please add funds to your account.`);
         return;
       }
       
-      // Create game session
-      const gameSession = gameEconomy.createGameSession(playerId, entryFee);
+      // Calculate prize pool based on game type
+      let prizePool = entryFee; // Default to entry fee
+      
+      // Use different prize pool calculations based on game
+      if (gameId === 'speed-bingo') {
+        prizePool = 10.00; // $10 prize pool for $3 entry
+      } else if (gameId === 'classic-bingo') {
+        prizePool = 25.00; // $25 prize pool for $5 entry
+      } else if (gameId === 'high-stakes-arena') {
+        prizePool = 100.00; // $100 prize pool for $12 entry
+      } else if (gameId === 'daily-tournament') {
+        prizePool = 75.00; // $75 prize pool for $8 entry
+      } else if (gameId === 'weekly-championship') {
+        prizePool = 200.00; // $200 prize pool for $20 entry
+      }
+      
+      // Create game session with actual prize pool
+      const gameSession = gameEconomy.createGameSession(playerId, entryFee, prizePool);
       if (!gameSession) {
         setError('Failed to create game session. Please try again.');
         return;
       }
       
-      console.log(`💰 Entry fee processed: $${entryFee}`);
+      console.log(`💰 Entry fee processed: $${entryFee.toFixed(2)}`);
+      console.log(`🏆 Prize pool: $${prizePool.toFixed(2)}`);
       console.log(`🎯 Game session created: ${gameSession.id}`);
       
       // Set game status to playing FIRST (both state and ref)
