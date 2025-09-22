@@ -15,7 +15,9 @@ export interface GameSession {
 
 export interface PlayerAccount {
   id: string;
-  balance: number;
+  balance: number; // Total balance (withdrawable + bonus)
+  withdrawableBalance: number; // Only winnings from games
+  bonusBalance: number; // Bonuses, rewards, etc. (not withdrawable)
   totalDeposited: number;
   totalWinnings: number;
   totalFeesPaid: number;
@@ -45,6 +47,8 @@ class GameEconomy {
     const account: PlayerAccount = {
       id: playerId,
       balance: initialBalance,
+      withdrawableBalance: initialBalance, // Deposits are withdrawable
+      bonusBalance: 0, // No bonuses initially
       totalDeposited: 0,
       totalWinnings: 0,
       totalFeesPaid: 0,
@@ -72,12 +76,13 @@ class GameEconomy {
       return false;
     }
 
-    // Add to player balance
+    // Add to player balance (deposits are withdrawable)
     account.balance += amount;
+    account.withdrawableBalance += amount;
     account.totalDeposited += amount;
 
     console.log(`💰 Deposit processed: Player ${playerId} deposited $${amount.toFixed(2)}`);
-    console.log(`💰 New balance: $${account.balance.toFixed(2)}`);
+    console.log(`💰 New balance: $${account.balance.toFixed(2)} (Withdrawable: $${account.withdrawableBalance.toFixed(2)})`);
     
     return true;
   }
@@ -99,8 +104,25 @@ class GameEconomy {
       return false;
     }
 
-    // Deduct entry fee from player
-    account.balance -= entryFee;
+    // Deduct entry fee from player (use withdrawable balance first, then bonus)
+    let remainingFee = entryFee;
+    
+    // First deduct from withdrawable balance
+    if (account.withdrawableBalance >= remainingFee) {
+      account.withdrawableBalance -= remainingFee;
+      remainingFee = 0;
+    } else {
+      remainingFee -= account.withdrawableBalance;
+      account.withdrawableBalance = 0;
+    }
+    
+    // Then deduct from bonus balance if needed
+    if (remainingFee > 0) {
+      account.bonusBalance -= remainingFee;
+    }
+    
+    // Update total balance
+    account.balance = account.withdrawableBalance + account.bonusBalance;
     account.totalFeesPaid += entryFee;
     account.gamesPlayed += 1;
 
@@ -110,7 +132,7 @@ class GameEconomy {
     this.bingoBestAccount.activeGames += 1;
 
     console.log(`🎮 Entry fee processed: Player ${playerId} paid $${entryFee.toFixed(2)}`);
-    console.log(`🎮 New balance: $${account.balance.toFixed(2)}`);
+    console.log(`🎮 New balance: $${account.balance.toFixed(2)} (Withdrawable: $${account.withdrawableBalance.toFixed(2)}, Bonus: $${account.bonusBalance.toFixed(2)})`);
     console.log(`🎮 BingoBest collected: $${this.bingoBestAccount.totalFeesCollected.toFixed(2)}`);
     
     return true;
@@ -163,8 +185,9 @@ class GameEconomy {
       return false;
     }
 
-    // Add prize to player account
+    // Add prize to player account (winnings are withdrawable)
     account.balance += prizeAmount;
+    account.withdrawableBalance += prizeAmount; // Winnings are withdrawable
     account.totalWinnings += prizeAmount;
     account.gamesWon += 1;
 
@@ -180,7 +203,7 @@ class GameEconomy {
     session.prizeAmount = prizeAmount;
 
     console.log(`🏆 Prize awarded: Player ${session.playerId} won $${prizeAmount.toFixed(2)}`);
-    console.log(`🏆 New balance: $${account.balance.toFixed(2)}`);
+    console.log(`🏆 New balance: $${account.balance.toFixed(2)} (Withdrawable: $${account.withdrawableBalance.toFixed(2)}, Bonus: $${account.bonusBalance.toFixed(2)})`);
     console.log(`🏆 BingoBest net profit: $${this.bingoBestAccount.netProfit.toFixed(2)}`);
     
     return true;
@@ -194,20 +217,45 @@ class GameEconomy {
       return false;
     }
 
-    if (account.balance < amount) {
-      console.error('Insufficient funds for withdrawal:', {
+    if (account.withdrawableBalance < amount) {
+      console.error('Insufficient withdrawable funds:', {
         playerId,
-        balance: account.balance,
+        withdrawableBalance: account.withdrawableBalance,
+        bonusBalance: account.bonusBalance,
         withdrawalAmount: amount
       });
       return false;
     }
 
-    // Deduct from player balance
-    account.balance -= amount;
+    // Deduct from withdrawable balance only
+    account.withdrawableBalance -= amount;
+    account.balance = account.withdrawableBalance + account.bonusBalance;
 
     console.log(`💸 Withdrawal processed: Player ${playerId} withdrew $${amount.toFixed(2)}`);
-    console.log(`💸 New balance: $${account.balance.toFixed(2)}`);
+    console.log(`💸 New balance: $${account.balance.toFixed(2)} (Withdrawable: $${account.withdrawableBalance.toFixed(2)}, Bonus: $${account.bonusBalance.toFixed(2)})`);
+    
+    return true;
+  }
+
+  // Bonus Management
+  addBonus(playerId: string, amount: number, reason: string = 'Bonus'): boolean {
+    const account = this.getPlayerAccount(playerId);
+    if (!account) {
+      console.error('Player account not found:', playerId);
+      return false;
+    }
+
+    if (amount <= 0) {
+      console.error('Invalid bonus amount:', amount);
+      return false;
+    }
+
+    // Add to bonus balance (not withdrawable)
+    account.bonusBalance += amount;
+    account.balance = account.withdrawableBalance + account.bonusBalance;
+
+    console.log(`🎁 Bonus added: Player ${playerId} received $${amount.toFixed(2)} bonus (${reason})`);
+    console.log(`🎁 New balance: $${account.balance.toFixed(2)} (Withdrawable: $${account.withdrawableBalance.toFixed(2)}, Bonus: $${account.bonusBalance.toFixed(2)})`);
     
     return true;
   }

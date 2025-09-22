@@ -1098,6 +1098,8 @@ const EnhancedAppLayout: React.FC = () => {
           <div className="space-y-6">
             <SimplePaymentSystem 
               playerBalance={player.balance}
+              withdrawableBalance={player.withdrawableBalance}
+              bonusBalance={player.bonusBalance}
               onAddFunds={handleAddFunds}
               onWithdraw={handleWithdraw}
             />

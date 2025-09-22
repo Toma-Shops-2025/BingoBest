@@ -11,6 +11,8 @@ interface WithdrawalModalProps {
   isOpen: boolean;
   onClose: () => void;
   playerBalance: number;
+  withdrawableBalance: number;
+  bonusBalance: number;
   onWithdraw: (amount: number, method: string, details: any) => void;
 }
 
@@ -18,6 +20,8 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
   isOpen,
   onClose,
   playerBalance,
+  withdrawableBalance,
+  bonusBalance,
   onWithdraw
 }) => {
   const [amount, setAmount] = useState(0);
@@ -71,7 +75,7 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
   const selectedMethod = withdrawalMethods.find(m => m.id === method);
   const totalFee = selectedMethod?.fee || 0;
   const netAmount = amount - totalFee;
-  const isValid = amount > 0 && amount <= playerBalance && netAmount > 0;
+  const isValid = amount > 0 && amount <= withdrawableBalance && netAmount > 0;
 
   const handleWithdraw = async () => {
     if (!isValid) return;
@@ -186,9 +190,17 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
             <div className="bg-green-50 p-4 rounded-lg">
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">
-                  ${playerBalance.toFixed(2)}
+                  ${withdrawableBalance.toFixed(2)}
                 </div>
-                <div className="text-sm text-gray-600">Available Balance</div>
+                <div className="text-sm text-gray-600">Withdrawable Balance</div>
+                {bonusBalance > 0 && (
+                  <div className="text-sm text-orange-600 mt-1">
+                    + ${bonusBalance.toFixed(2)} Bonus (Not Withdrawable)
+                  </div>
+                )}
+                <div className="text-xs text-gray-500 mt-1">
+                  Total Balance: ${playerBalance.toFixed(2)}
+                </div>
               </div>
             </div>
 
@@ -201,13 +213,13 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
                   value={amount}
                   onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
                   min="1"
-                  max={playerBalance}
+                  max={withdrawableBalance}
                   step="0.01"
                   className="flex-1"
                   placeholder="Enter amount"
                 />
                 <Button
-                  onClick={() => setAmount(playerBalance)}
+                  onClick={() => setAmount(withdrawableBalance)}
                   variant="outline"
                   size="sm"
                 >

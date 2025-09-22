@@ -8,12 +8,16 @@ import WithdrawalModal from './WithdrawalModal';
 
 interface SimplePaymentSystemProps {
   playerBalance: number;
+  withdrawableBalance: number;
+  bonusBalance: number;
   onAddFunds: (amount: number) => void;
   onWithdraw: (amount: number) => void;
 }
 
 const SimplePaymentSystem: React.FC<SimplePaymentSystemProps> = ({
   playerBalance,
+  withdrawableBalance,
+  bonusBalance,
   onAddFunds,
   onWithdraw
 }) => {
@@ -77,10 +81,18 @@ const SimplePaymentSystem: React.FC<SimplePaymentSystemProps> = ({
         <CardContent>
           <div className="text-center">
             <div className="text-3xl font-bold text-green-600">
-              ${playerBalance.toFixed(2)}
+              ${withdrawableBalance.toFixed(2)}
             </div>
             <div className="text-sm text-gray-600 mt-2">
-              Available for games and withdrawals
+              Withdrawable Balance
+            </div>
+            {bonusBalance > 0 && (
+              <div className="text-sm text-orange-600 mt-1">
+                + ${bonusBalance.toFixed(2)} Bonus (Not Withdrawable)
+              </div>
+            )}
+            <div className="text-xs text-gray-500 mt-1">
+              Total: ${playerBalance.toFixed(2)}
             </div>
           </div>
         </CardContent>
@@ -160,28 +172,33 @@ const SimplePaymentSystem: React.FC<SimplePaymentSystemProps> = ({
         <CardContent className="space-y-4">
           <div className="text-center">
             <div className="text-2xl font-bold text-green-600 mb-2">
-              ${playerBalance.toFixed(2)}
+              ${withdrawableBalance.toFixed(2)}
             </div>
             <div className="text-sm text-gray-600 mb-4">
               Available for withdrawal
             </div>
+            {bonusBalance > 0 && (
+              <div className="text-sm text-orange-600 mb-2">
+                + ${bonusBalance.toFixed(2)} Bonus (Not Withdrawable)
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <Button 
               onClick={() => setShowWithdrawalModal(true)}
               className="bg-blue-600 hover:bg-blue-700"
-              disabled={playerBalance <= 0}
+              disabled={withdrawableBalance <= 0}
             >
               💳 Withdraw Funds
             </Button>
             <Button 
               onClick={() => {
-                setWithdrawAmount(playerBalance);
+                setWithdrawAmount(withdrawableBalance);
                 handleWithdraw();
               }} 
               variant="outline"
-              disabled={playerBalance <= 0}
+              disabled={withdrawableBalance <= 0}
             >
               Quick Withdraw All
             </Button>
@@ -234,6 +251,8 @@ const SimplePaymentSystem: React.FC<SimplePaymentSystemProps> = ({
         isOpen={showWithdrawalModal}
         onClose={() => setShowWithdrawalModal(false)}
         playerBalance={playerBalance}
+        withdrawableBalance={withdrawableBalance}
+        bonusBalance={bonusBalance}
         onWithdraw={handleAdvancedWithdraw}
       />
     </div>
