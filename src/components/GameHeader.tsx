@@ -82,30 +82,32 @@ const GameHeader: React.FC<GameHeaderProps> = ({
           <div className="text-purple-200">Prize Pool</div>
         </div>
         
-        <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
           {timeLeft !== undefined && (
             <div className="text-center">
               <div className="text-2xl font-bold">{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</div>
               <div className="text-purple-200">Time Left</div>
             </div>
           )}
-          <Button 
-            onClick={onViewProfile}
-            variant="outline"
-            size="sm"
-            className="bg-white bg-opacity-20 border-white text-white hover:bg-white hover:text-purple-600"
-          >
-            Profile
-          </Button>
-          <Button 
-            onClick={handleSignOut}
-            variant="outline"
-            size="sm"
-            disabled={isSigningOut}
-            className="bg-white bg-opacity-20 border-white text-white hover:bg-white hover:text-purple-600 disabled:opacity-50"
-          >
-            {isSigningOut ? 'Signing Out...' : 'Sign Out'}
-          </Button>
+          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+            <Button 
+              onClick={onViewProfile}
+              variant="outline"
+              size="sm"
+              className="bg-white bg-opacity-20 border-white text-white hover:bg-white hover:text-purple-600 w-full sm:w-auto"
+            >
+              Profile
+            </Button>
+            <Button 
+              onClick={handleSignOut}
+              variant="outline"
+              size="sm"
+              disabled={isSigningOut}
+              className="bg-white bg-opacity-20 border-white text-white hover:bg-white hover:text-purple-600 disabled:opacity-50 w-full sm:w-auto"
+            >
+              {isSigningOut ? 'Signing Out...' : 'Sign Out'}
+            </Button>
+          </div>
         </div>
       </div>
       
